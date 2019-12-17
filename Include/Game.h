@@ -5,6 +5,14 @@
 #include <Include/GameState.h>
 #include <Include/MainMenuState.h>
 
+/*
+ * Triangle Game by Kamriel
+ *
+ * Roguelike based on the game of youtuber Dani "Triangle Game".
+ * I was very inspired by the idea of the game and decided to
+ * rewrite his project in C++ using the SFML library.
+ */
+
 class Game
 {
 private:
