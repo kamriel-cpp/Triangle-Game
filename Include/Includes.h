@@ -16,4 +16,8 @@
 #include <SFML/Graphics.hpp>
 #include <SFML/Audio.hpp>
 
-enum Direction { LEFT, RIGHT, UP, DOWN, IN, OUT };
+//I'm not really sure where this part should be...
+//maybe I'll put it in a separate header because I'm going
+//to use this enumeration in the MovementComponent
+enum RoomSpecification { NONE, FRONT, BACK, DEFAULT, BONUS, CORRIDOR_HORIZONTAL, CORRIDOR_VERTICAL };
+enum Direction { LEFT, RIGHT, UP, DOWN, IN, OUT };	

@@ -5,18 +5,17 @@
 class Dungeon
 {
 private:
-	unsigned floor[50][50];
+	unsigned		floor[50][50];
+	unsigned		roomCounter;
+	sf::Vector2f	roomSize;
+	float			corridorWidth;
+	float			corridorLength;
+	sf::Vector2f	center;
+
 	std::list<sf::Vector2u> rooms;
 	std::list<sf::Vector2u> bonusRooms;
 	std::list<sf::Vector2u> corridorsHorizontal;
 	std::list<sf::Vector2u> corridorsVertical;
-	unsigned roomCounter;
-
-	sf::Vector2f roomSize;
-	float corridorWidth;
-	float corridorLength;
-
-	sf::Vector2f center;
 public:
 	Dungeon();
 	Dungeon(const Dungeon& other) = default;
@@ -31,9 +30,6 @@ public:
 	void generate();
 	void update(const float& dt);
 	void render(sf::RenderTarget* target = NULL);
-
-	enum Direction { LEFT, RIGHT, UP, DOWN };
-	enum RoomSpecification { NONE, FRONT, BACK, DEFAULT, BONUS, CORRIDOR_HORIZONTAL, CORRIDOR_VERTICAL };
 };
 
 #include <Source/Dungeon.cpp>

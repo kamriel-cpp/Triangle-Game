@@ -9,11 +9,11 @@
 class GameState : public State
 {
 private:
-	Button button;
-	sf::Font font;
-	sf::Text text;
-	Dungeon dungeon;
-	Camera camera;
+	Button		button;
+	sf::Font 	font;
+	sf::Text 	text;
+	Dungeon		dungeon;
+	Camera		camera;
 	
 	void initDungeon();
 	void initKeybinds();
@@ -22,13 +22,13 @@ private:
 	void initCamera();
 public:
 	GameState(sf::RenderWindow* window, std::map<std::string,
-				int>* supportedKeys, std::stack<State*>* states);
+			  int>* supportedKeys, std::stack<State*>* states);
 	virtual ~GameState();
 
-	void endState		(); 
-	void updateInput	(const float& dt) override;
-	void update			(const float& dt) override; 
-	void render			(sf::RenderTarget* target = nullptr) override;
+	void endStat(); 
+	void updateInput(const float& dt) override;
+	void update(const float& dt) override; 
+	void render(sf::RenderTarget* target = nullptr) override;
 };
 
 #include <Source/GameState.cpp>

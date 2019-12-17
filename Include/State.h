@@ -19,16 +19,17 @@ protected:
 	virtual void initKeybinds() = 0;
 public:
 	State(sf::RenderWindow* window, std::map<std::string,
-			int>* supportedKeys, std::stack<State*>* states);
+		  int>* supportedKeys, std::stack<State*>* states);
 	virtual ~State();
 
-	const bool& getQuit			() const;
-	void endState				(); 
-	void coutMousePosView		(); 
-	void updateMousePositions	();
-	virtual void updateInput	(const float& dt) = 0;
-	virtual void update			(const float& dt) = 0; 
-	virtual void render			(sf::RenderTarget* target = nullptr) = 0;
+	const bool& getQuit() const;
+	void endState(); 
+	void showMousePosition(); 
+	void updateMousePositions();
+
+	virtual void updateInput(const float& dt) = 0;
+	virtual void update(const float& dt) = 0; 
+	virtual void render(sf::RenderTarget* target = nullptr) = 0;
 };
 
 #include <Source/State.cpp>

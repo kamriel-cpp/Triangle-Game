@@ -2,8 +2,6 @@
 #ifndef CAMERA_H
 #define CAMERA_H
 
-enum Direction { LEFT, RIGHT, UP, DOWN, IN, OUT };
-
 class Camera
 {
 private:

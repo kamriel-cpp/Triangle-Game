@@ -22,14 +22,14 @@ private:
 public:
 	Button() = default;
 	Button(float x, float y, float width, float height,
-			sf::Font* font, std::string text, unsigned char character_size,
-			sf::Color text_idle_color, sf::Color text_hover_color, sf::Color text_active_color,
-			sf::Color idle_color, sf::Color hover_color, sf::Color active_color);
+		   sf::Font* font, std::string text, unsigned char character_size,
+		   sf::Color text_idle_color, sf::Color text_hover_color, sf::Color text_active_color,
+		   sf::Color idle_color, sf::Color hover_color, sf::Color active_color);
 	~Button() = default;
 	
 	const bool isPressed() const;
-	void update			(const sf::Vector2f& mousePos);
-	void render			(sf::RenderTarget* target);
+	void update(const sf::Vector2f& mousePos);
+	void render(sf::RenderTarget* target);
 };
 
 #include <Source/Button.cpp>

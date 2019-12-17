@@ -2,32 +2,35 @@
 #ifndef TRIANGLE_H
 #define TRIANGLE_H
 
-enum movement_states { IDLE = 0, MOVING_LEFT, MOVING_RIGHT, MOVING_UP, MOVING_DOWN };
+/*
+ * TODO:
+ * 
+ * Inside the private section:
+ * Variables:
+ *  - Shape or Texture
+ *  - AttackComponent
+ *  - MovementComponent
+ *  - two slots of the Guns (maybe Gun*)
+ *  - Effect* or std::list of Effects
+ *  - some class with triangle parameters (hp, maxhp, maybe armor, xp etc.)
+ * 
+ * Inside the public section:
+ * Functions:
+ *  - attack --> the Attack function of the AttackComponent instance should be called here
+ *  - death	 --> explosion effect and the destruction of the triangle
+ *  - spawn	 --> spawn a triangle on the floor with the zoom effect
+ *  - hit	 --> the triangle blinks and takes damage
+ *  - dash	 --> is a ghostly movement, faster than the default,
+ *				 directed to the mouse and damaging all enemies on the way
+ */
 
 class Triangle
 {
-private:
-	sf::RectangleShape				head;
-	std::list<sf::RectangleShape>	tail;
-	sf::FloatRect					boundingBox;
-	short unsigned					moveDirection;
-	unsigned						length;
-	int 							arr[255];
 public:
- 	Triangle				();
- 	Triangle				(float x, float y, const short unsigned moveDirection);
- 	Triangle& operator=	(const Triangle& other);
-	virtual ~Triangle		();
+ 	Triangle();
 
-	sf::FloatRect getBoundingRect	() const;
-	sf::Vector2f getPosition		();
-	void pushTail					();
-	void setFillColor				(sf::Color color);
-	void setPosition				(const float x, const float y);
-	void setDirection				(const short unsigned moveDirection);
-	void move						(const float& dt);
-	void update						(const float& dt);
-	void render						(sf::RenderTarget* target = NULL);
+	void update(const float& dt);
+	void render(sf::RenderTarget* target = NULL);
 };
 
 #include <Source/Triangle.cpp>

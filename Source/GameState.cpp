@@ -60,6 +60,11 @@ GameState::~GameState()
 //Functions
 void GameState::updateInput(const float& dt)
 {	
+	/*
+	 * Press Esc to exit the game
+	 * Press on the arrows to control the camera
+	 * Press Q/E to zoom
+	 */
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key(this->keybinds.at("CLOSE"))))
 		this->State::endState();
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Left))
@@ -78,11 +83,10 @@ void GameState::updateInput(const float& dt)
 
 void GameState::update(const float& dt)
 {
+	this->updateMousePositions();
+	this->updateInput(dt);
 	this->dungeon.update(dt);
 	this->camera.update(dt);
-	//this->updateMousePositions();
-	//this->coutMousePosView();
-	this->updateInput(dt);
 }
 
 void GameState::render(sf::RenderTarget* target)

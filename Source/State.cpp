@@ -31,7 +31,7 @@ void State::updateMousePositions()
 	this->mousePosView = this->window->mapPixelToCoords(sf::Mouse::getPosition(*this->window));
 }
 
-void State::coutMousePosView()
+void State::showMousePosition()
 {
 	std::cout << "(" << this->mousePosView.x << "," << this->mousePosView.y << ")" << std::endl;
 }
