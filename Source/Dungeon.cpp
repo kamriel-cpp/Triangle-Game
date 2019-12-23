@@ -1,16 +1,59 @@
-Dungeon::Dungeon()
+//Initialization
+void Dungeon::initVariables()
 {
 	for (size_t i = 0; i < 50; i++)
 		for (size_t j = 0; j < 50; j++)
 			this->floor[i][j] = NONE;
-	this->roomSize.x = 250.f;
-	this->roomSize.y = 250.f;
+	this->roomSize.x = 500.f;
+	this->roomSize.y = 500.f;
 	this->corridorLength = this->roomSize.x / 2.f;
 	this->corridorWidth = this->corridorLength * 0.5f;
 
 	sf::VideoMode window_bounds = sf::VideoMode::getDesktopMode();
 	this->center.x = window_bounds.width / 2.f;
 	this->center.y = window_bounds.height / 2.f;
+
+	this->mainColor.r = 31;
+	this->mainColor.g = 31;
+	this->mainColor.b = 31;
+
+	this->mainRoomColor.r = 200;
+	this->mainRoomColor.g = 255;
+	this->mainRoomColor.b = 200;
+
+	this->startRoomColor.r = 200;
+	this->startRoomColor.g = 200;
+	this->startRoomColor.b = 255;
+	
+	this->lastRoomColor.r = 255;
+	this->lastRoomColor.g = 200;
+	this->lastRoomColor.b = 200;
+	
+	this->corridorColor.r = 200;
+	this->corridorColor.g = 200;
+	this->corridorColor.b = 200;
+
+	this->roomsOutlineThickness = -3.f;
+}
+
+//Constructors/Destructors
+Dungeon::Dungeon()
+{
+	this->initVariables();
+}
+
+//Functions
+sf::Vector2f Dungeon::getCenter()
+{
+	float mean = (this->roomSize.x + this->corridorLength + this->corridorWidth) / 3.f;
+	return sf::Vector2f(
+		mean * 0.75f * 25 - mean * 0.75f * 25 + this->center.x,
+		mean * 0.75f * 25 - mean * 0.75f * 25 + this->center.y);
+}
+
+std::list<sf::RectangleShape>& Dungeon::getShapesList()
+{
+	return this->shapes;
 }
 
 void Dungeon::setRoomSize(sf::Vector2f room_size)
@@ -46,6 +89,73 @@ void Dungeon::addCorridorHorizontal(sf::Vector2u position)
 void Dungeon::addCorridorVertical(sf::Vector2u position)
 {
 	this->corridorsVertical.push_back(position);
+}
+
+void Dungeon::fillFloor()
+{
+	if (!this->rooms.empty())
+	{
+		for (auto& room : this->rooms)
+			this->floor[room.x][room.y] = DEFAULT;
+
+		this->floor[this->rooms.front().x][this->rooms.front().y] = FRONT;
+		this->floor[this->rooms.back().x][this->rooms.back().y] = BACK;
+	}
+
+	if (!this->bonusRooms.empty())
+		for (auto& bonus_room : this->bonusRooms)
+			this->floor[bonus_room.x][bonus_room.y] = BONUS;
+
+	if (!this->corridorsHorizontal.empty())
+		for (auto& corridor : this->corridorsHorizontal)
+			this->floor[corridor.x][corridor.y] = CORRIDOR_HORIZONTAL;
+
+	if (!this->corridorsVertical.empty())
+		for (auto& corridor : this->corridorsVertical)
+			this->floor[corridor.x][corridor.y] = CORRIDOR_VERTICAL;
+}
+
+void Dungeon::fillShapesList()
+{
+	for (size_t i = 0; i < 50; i++)
+	{
+		for (size_t j = 0; j < 50; j++)
+		{
+			if (this->floor[i][j])
+			{
+				this->shapes.push_back(sf::RectangleShape(this->roomSize));
+
+				if (this->floor[i][j] == FRONT)
+				{
+					this->shapes.back().setOutlineColor(this->startRoomColor);
+				}
+				else if (this->floor[i][j] == BACK)
+				{
+					this->shapes.back().setOutlineColor(this->lastRoomColor);
+				}
+				else if (this->floor[i][j] == DEFAULT || this->floor[i][j] == BONUS)
+				{
+					this->shapes.back().setOutlineColor(this->mainRoomColor);
+				}
+				else if (this->floor[i][j] == CORRIDOR_HORIZONTAL || this->floor[i][j] == CORRIDOR_VERTICAL)
+				{
+					this->shapes.back().setOutlineColor(this->corridorColor);
+					if (this->floor[i][j] == CORRIDOR_HORIZONTAL)
+						this->shapes.back().setSize(sf::Vector2f(this->corridorLength, this->corridorWidth));
+					else if (this->floor[i][j] == CORRIDOR_VERTICAL)
+						this->shapes.back().setSize(sf::Vector2f(this->corridorWidth, this->corridorLength));
+				}
+				this->shapes.back().setFillColor(this->mainColor);
+				this->shapes.back().setOutlineThickness(this->roomsOutlineThickness);
+				this->shapes.back().setPosition(sf::Vector2f(
+					this->roomSize.x * 0.75f * i - this->roomSize.x * 0.75f * 25.f + this->center.x,
+					this->roomSize.y * 0.75f * j - this->roomSize.x * 0.75f * 25.f + this->center.y));
+				this->shapes.back().setOrigin(sf::Vector2f(
+					this->shapes.back().getSize().x / 2.f,
+					this->shapes.back().getSize().y / 2.f));
+			}
+		}
+	}
 }
 
 void Dungeon::generate()
@@ -219,72 +329,12 @@ void Dungeon::generate()
 
 		bonus_rooms_count--;
 	}
-}
-
-void Dungeon::update(const float& dt)
-{
-	if (!this->rooms.empty())
-	{
-		for (auto& room : this->rooms)
-			this->floor[room.x][room.y] = DEFAULT;
-
-		this->floor[this->rooms.front().x][this->rooms.front().y] = FRONT;
-		this->floor[this->rooms.back().x][this->rooms.back().y] = BACK;
-	}
-
-	if (!this->bonusRooms.empty())
-		for (auto& bonus_room : this->bonusRooms)
-			this->floor[bonus_room.x][bonus_room.y] = BONUS;
-
-	if (!this->corridorsHorizontal.empty())
-		for (auto& corridor : this->corridorsHorizontal)
-			this->floor[corridor.x][corridor.y] = CORRIDOR_HORIZONTAL;
-
-	if (!this->corridorsVertical.empty())
-		for (auto& corridor : this->corridorsVertical)
-			this->floor[corridor.x][corridor.y] = CORRIDOR_VERTICAL;
+	this->fillFloor();
+	this->fillShapesList();
 }
 
 void Dungeon::render(sf::RenderTarget* target)
 {
-	for (size_t i = 0; i < 50; i++)
-	{
-		for (size_t j = 0; j < 50; j++)
-		{
-			if (this->floor[i][j])
-			{
-				sf::RectangleShape room_shape(this->roomSize);
-
-				if (this->floor[i][j] == FRONT)
-					room_shape.setFillColor(sf::Color(200, 200, 255));
-
-				else if (this->floor[i][j] == BACK)
-					room_shape.setFillColor(sf::Color(255, 200, 200));
-
-				else if (this->floor[i][j] == DEFAULT || this->floor[i][j] == BONUS)
-					room_shape.setFillColor(sf::Color(200, 255, 200));
-
-				else if (this->floor[i][j] == CORRIDOR_HORIZONTAL)
-				{
-					room_shape.setFillColor(sf::Color(200, 200, 200));
-					room_shape.setSize(sf::Vector2f(this->corridorLength, this->corridorWidth));
-				}
-
-				else if (this->floor[i][j] == CORRIDOR_VERTICAL)
-				{
-					room_shape.setFillColor(sf::Color(200, 200, 200));
-					room_shape.setSize(sf::Vector2f(this->corridorWidth, this->corridorLength));
-				}
-
-				room_shape.setPosition(sf::Vector2f(
-					this->roomSize.x * 0.75f * i - this->roomSize.x * 0.75f * 25.f + this->center.x,
-					this->roomSize.y * 0.75f * j - this->roomSize.x * 0.75f * 25.f + this->center.y));
-				room_shape.setOrigin(sf::Vector2f(
-					room_shape.getSize().x / 2.f,
-					room_shape.getSize().y / 2.f));
-
-				target->draw(room_shape);
-			}
-		}
-	}
+	for (auto& shape : this->shapes)
+		target->draw(shape);
 }

@@ -9,6 +9,7 @@
 #include <stack>
 #include <list>
 #include <map>
+#include <cmath>
 
 //SFML includes
 #include <SFML/Window.hpp>

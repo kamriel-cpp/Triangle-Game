@@ -5,29 +5,37 @@
 #include <Include/Button.h>
 #include <Include/Dungeon.h>
 #include <Include/Camera.h>
+#include <Include/Minimap.h>
+#include <Include/MovementComponent.h>
+#include <Include/Triangle.h>
+#include <Include/Player.h>
 
 class GameState : public State
 {
 private:
-	Button		button;
-	sf::Font 	font;
-	sf::Text 	text;
+	Player		player;
 	Dungeon		dungeon;
-	Camera		camera;
-	
-	void initDungeon();
+	Camera		mainCamera;
+	Camera		secondCamera;
+	Camera		thirdCamera;
+	Minimap		minimap;
+	//Button	button;
+	sf::Font	font;
+	sf::Text	tips;
+
 	void initKeybinds();
 	void initPlayer();
-	void initText();
-	void initCamera();
+	void initDungeon();
+	void initCameras();
+	void initMinimap();
+	void initTexts();
 public:
 	GameState(sf::RenderWindow* window, std::map<std::string,
-			  int>* supportedKeys, std::stack<State*>* states);
+		int>* supportedKeys, std::stack<State*>* states);
 	virtual ~GameState();
 
-	void endStat(); 
 	void updateInput(const float& dt) override;
-	void update(const float& dt) override; 
+	void update(const float& dt) override;
 	void render(sf::RenderTarget* target = nullptr) override;
 };
 

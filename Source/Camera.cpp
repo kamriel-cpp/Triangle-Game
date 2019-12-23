@@ -15,6 +15,11 @@ Camera::~Camera()
 	delete this->window;
 }
 
+sf::View& Camera::getView()
+{
+	return this->view;
+}
+
 void Camera::setWindow(sf::RenderWindow* window)
 {
 	this->window = window;
@@ -55,13 +60,17 @@ void Camera::zoom(unsigned int direction)
 		this->view.zoom(0.99f);
 }
 
+void Camera::zoom(float factor)
+{
+	this->view.zoom(factor);
+}
+
 void Camera::update(const float& dt)
 {
 	this->dt = dt;
-	this->window->setView(this->view);
 }
 
-void Camera::render()
+void Camera::updateView()
 {
 	this->window->setView(this->view);
 }

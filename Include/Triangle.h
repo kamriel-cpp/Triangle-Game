@@ -26,11 +26,18 @@
 
 class Triangle
 {
+protected:
+	sf::CircleShape shape;
 public:
  	Triangle();
 
-	void update(const float& dt);
-	void render(sf::RenderTarget* target = NULL);
+ 	sf::Vector2f getPosition();
+ 	void setPosition(sf::Vector2f position);
+ 	void setRotation(float angle);
+ 	void setRadius(float radius);
+
+	virtual void update(const float& dt);
+	virtual void render(sf::RenderTarget* target = NULL);
 };
 
 #include <Source/Triangle.cpp>

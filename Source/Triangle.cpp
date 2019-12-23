@@ -1,10 +1,36 @@
 //Constructors/Destructors
 Triangle::Triangle()
 {
-	//calling all future initialization functions if they will
+	this->shape.setRadius(20.f);
+	this->shape.setPointCount(3);
+	this->shape.setOrigin(sf::Vector2f(
+		this->shape.getRadius(),
+		this->shape.getRadius()));
+	this->shape.setOutlineColor(sf::Color::White);
+	this->shape.setScale(sf::Vector2f(0.75f, 1.f));
 }
 
 //Functions
+sf::Vector2f Triangle::getPosition()
+{
+	return this->shape.getPosition();
+}
+
+void Triangle::setPosition(sf::Vector2f position)
+{
+	this->shape.setPosition(position);
+}
+
+void Triangle::setRotation(float angle)
+{
+	this->shape.setRotation(angle);
+}
+
+void Triangle::setRadius(float radius)
+{
+	this->shape.setRadius(radius);
+}
+
 void Triangle::update(const float& dt)
 {
 	//updating some variables
@@ -12,5 +38,5 @@ void Triangle::update(const float& dt)
 
 void Triangle::render(sf::RenderTarget* target)
 {
-	//rendering some shape or texture
+	target->draw(this->shape);
 }
