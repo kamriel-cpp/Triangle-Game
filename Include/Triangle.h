@@ -1,4 +1,3 @@
-#pragma once
 #ifndef TRIANGLE_H
 #define TRIANGLE_H
 
@@ -32,6 +31,7 @@ public:
  	Triangle();
 
  	sf::Vector2f getPosition();
+ 	sf::FloatRect getGlobalBounds();
  	void setPosition(sf::Vector2f position);
  	void setRotation(float angle);
  	void setRadius(float radius);

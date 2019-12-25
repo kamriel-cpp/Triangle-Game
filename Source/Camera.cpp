@@ -40,7 +40,7 @@ void Camera::setViewport(const sf::FloatRect& viewport)
 	this->view.setViewport(viewport);
 }
 
-void Camera::move(unsigned int direction)
+void Camera::move(const unsigned char direction)
 {
 	if (direction == LEFT)
 		this->view.move(-1000.f * this->dt, 0);
@@ -52,15 +52,7 @@ void Camera::move(unsigned int direction)
 		this->view.move(0, 1000.f * this->dt);
 }
 
-void Camera::zoom(unsigned int direction)
-{
-	if (direction == IN)
-		this->view.zoom(1.01f);
-	else if (direction == OUT)
-		this->view.zoom(0.99f);
-}
-
-void Camera::zoom(float factor)
+void Camera::zoom(const float factor)
 {
 	this->view.zoom(factor);
 }

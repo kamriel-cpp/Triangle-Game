@@ -1,4 +1,3 @@
-#pragma once
 #ifndef CAMERA_H
 #define CAMERA_H
 
@@ -19,9 +18,8 @@ public:
 	void setCenter(const sf::Vector2f& center);
 	void setViewport(const sf::FloatRect& viewport);
 	
-	void move(unsigned int direction);
-	void zoom(unsigned int direction);
-	void zoom(float factor);
+	void move(const unsigned char direction);
+	void zoom(const float factor);
 
 	void update(const float& dt);
 	void updateView();

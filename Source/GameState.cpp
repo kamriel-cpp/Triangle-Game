@@ -22,6 +22,13 @@ void GameState::initPlayer()
 	this->player.setMousePosition2(&this->mousePosView);
 }
 
+void GameState::initEnemies()
+{
+	this->enemy.setPosition(sf::Vector2f(
+		this->player.getPosition().x + this->player.getGlobalBounds().width * 2,
+		this->player.getPosition().y));
+}
+
 void GameState::initDungeon()
 {
 	this->dungeon.generate();
@@ -67,6 +74,7 @@ GameState::GameState(sf::RenderWindow* window, std::map<std::string,
 	this->initKeybinds();
 	this->initDungeon();
 	this->initPlayer();
+	this->initEnemies();
 	this->initCameras();
 	this->initMinimap();
 	this->initTexts();
@@ -82,13 +90,37 @@ void GameState::updateInput(const float& dt)
 {
 	//Update player input
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key(this->keybinds.at("MOVE_LEFT"))))
-		this->player.move(-1.f, 0.f, dt);
+	{
+		if (this->player.insideDungeon)
+		{
+			this->player.move(-1.f, 0.f, dt);
+			this->player.lastMove = MOVING_LEFT;
+		}
+	}
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key(this->keybinds.at("MOVE_RIGHT"))))
-		this->player.move(1.f, 0.f, dt);
+	{
+		if (this->player.insideDungeon)
+		{
+			this->player.move(1.f, 0.f, dt);
+			this->player.lastMove = MOVING_RIGHT;
+		}
+	}
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key(this->keybinds.at("MOVE_UP"))))
-		this->player.move(0.f, -1.f, dt);
+	{
+		if (this->player.insideDungeon)
+		{
+			this->player.move(0.f, -1.f, dt);
+			this->player.lastMove = MOVING_UP;
+		}
+	}
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key(this->keybinds.at("MOVE_DOWN"))))
-		this->player.move(0.f, 1.f, dt);
+	{
+		if (this->player.insideDungeon)
+		{
+			this->player.move(0.f, 1.f, dt);
+			this->player.lastMove = MOVING_DOWN;
+		}
+	}
 
 	/*
 	 * Press Esc to exit the game
@@ -106,9 +138,20 @@ void GameState::updateInput(const float& dt)
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Down))
 		this->mainCamera.move(DOWN);
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Q))
-		this->mainCamera.zoom((unsigned int)IN);
+		this->mainCamera.zoom(1.01f);
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::E))
-		this->mainCamera.zoom((unsigned int)OUT);
+		this->mainCamera.zoom(0.99f);
+
+	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::F))
+		this->player.attributeComponent.updateStats(false);
+	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Z))
+		this->player.attributeComponent.loseEXP(this->player.attributeComponent.expNext / 10);
+	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::X))
+		this->player.attributeComponent.gainEXP(this->player.attributeComponent.expNext / 10);
+	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::C))
+		this->player.attributeComponent.loseHP(this->player.attributeComponent.hpMax / 5);
+	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::V))
+		this->player.attributeComponent.gainHP(this->player.attributeComponent.hpMax / 5);
 }
 
 void GameState::update(const float& dt)
@@ -117,11 +160,25 @@ void GameState::update(const float& dt)
 	this->updateInput(dt);
 
 	this->player.update(dt);
+	this->enemy.update(dt);
 
 	this->mainCamera.setCenter(this->player.getPosition());
 	this->mainCamera.update(dt);
 	this->secondCamera.update(dt);
 	this->thirdCamera.update(dt);
+
+	for (auto& shape : this->dungeon.shapes)
+	{
+		if (this->player.getGlobalBounds().intersects(shape.getGlobalBounds()))
+		{
+			this->player.insideDungeon = true;
+			break;
+		}
+		else
+		{
+			this->player.insideDungeon = false;
+		}
+	}
 }
 
 void GameState::render(sf::RenderTarget* target)
@@ -131,6 +188,7 @@ void GameState::render(sf::RenderTarget* target)
 
 	this->mainCamera.updateView();
 	this->dungeon.render(target);
+	this->enemy.render(target);
 	this->player.render(target);
 
 	this->secondCamera.updateView();

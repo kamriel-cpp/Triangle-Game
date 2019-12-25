@@ -1,4 +1,3 @@
-#pragma once
 #ifndef MAINMENUSTATE_H
 #define MAINMENUSTATE_H
 #include <Include/State.h>

@@ -1,4 +1,3 @@
-#pragma once
 #ifndef MINIMAP_H
 #define MINIMAP_H
 
@@ -9,7 +8,7 @@ private:
 public:
 	Minimap();
 	
-	void setShapesList(std::list<sf::RectangleShape> shapes);
+	void setShapesList(const std::list<sf::RectangleShape> shapes);
 	void render(sf::RenderTarget* target = NULL);
 };
 

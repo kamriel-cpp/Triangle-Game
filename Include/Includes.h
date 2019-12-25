@@ -21,4 +21,5 @@
 //maybe I'll put it in a separate header because I'm going
 //to use this enumeration in the MovementComponent
 enum RoomSpecification { NONE, FRONT, BACK, DEFAULT, BONUS, CORRIDOR_HORIZONTAL, CORRIDOR_VERTICAL };
-enum Direction { LEFT, RIGHT, UP, DOWN, IN, OUT };	
+enum Direction { LEFT, RIGHT, UP, DOWN };
+enum MovementStates { IDLE, MOVING, MOVING_LEFT, MOVING_RIGHT, MOVING_UP, MOVING_DOWN };

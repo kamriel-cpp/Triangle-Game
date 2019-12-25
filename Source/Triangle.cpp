@@ -5,15 +5,20 @@ Triangle::Triangle()
 	this->shape.setPointCount(3);
 	this->shape.setOrigin(sf::Vector2f(
 		this->shape.getRadius(),
-		this->shape.getRadius()));
+		this->shape.getRadius() * 0.75f));
 	this->shape.setOutlineColor(sf::Color::White);
-	this->shape.setScale(sf::Vector2f(0.75f, 1.f));
+	//this->shape.setScale(sf::Vector2f(0.75f, 1.f));
 }
 
 //Functions
 sf::Vector2f Triangle::getPosition()
 {
 	return this->shape.getPosition();
+}
+
+sf::FloatRect Triangle::getGlobalBounds()
+{
+	return this->shape.getGlobalBounds();
 }
 
 void Triangle::setPosition(sf::Vector2f position)

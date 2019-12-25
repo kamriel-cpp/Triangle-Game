@@ -1,4 +1,3 @@
-#pragma once
 #ifndef GAMESTATE_H
 #define GAMESTATE_H
 #include <Include/State.h>
@@ -7,13 +6,16 @@
 #include <Include/Camera.h>
 #include <Include/Minimap.h>
 #include <Include/MovementComponent.h>
+#include <Include/AttributeComponent.h>
 #include <Include/Triangle.h>
 #include <Include/Player.h>
+#include <Include/Enemy.h>
 
 class GameState : public State
 {
 private:
 	Player		player;
+	Enemy		enemy;
 	Dungeon		dungeon;
 	Camera		mainCamera;
 	Camera		secondCamera;
@@ -25,6 +27,7 @@ private:
 
 	void initKeybinds();
 	void initPlayer();
+	void initEnemies();
 	void initDungeon();
 	void initCameras();
 	void initMinimap();

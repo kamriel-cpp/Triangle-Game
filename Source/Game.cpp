@@ -11,7 +11,7 @@ void Game::initWindow()
 	std::ifstream ifs("../Config/Window.ini");
 	this->videoModes = sf::VideoMode::getFullscreenModes();
 
-	std::string title = "Triangle Game";
+	std::string title = "Title";
 	sf::VideoMode window_bounds = sf::VideoMode::getDesktopMode();
 	bool fullscreen = false;
 	unsigned framerate_limit = 120;
@@ -39,6 +39,7 @@ void Game::initWindow()
 	
 	this->window->setFramerateLimit(framerate_limit);
 	this->window->setVerticalSyncEnabled(vertical_sync_enabled);
+	this->window->setPosition(sf::Vector2i(sf::VideoMode::getDesktopMode().width - this->window->getSize().x - 10, 5));
 }
 
 void Game::initKeys()

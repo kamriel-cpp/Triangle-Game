@@ -1,19 +1,17 @@
-#pragma once
 #ifndef DUNGEON_H
 #define DUNGEON_H
 
 class Dungeon
 {
 private:
-	unsigned		floor[50][50];
-	unsigned		roomCounter;
+	unsigned char	floor[50][50];
+	unsigned char	roomCounter;
 	sf::Vector2f	roomSize;
 	float			corridorWidth;
 	float			corridorLength;
 	sf::Vector2f	center;
 
 	sf::Color 		mainColor;
-
 	sf::Color 		mainRoomColor;
 	sf::Color 		startRoomColor;
 	sf::Color 		lastRoomColor;
@@ -26,10 +24,11 @@ private:
 	std::list<sf::Vector2u> corridorsHorizontal;
 	std::list<sf::Vector2u> corridorsVertical;
 
-	std::list<sf::RectangleShape> shapes;
 
 	void initVariables();
 public:
+	std::list<sf::RectangleShape> shapes;
+	
 	Dungeon();
 	Dungeon(const Dungeon& other) = default;
 	~Dungeon() = default;
