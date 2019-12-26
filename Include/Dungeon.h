@@ -9,7 +9,7 @@ private:
 	sf::Vector2f	roomSize;
 	float			corridorWidth;
 	float			corridorLength;
-	sf::Vector2f	center;
+	float			wallThickness;
 
 	sf::Color 		mainColor;
 	sf::Color 		mainRoomColor;
@@ -24,25 +24,27 @@ private:
 	std::list<sf::Vector2u> corridorsHorizontal;
 	std::list<sf::Vector2u> corridorsVertical;
 
-
 	void initVariables();
 public:
+	sf::Vector2f center;
 	std::list<sf::RectangleShape> shapes;
+	std::list<sf::RectangleShape> walls;
 	
 	Dungeon();
 	Dungeon(const Dungeon& other) = default;
 	~Dungeon() = default;
 
-	sf::Vector2f getCenter();
-	std::list<sf::RectangleShape>& getShapesList();
 	void setRoomSize(sf::Vector2f room_size);
 	void addStartRoom();
 	void addRoom(sf::Vector2u position);
 	void addBonusRoom(sf::Vector2u position);
 	void addCorridorHorizontal(sf::Vector2u position);
 	void addCorridorVertical(sf::Vector2u position);
+
 	void fillFloor();
 	void fillShapesList();
+	void fillWallsList();
+
 	void generate();
 
 	void render(sf::RenderTarget* target = NULL);

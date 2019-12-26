@@ -6,7 +6,6 @@ class Camera
 private:
 	sf::RenderWindow* window;
 	sf::View view;
-	float dt;
 public:
 	Camera();
 	~Camera();
@@ -18,10 +17,10 @@ public:
 	void setCenter(const sf::Vector2f& center);
 	void setViewport(const sf::FloatRect& viewport);
 	
-	void move(const unsigned char direction);
+	void move(float offsetX, float offsetY, const float& dt);
+	void move(const sf::Vector2f offset, const float& dt);
 	void zoom(const float factor);
 
-	void update(const float& dt);
 	void updateView();
 };
 

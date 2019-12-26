@@ -3,12 +3,11 @@
 
 class Minimap
 {
-private:
+public:
 	std::list<sf::RectangleShape> shapes;
 public:
 	Minimap();
 	
-	void setShapesList(const std::list<sf::RectangleShape> shapes);
 	void render(sf::RenderTarget* target = NULL);
 };
 

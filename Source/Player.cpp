@@ -15,11 +15,14 @@ Player::Player()
 	this->shape.setFillColor(sf::Color(49, 252, 252));
 	this->initMovementComponent();
 	this->mousePosition = nullptr;
-	this->lastMove = IDLE;
-	this->insideDungeon = true;
+	this->intersectsWall = false;
+
 	this->frame.setFillColor(sf::Color::Transparent);
 	this->frame.setOutlineColor(sf::Color::White);
 	this->frame.setOutlineThickness(1.f);
+	this->frame.setOrigin(sf::Vector2f(
+		this->frame.getSize().x / 2,
+		this->frame.getSize().y / 2));
 }
 
 Player::~Player()
@@ -44,6 +47,16 @@ void Player::move(const float dir_x, const float dir_y, const float& dt)
 	this->movementComponent.move(dir_x, dir_y, dt);
 }
 
+void Player::move(const float offsetX, const float offsetY)
+{
+	this->shape.move(offsetX, offsetY);
+}
+
+void Player::resetVelocity()
+{
+	this->movementComponent.resetVelocity();
+}
+
 void Player::update(const float& dt)
 {
 	this->movementComponent.update(dt);
@@ -56,45 +69,47 @@ void Player::update(const float& dt)
 	float angle = atan2(this->lookDir.y, this->lookDir.x) * (180.f/pi) + 90.f;
 	this->shape.setRotation(angle);
 
-	if (!this->insideDungeon)
-	{
-		switch (this->lastMove)
-		{
-		case MOVING_LEFT:
-			this->move(1.f, 0.f, dt);
-			break;
-		case MOVING_RIGHT:
-			this->move(-1.f, 0.f, dt);
-			break;
-		case MOVING_UP:
-			this->move(0.f, 1.f, dt);
-			break;
-		case MOVING_DOWN:
-			this->move(0.f, -1.f, dt);
-			break;
-		default:
-			break;
-		}
-	}
-
+	this->frame.setPosition(this->shape.getPosition());
 	this->frame.setSize(sf::Vector2f(
 		this->shape.getGlobalBounds().width,
 		this->shape.getGlobalBounds().height));
 
-	this->frame.setPosition(this->shape.getPosition());
+	char counter = 0;
+	for (auto& wallChecker : this->wallCheckers)
+	{
+		if (counter == LEFT || counter == RIGHT)
+			wallChecker.setSize(sf::Vector2f(1.f, this->shape.getGlobalBounds().height));
+		else if (counter == UP || counter == DOWN)
+			wallChecker.setSize(sf::Vector2f(this->shape.getGlobalBounds().width, 1.f));
+		if (counter == LEFT)
+			wallChecker.setPosition(sf::Vector2f(
+				this->shape.getPosition().x - this->shape.getGlobalBounds().width / 2.f,
+				this->shape.getPosition().y));
+		if (counter == RIGHT)
+			wallChecker.setPosition(sf::Vector2f(
+				this->shape.getPosition().x + this->shape.getGlobalBounds().width / 2.f,
+				this->shape.getPosition().y));
+		if (counter == UP)
+			wallChecker.setPosition(sf::Vector2f(
+				this->shape.getPosition().x,
+				this->shape.getPosition().y - this->shape.getGlobalBounds().height / 2.f));
+		if (counter == DOWN)
+			wallChecker.setPosition(sf::Vector2f(
+				this->shape.getPosition().x,
+				this->shape.getPosition().y + this->shape.getGlobalBounds().height / 2.f));
+		wallChecker.setOrigin(wallChecker.getSize() / 2.f);
+		counter++;
+	}
 
-	this->frame.setOrigin(sf::Vector2f(
-		this->frame.getSize().x / 2,
-		this->frame.getSize().y / 2));
-
-	/*
-	system("cls");
-	std::cout << this->attributeComponent.debugPrint() << std::endl;
-	*/
+	//Print all attributes in the console
+	//system("cls");
+	//std::cout << this->attributeComponent.debugPrint() << std::endl;
 }
 
 void Player::render(sf::RenderTarget* target)
 {
+	//This is for the future.
+	//for (auto& wallChecker : this->wallCheckers)
+	//	target->draw(wallChecker);
 	target->draw(this->shape);
-	target->draw(this->frame);
 }

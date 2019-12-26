@@ -28,6 +28,8 @@ class Triangle
 protected:
 	sf::CircleShape shape;
 public:
+	std::list<sf::RectangleShape> wallCheckers;
+public:
  	Triangle();
 
  	sf::Vector2f getPosition();

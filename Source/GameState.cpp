@@ -17,7 +17,7 @@ void GameState::initKeybinds()
 
 void GameState::initPlayer()
 {
-	this->player.setPosition(this->dungeon.getCenter());
+	this->player.setPosition(this->dungeon.center);
 	this->player.setMousePosition(&this->mousePosWindow);
 	this->player.setMousePosition2(&this->mousePosView);
 }
@@ -48,7 +48,14 @@ void GameState::initCameras()
 
 void GameState::initMinimap()
 {
-	this->minimap.setShapesList(this->dungeon.getShapesList());
+	for (auto& shape : this->dungeon.shapes)
+	{
+		this->minimap.shapes.push_back(sf::RectangleShape());
+		this->minimap.shapes.back().setSize(shape.getSize());
+		this->minimap.shapes.back().setPosition(shape.getPosition());
+		this->minimap.shapes.back().setOrigin(shape.getOrigin());
+		this->minimap.shapes.back().setFillColor(shape.getOutlineColor());
+	}
 }
 
 void GameState::initTexts()
@@ -91,52 +98,35 @@ void GameState::updateInput(const float& dt)
 	//Update player input
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key(this->keybinds.at("MOVE_LEFT"))))
 	{
-		if (this->player.insideDungeon)
-		{
-			this->player.move(-1.f, 0.f, dt);
-			this->player.lastMove = MOVING_LEFT;
-		}
+		this->player.move(-1.f, 0.f, dt);
 	}
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key(this->keybinds.at("MOVE_RIGHT"))))
 	{
-		if (this->player.insideDungeon)
-		{
-			this->player.move(1.f, 0.f, dt);
-			this->player.lastMove = MOVING_RIGHT;
-		}
+		this->player.move(1.f, 0.f, dt);
 	}
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key(this->keybinds.at("MOVE_UP"))))
 	{
-		if (this->player.insideDungeon)
-		{
-			this->player.move(0.f, -1.f, dt);
-			this->player.lastMove = MOVING_UP;
-		}
+		this->player.move(0.f, -1.f, dt);
 	}
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key(this->keybinds.at("MOVE_DOWN"))))
 	{
-		if (this->player.insideDungeon)
-		{
-			this->player.move(0.f, 1.f, dt);
-			this->player.lastMove = MOVING_DOWN;
-		}
+		this->player.move(0.f, 1.f, dt);
 	}
 
-	/*
-	 * Press Esc to exit the game
-	 * Press on the arrows to control the camera
-	 * Press Q/E to zoom
-	 */
+	
+	//Esc to exit the game
+	//Arrows to control the camera
+	//Q/E to zoom
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key(this->keybinds.at("CLOSE"))))
 		this->State::endState();
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Left))
-		this->mainCamera.move(LEFT);
+		this->mainCamera.move(-1000.f, 0.f, dt);
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Right))
-		this->mainCamera.move(RIGHT);
+		this->mainCamera.move(1000.f, 0.f, dt);
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Up))
-		this->mainCamera.move(UP);
+		this->mainCamera.move(0.f, -1000.f, dt);
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Down))
-		this->mainCamera.move(DOWN);
+		this->mainCamera.move(0.f, 1000.f, dt);
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Q))
 		this->mainCamera.zoom(1.01f);
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::E))
@@ -152,6 +142,11 @@ void GameState::updateInput(const float& dt)
 		this->player.attributeComponent.loseHP(this->player.attributeComponent.hpMax / 5);
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::V))
 		this->player.attributeComponent.gainHP(this->player.attributeComponent.hpMax / 5);
+
+	//Minimap teleportation
+	//REMOVE LATER
+	if (sf::Mouse::isButtonPressed(sf::Mouse::Left))
+		this->player.setPosition(this->window->mapPixelToCoords(sf::Mouse::getPosition(*this->window), this->thirdCamera.getView()));
 }
 
 void GameState::update(const float& dt)
@@ -159,26 +154,44 @@ void GameState::update(const float& dt)
 	this->updateMousePositions();
 	this->updateInput(dt);
 
+	char counter = 0;
+	for (auto& wallChecker : this->player.wallCheckers)
+	{
+		for (auto& wall : this->dungeon.walls)
+		{
+			if (wallChecker.getGlobalBounds().intersects(wall.getGlobalBounds()))
+			{
+				this->player.intersectsWall = true;
+				this->player.resetVelocity();
+				break;
+			}
+			else
+			{
+				this->player.intersectsWall = false;
+			}
+		}
+		if (this->player.intersectsWall)
+		{
+			if (counter == LEFT)
+				this->player.move(50.f * dt, 0.f);
+			if (counter == RIGHT)
+				this->player.move(-50.f * dt, 0.f);
+			if (counter == UP)
+				this->player.move(0.f, 50.f * dt);
+			if (counter == DOWN)
+				this->player.move(0.f, -50.f * dt);
+		}
+		counter++;
+	}
+
 	this->player.update(dt);
 	this->enemy.update(dt);
 
-	this->mainCamera.setCenter(this->player.getPosition());
-	this->mainCamera.update(dt);
-	this->secondCamera.update(dt);
-	this->thirdCamera.update(dt);
+	std::cout << this->player.getPosition().x << '\t' << this->player.getPosition().y << std::endl;
 
-	for (auto& shape : this->dungeon.shapes)
-	{
-		if (this->player.getGlobalBounds().intersects(shape.getGlobalBounds()))
-		{
-			this->player.insideDungeon = true;
-			break;
-		}
-		else
-		{
-			this->player.insideDungeon = false;
-		}
-	}
+	//Tracking the camera behind the player.
+	this->mainCamera.setCenter(this->player.getPosition());
+	
 }
 
 void GameState::render(sf::RenderTarget* target)

@@ -56,6 +56,12 @@ const bool MovementComponent::getState(const unsigned char state) const
 	return false;
 }
 
+void MovementComponent::resetVelocity()
+{
+	this->velocity.x = 0.f;
+	this->velocity.y = 0.f;
+}
+
 void MovementComponent::move(const float dir_x, const float dir_y, const float& dt)
 {
 	/*Acceleration a shape until it reaches the max velocity*/
@@ -107,7 +113,7 @@ void MovementComponent::update(const float& dt)
 		if (this->velocity.y > 0.f)
 			this->velocity.y = 0.f;
 	}
-
+	
 	//Final move
 	this->shape->move(this->velocity * dt);
 }

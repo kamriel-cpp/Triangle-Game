@@ -2,11 +2,11 @@
 #define GAMESTATE_H
 #include <Include/State.h>
 #include <Include/Button.h>
+#include <Include/MovementComponent.h>
+#include <Include/AttributeComponent.h>
 #include <Include/Dungeon.h>
 #include <Include/Camera.h>
 #include <Include/Minimap.h>
-#include <Include/MovementComponent.h>
-#include <Include/AttributeComponent.h>
 #include <Include/Triangle.h>
 #include <Include/Player.h>
 #include <Include/Enemy.h>

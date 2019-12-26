@@ -1,3 +1,4 @@
+//Constructors/Destructors
 Camera::Camera()
 {
 	sf::VideoMode window_bounds = sf::VideoMode::getDesktopMode();
@@ -15,6 +16,7 @@ Camera::~Camera()
 	delete this->window;
 }
 
+//Functions
 sf::View& Camera::getView()
 {
 	return this->view;
@@ -40,26 +42,19 @@ void Camera::setViewport(const sf::FloatRect& viewport)
 	this->view.setViewport(viewport);
 }
 
-void Camera::move(const unsigned char direction)
+void Camera::move(float offsetX, float offsetY, const float& dt)
 {
-	if (direction == LEFT)
-		this->view.move(-1000.f * this->dt, 0);
-	else if (direction == RIGHT)
-		this->view.move(1000.f * this->dt, 0);
-	else if (direction == UP)
-		this->view.move(0, -1000.f * this->dt);
-	else if (direction == DOWN)
-		this->view.move(0, 1000.f * this->dt);
+	this->view.move(offsetX * dt, offsetY * dt);
+}
+
+void Camera::move(const sf::Vector2f offset, const float& dt)
+{
+	this->view.move(offset * dt);
 }
 
 void Camera::zoom(const float factor)
 {
 	this->view.zoom(factor);
-}
-
-void Camera::update(const float& dt)
-{
-	this->dt = dt;
 }
 
 void Camera::updateView()
