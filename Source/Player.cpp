@@ -12,23 +12,24 @@ void Player::initAttributeComponent()
 //Constructors/Destructors
 Player::Player()
 {
-	this->shape.setFillColor(sf::Color(49, 252, 252));
 	this->initMovementComponent();
+	this->initAttributeComponent();
+
+	this->defaultColor.r = 49;
+	this->defaultColor.g = 252;
+	this->defaultColor.b = 252;
+
+	this->shape.setFillColor(this->defaultColor);
 	this->mousePosition = nullptr;
 	this->intersectsWall = false;
-
-	this->frame.setFillColor(sf::Color::Transparent);
-	this->frame.setOutlineColor(sf::Color::White);
-	this->frame.setOutlineThickness(1.f);
-	this->frame.setOrigin(sf::Vector2f(
-		this->frame.getSize().x / 2,
-		this->frame.getSize().y / 2));
 }
 
 Player::~Player()
 {
 	this->mousePosition = nullptr;
 	delete this->mousePosition;
+	this->mousePosition2 = nullptr;
+	delete this->mousePosition2;
 }
 
 //Functions
@@ -68,11 +69,6 @@ void Player::update(const float& dt)
 	const double pi = 3.14159265358979323846;
 	float angle = atan2(this->lookDir.y, this->lookDir.x) * (180.f/pi) + 90.f;
 	this->shape.setRotation(angle);
-
-	this->frame.setPosition(this->shape.getPosition());
-	this->frame.setSize(sf::Vector2f(
-		this->shape.getGlobalBounds().width,
-		this->shape.getGlobalBounds().height));
 
 	char counter = 0;
 	for (auto& wallChecker : this->wallCheckers)

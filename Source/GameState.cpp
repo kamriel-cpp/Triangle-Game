@@ -17,16 +17,16 @@ void GameState::initKeybinds()
 
 void GameState::initPlayer()
 {
-	this->player.setPosition(this->dungeon.center);
+	this->player.shape.setPosition(this->dungeon.center);
 	this->player.setMousePosition(&this->mousePosWindow);
 	this->player.setMousePosition2(&this->mousePosView);
 }
 
 void GameState::initEnemies()
 {
-	this->enemy.setPosition(sf::Vector2f(
-		this->player.getPosition().x + this->player.getGlobalBounds().width * 2,
-		this->player.getPosition().y));
+	this->enemy.shape.setPosition(sf::Vector2f(
+		this->player.shape.getPosition().x + this->player.shape.getGlobalBounds().width * 2,
+		this->player.shape.getPosition().y));
 }
 
 void GameState::initDungeon()
@@ -95,30 +95,25 @@ GameState::~GameState()
 //Functions
 void GameState::updateInput(const float& dt)
 {
-	//Update player input
-	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key(this->keybinds.at("MOVE_LEFT"))))
-	{
-		this->player.move(-1.f, 0.f, dt);
-	}
-	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key(this->keybinds.at("MOVE_RIGHT"))))
-	{
-		this->player.move(1.f, 0.f, dt);
-	}
-	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key(this->keybinds.at("MOVE_UP"))))
-	{
-		this->player.move(0.f, -1.f, dt);
-	}
-	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key(this->keybinds.at("MOVE_DOWN"))))
-	{
-		this->player.move(0.f, 1.f, dt);
-	}
-
-	
 	//Esc to exit the game
-	//Arrows to control the camera
-	//Q/E to zoom
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key(this->keybinds.at("CLOSE"))))
 		this->State::endState();
+
+	if (this->gameClock.getElapsedTime().asSeconds() <= 1.0f)
+		return;
+
+	//Update player input
+	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key(this->keybinds.at("MOVE_LEFT"))))
+		this->player.move(-1.f, 0.f, dt);
+	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key(this->keybinds.at("MOVE_RIGHT"))))
+		this->player.move(1.f, 0.f, dt);
+	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key(this->keybinds.at("MOVE_UP"))))
+		this->player.move(0.f, -1.f, dt);
+	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key(this->keybinds.at("MOVE_DOWN"))))
+		this->player.move(0.f, 1.f, dt);
+
+	//Arrows to control the camera
+	//Q/E to zoom
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Left))
 		this->mainCamera.move(-1000.f, 0.f, dt);
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Right))
@@ -146,7 +141,11 @@ void GameState::updateInput(const float& dt)
 	//Minimap teleportation
 	//REMOVE LATER
 	if (sf::Mouse::isButtonPressed(sf::Mouse::Left))
-		this->player.setPosition(this->window->mapPixelToCoords(sf::Mouse::getPosition(*this->window), this->thirdCamera.getView()));
+		if (sf::Mouse::getPosition(*this->window).x >= this->window->getDefaultView().getSize().x * 0.75f &&
+			sf::Mouse::getPosition(*this->window).x <= this->window->getDefaultView().getSize().x &&
+			sf::Mouse::getPosition(*this->window).y >= 0 &&
+			sf::Mouse::getPosition(*this->window).y <= this->window->getDefaultView().getSize().y * 0.25f)
+			this->player.shape.setPosition(this->window->mapPixelToCoords(sf::Mouse::getPosition(*this->window), this->thirdCamera.getView()));
 }
 
 void GameState::update(const float& dt)
@@ -187,11 +186,8 @@ void GameState::update(const float& dt)
 	this->player.update(dt);
 	this->enemy.update(dt);
 
-	std::cout << this->player.getPosition().x << '\t' << this->player.getPosition().y << std::endl;
-
 	//Tracking the camera behind the player.
-	this->mainCamera.setCenter(this->player.getPosition());
-	
+	this->mainCamera.setCenter(this->player.shape.getPosition());
 }
 
 void GameState::render(sf::RenderTarget* target)
@@ -199,14 +195,27 @@ void GameState::render(sf::RenderTarget* target)
 	if (!target)
 		target = this->window;
 
-	this->mainCamera.updateView();
+	//Main view
+	this->window->setView(this->mainCamera.getView());
 	this->dungeon.render(target);
 	this->enemy.render(target);
 	this->player.render(target);
 
-	this->secondCamera.updateView();
+	//Tips
+	this->window->setView(this->secondCamera.getView());
 	target->draw(this->tips);
 
-	this->thirdCamera.updateView();
+	//Minimap
+	this->window->setView(this->thirdCamera.getView());
 	this->minimap.render(target);
+
+	this->player.shape.setFillColor(sf::Color::Black);
+	this->player.shape.setRadius(200.f);
+	this->player.shape.setOrigin(sf::Vector2f(200.f, 200.f));
+	this->player.render(target);
+	this->player.shape.setFillColor(this->player.defaultColor);
+	this->player.shape.setRadius(this->player.defaultRadius);
+	this->player.shape.setOrigin(this->player.defaultOrigin);
+	
+	this->window->setView(this->window->getDefaultView());
 }

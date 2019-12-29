@@ -1,44 +1,27 @@
 //Constructors/Destructors
 Triangle::Triangle()
 {
-	this->shape.setRadius(20.f);
-	this->shape.setPointCount(3);
-	this->shape.setOrigin(sf::Vector2f(
-		this->shape.getRadius(),
-		this->shape.getRadius() * 0.75f));
-	this->shape.setOutlineColor(sf::Color::White);
-	this->shape.setScale(sf::Vector2f(0.75f, 1.f));
+	this->defaultColor.r = 255;
+	this->defaultColor.g = 255;
+	this->defaultColor.b = 255;
+	this->defaultRadius = 20.f;
+	this->defaultOrigin.x = this->defaultRadius;
+	this->defaultOrigin.y = this->defaultRadius * 0.75f;
+	this->defaultScale.x = 0.75f;
+	this->defaultScale.y = 1.f;
+	this->defaultPointCount = 3;
+
+	this->shape.setFillColor(this->defaultColor);
+	this->shape.setRadius(this->defaultRadius);
+	this->shape.setOrigin(this->defaultOrigin);
+	this->shape.setScale(this->defaultScale);
+	this->shape.setPointCount(this->defaultPointCount);
 
 	for (int i = LEFT; i <= DOWN; i++)
 		this->wallCheckers.push_back(sf::RectangleShape());
 }
 
 //Functions
-sf::Vector2f Triangle::getPosition()
-{
-	return this->shape.getPosition();
-}
-
-sf::FloatRect Triangle::getGlobalBounds()
-{
-	return this->shape.getGlobalBounds();
-}
-
-void Triangle::setPosition(sf::Vector2f position)
-{
-	this->shape.setPosition(position);
-}
-
-void Triangle::setRotation(float angle)
-{
-	this->shape.setRotation(angle);
-}
-
-void Triangle::setRadius(float radius)
-{
-	this->shape.setRadius(radius);
-}
-
 void Triangle::update(const float& dt)
 {
 	char counter = 0;

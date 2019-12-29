@@ -155,7 +155,7 @@ void Dungeon::fillWallsList()
 				for (int k = 0; k < 4; k++)
 				{
 					this->walls.push_back(sf::RectangleShape(this->roomSize));
-					this->walls.back().setFillColor(sf::Color(255, 0, 255, 100));
+					this->walls.back().setFillColor(sf::Color(255, 255, 0, 10));
 
 					sf::Vector2f position(sf::Vector2f(
 						this->roomSize.x * 0.75f * i - this->roomSize.x * 0.75f * 25.f + this->center.x,
@@ -455,4 +455,7 @@ void Dungeon::render(sf::RenderTarget* target)
 {
 	for (auto& shape : this->shapes)
 		target->draw(shape);
+
+	for (auto& wall : this->walls)
+		target->draw(wall);
 }

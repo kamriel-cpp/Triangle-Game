@@ -8,9 +8,9 @@ private:
 	sf::View view;
 public:
 	Camera();
-	~Camera();
+	virtual ~Camera();
 
-	sf::View& getView();
+	const sf::View& getView() const;
 
 	void setWindow(sf::RenderWindow* window);
 	void setSize(const sf::Vector2f& size);
@@ -20,8 +20,6 @@ public:
 	void move(float offsetX, float offsetY, const float& dt);
 	void move(const sf::Vector2f offset, const float& dt);
 	void zoom(const float factor);
-
-	void updateView();
 };
 
 #include <Source/Camera.cpp>

@@ -17,7 +17,7 @@ Camera::~Camera()
 }
 
 //Functions
-sf::View& Camera::getView()
+const sf::View& Camera::getView() const
 {
 	return this->view;
 }
@@ -55,9 +55,4 @@ void Camera::move(const sf::Vector2f offset, const float& dt)
 void Camera::zoom(const float factor)
 {
 	this->view.zoom(factor);
-}
-
-void Camera::updateView()
-{
-	this->window->setView(this->view);
 }

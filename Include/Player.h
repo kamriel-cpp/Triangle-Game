@@ -10,13 +10,11 @@ private:
 	sf::Vector2f* mousePosition2;
 	sf::Vector2f lookDir;
 
-	sf::RectangleShape frame;
-
 	void initMovementComponent();
 	void initAttributeComponent();
 public:
  	Player();
- 	~Player();
+ 	virtual ~Player();
 
  	//Until I completely complete the work on the player’s movement system, it will be here
  	bool intersectsWall;

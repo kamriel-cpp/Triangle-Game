@@ -24,6 +24,7 @@ private:
 	//Button	button;
 	sf::Font	font;
 	sf::Text	tips;
+	sf::Clock 	gameClock;
 
 	void initKeybinds();
 	void initPlayer();

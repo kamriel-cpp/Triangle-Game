@@ -32,7 +32,7 @@ public:
 	
 	Dungeon();
 	Dungeon(const Dungeon& other) = default;
-	~Dungeon() = default;
+	virtual ~Dungeon() = default;
 
 	void setRoomSize(sf::Vector2f room_size);
 	void addStartRoom();

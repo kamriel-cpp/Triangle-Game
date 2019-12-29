@@ -98,8 +98,6 @@ void MainMenuState::updateInput(const float& dt)
 	//Update player input
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key(this->keybinds.at("NEW_GAME"))))
 		this->states->push(new GameState(this->window, this->supportedKeys, this->states));
-	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key(this->keybinds.at("CLOSE"))))
-		this->State::endState();
 }
 
 void MainMenuState::updateButtons()

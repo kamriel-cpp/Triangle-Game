@@ -25,18 +25,18 @@
 
 class Triangle
 {
-protected:
-	sf::CircleShape shape;
 public:
+	sf::CircleShape shape;
+
 	std::list<sf::RectangleShape> wallCheckers;
+
+	sf::Color defaultColor;
+	float defaultRadius;
+	sf::Vector2f defaultOrigin;
+	sf::Vector2f defaultScale;
+	size_t defaultPointCount;
 public:
  	Triangle();
-
- 	sf::Vector2f getPosition();
- 	sf::FloatRect getGlobalBounds();
- 	void setPosition(sf::Vector2f position);
- 	void setRotation(float angle);
- 	void setRadius(float radius);
 
 	virtual void update(const float& dt);
 	virtual void render(sf::RenderTarget* target = NULL);

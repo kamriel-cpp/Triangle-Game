@@ -9,7 +9,7 @@ private:
 	void initMovementComponent();
 public:
  	Enemy();
- 	~Enemy();
+ 	virtual ~Enemy();
 
 	void move(const float dir_x, const float dir_y, const float& dt);
 	void update(const float& dt);
