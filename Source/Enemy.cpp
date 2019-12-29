@@ -11,6 +11,13 @@ Enemy::Enemy()
 	this->initMovementComponent();
 }
 
+Enemy::Enemy(const sf::Vector2f& position)
+{
+	this->shape.setPosition(position);
+	this->shape.setFillColor(sf::Color(252, 49, 49));
+	this->initMovementComponent();
+}
+
 Enemy::~Enemy()
 {
 	/* code */
@@ -24,11 +31,12 @@ void Enemy::move(const float dir_x, const float dir_y, const float& dt)
 
 void Enemy::update(const float& dt)
 {
+	//Scary convulsions
 	this->movementComponent.move(rand() % 3 - 1, rand() % 3 - 1, dt);
 	this->movementComponent.update(dt);
 	this->shape.setRotation(this->shape.getRotation() + rand() % 3 - 1);
 
-	//moving towards the player, tracking him.
+	//Moving towards the player, tracking him
 }
 
 void Enemy::render(sf::RenderTarget* target)

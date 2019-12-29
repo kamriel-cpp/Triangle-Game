@@ -9,6 +9,7 @@ private:
 	void initMovementComponent();
 public:
  	Enemy();
+ 	Enemy(const sf::Vector2f& position);
  	virtual ~Enemy();
 
 	void move(const float dir_x, const float dir_y, const float& dt);

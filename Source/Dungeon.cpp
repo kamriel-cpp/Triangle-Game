@@ -18,21 +18,21 @@ void Dungeon::initVariables()
 	this->mainColor.g = 31;
 	this->mainColor.b = 31;
 
-	this->mainRoomColor.r = 200;
-	this->mainRoomColor.g = 255;
-	this->mainRoomColor.b = 200;
+	this->mainRoomColor.r = 125;
+	this->mainRoomColor.g = 225;
+	this->mainRoomColor.b = 125;
 
-	this->startRoomColor.r = 200;
-	this->startRoomColor.g = 200;
-	this->startRoomColor.b = 255;
+	this->startRoomColor.r = 125;
+	this->startRoomColor.g = 125;
+	this->startRoomColor.b = 225;
 	
-	this->lastRoomColor.r = 255;
-	this->lastRoomColor.g = 200;
-	this->lastRoomColor.b = 200;
+	this->lastRoomColor.r = 225;
+	this->lastRoomColor.g = 125;
+	this->lastRoomColor.b = 125;
 	
-	this->corridorColor.r = 200;
-	this->corridorColor.g = 200;
-	this->corridorColor.b = 200;
+	this->corridorColor.r = 125;
+	this->corridorColor.g = 125;
+	this->corridorColor.b = 125;
 
 	this->roomsOutlineThickness = -3.f;
 }
@@ -155,7 +155,7 @@ void Dungeon::fillWallsList()
 				for (int k = 0; k < 4; k++)
 				{
 					this->walls.push_back(sf::RectangleShape(this->roomSize));
-					this->walls.back().setFillColor(sf::Color(255, 255, 0, 10));
+					this->walls.back().setFillColor(sf::Color(225, 225, 0, 10));
 
 					sf::Vector2f position(sf::Vector2f(
 						this->roomSize.x * 0.75f * i - this->roomSize.x * 0.75f * 25.f + this->center.x,

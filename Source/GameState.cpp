@@ -18,15 +18,16 @@ void GameState::initKeybinds()
 void GameState::initPlayer()
 {
 	this->player.shape.setPosition(this->dungeon.center);
-	this->player.setMousePosition(&this->mousePosWindow);
-	this->player.setMousePosition2(&this->mousePosView);
 }
 
 void GameState::initEnemies()
 {
-	this->enemy.shape.setPosition(sf::Vector2f(
-		this->player.shape.getPosition().x + this->player.shape.getGlobalBounds().width * 2,
-		this->player.shape.getPosition().y));
+	for (int i = 0; i < 100; i++)
+	{
+		this->enemies.push_back(Enemy(sf::Vector2f(
+			this->player.shape.getPosition().x + rand() % 450 - 225,
+			this->player.shape.getPosition().y + rand() % 450 - 225)));
+	}
 }
 
 void GameState::initDungeon()
@@ -72,6 +73,13 @@ void GameState::initTexts()
 		this->window->getView().getSize().y / 2.f - this->tips.getGlobalBounds().height / 1.f));
 }
 
+void GameState::initCinemachine()
+{
+	//ENABLE THIS
+	this->cinemachine.setCamera(&this->mainCamera);
+	this->cinemachine.setTarget(&this->player.shape);
+}
+
 //Constructors/Destructors
 GameState::GameState(sf::RenderWindow* window, std::map<std::string,
 	int>* supportedKeys, std::stack<State*>* states)
@@ -83,6 +91,7 @@ GameState::GameState(sf::RenderWindow* window, std::map<std::string,
 	this->initPlayer();
 	this->initEnemies();
 	this->initCameras();
+	this->initCinemachine();
 	this->initMinimap();
 	this->initTexts();
 }
@@ -95,12 +104,9 @@ GameState::~GameState()
 //Functions
 void GameState::updateInput(const float& dt)
 {
-	//Esc to exit the game
+	//Quit checking
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key(this->keybinds.at("CLOSE"))))
 		this->State::endState();
-
-	if (this->gameClock.getElapsedTime().asSeconds() <= 1.0f)
-		return;
 
 	//Update player input
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key(this->keybinds.at("MOVE_LEFT"))))
@@ -111,6 +117,18 @@ void GameState::updateInput(const float& dt)
 		this->player.move(0.f, -1.f, dt);
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key(this->keybinds.at("MOVE_DOWN"))))
 		this->player.move(0.f, 1.f, dt);
+
+	//Debug attribute component
+	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::F))
+		this->player.attributeComponent.updateStats(false);
+	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Z))
+		this->player.attributeComponent.loseEXP(this->player.attributeComponent.expNext / 10);
+	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::X))
+		this->player.attributeComponent.gainEXP(this->player.attributeComponent.expNext / 10);
+	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::C))
+		this->player.attributeComponent.loseHP(this->player.attributeComponent.hpMax / 5);
+	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::V))
+		this->player.attributeComponent.gainHP(this->player.attributeComponent.hpMax / 5);
 
 	//Arrows to control the camera
 	//Q/E to zoom
@@ -127,17 +145,6 @@ void GameState::updateInput(const float& dt)
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::E))
 		this->mainCamera.zoom(0.99f);
 
-	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::F))
-		this->player.attributeComponent.updateStats(false);
-	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Z))
-		this->player.attributeComponent.loseEXP(this->player.attributeComponent.expNext / 10);
-	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::X))
-		this->player.attributeComponent.gainEXP(this->player.attributeComponent.expNext / 10);
-	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::C))
-		this->player.attributeComponent.loseHP(this->player.attributeComponent.hpMax / 5);
-	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::V))
-		this->player.attributeComponent.gainHP(this->player.attributeComponent.hpMax / 5);
-
 	//Minimap teleportation
 	//REMOVE LATER
 	if (sf::Mouse::isButtonPressed(sf::Mouse::Left))
@@ -150,9 +157,15 @@ void GameState::updateInput(const float& dt)
 
 void GameState::update(const float& dt)
 {
+	//Update some components
 	this->updateMousePositions();
 	this->updateInput(dt);
+	this->player.update(dt);
+	for (auto& enemy : this->enemies)
+		enemy.update(dt);
+	this->cinemachine.update(dt);
 
+	//Wall checking
 	char counter = 0;
 	for (auto& wallChecker : this->player.wallCheckers)
 	{
@@ -183,11 +196,21 @@ void GameState::update(const float& dt)
 		counter++;
 	}
 
-	this->player.update(dt);
-	this->enemy.update(dt);
+	//Players mouse tracking
+	sf::Vector2f look_dir(this->window->mapPixelToCoords(sf::Mouse::getPosition(*this->window), this->mainCamera.getView())
+		- this->player.shape.getPosition());
 
-	//Tracking the camera behind the player.
-	this->mainCamera.setCenter(this->player.shape.getPosition());
+	float angle = atan2(look_dir.y, look_dir.x) * (180.f / 3.14159265358979323846f) + 90.f;
+	this->player.shape.setRotation(angle);
+
+	//Enemies player tracking
+	for (auto& enemy : this->enemies)
+	{
+		sf::Vector2f look_dir(this->player.shape.getPosition() - enemy.shape.getPosition());
+
+		float angle = atan2(look_dir.y, look_dir.x) * (180.f / 3.14159265358979323846f) + 90.f;
+		enemy.shape.setRotation(angle);
+	}
 }
 
 void GameState::render(sf::RenderTarget* target)
@@ -198,7 +221,8 @@ void GameState::render(sf::RenderTarget* target)
 	//Main view
 	this->window->setView(this->mainCamera.getView());
 	this->dungeon.render(target);
-	this->enemy.render(target);
+	for (auto& enemy : this->enemies)
+		enemy.render(target);
 	this->player.render(target);
 
 	//Tips
@@ -209,13 +233,14 @@ void GameState::render(sf::RenderTarget* target)
 	this->window->setView(this->thirdCamera.getView());
 	this->minimap.render(target);
 
-	this->player.shape.setFillColor(sf::Color::Black);
+	this->player.shape.setFillColor(sf::Color::White);
 	this->player.shape.setRadius(200.f);
 	this->player.shape.setOrigin(sf::Vector2f(200.f, 200.f));
 	this->player.render(target);
 	this->player.shape.setFillColor(this->player.defaultColor);
 	this->player.shape.setRadius(this->player.defaultRadius);
 	this->player.shape.setOrigin(this->player.defaultOrigin);
-	
+
+	//Set window view to default
 	this->window->setView(this->window->getDefaultView());
 }

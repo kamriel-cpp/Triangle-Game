@@ -6,6 +6,7 @@
 #include <Include/AttributeComponent.h>
 #include <Include/Dungeon.h>
 #include <Include/Camera.h>
+#include <Include/Cinemachine.h>
 #include <Include/Minimap.h>
 #include <Include/Triangle.h>
 #include <Include/Player.h>
@@ -14,23 +15,25 @@
 class GameState : public State
 {
 private:
-	Player		player;
-	Enemy		enemy;
-	Dungeon		dungeon;
-	Camera		mainCamera;
-	Camera		secondCamera;
-	Camera		thirdCamera;
-	Minimap		minimap;
-	//Button	button;
-	sf::Font	font;
-	sf::Text	tips;
-	sf::Clock 	gameClock;
+	Player				player;
+	std::list<Enemy>	enemies;
+	Dungeon				dungeon;
+	Camera				mainCamera;
+	Camera				secondCamera;
+	Camera				thirdCamera;
+	Cinemachine			cinemachine;
+	Minimap				minimap;
+	//Button			button;
+	sf::Font			font;
+	sf::Text			tips;
+	sf::Clock 			gameClock;
 
 	void initKeybinds();
 	void initPlayer();
 	void initEnemies();
 	void initDungeon();
 	void initCameras();
+	void initCinemachine();
 	void initMinimap();
 	void initTexts();
 public:

@@ -6,10 +6,6 @@ class Player : public Triangle
 private:
 	MovementComponent movementComponent;
 	
-	sf::Vector2i* mousePosition;
-	sf::Vector2f* mousePosition2;
-	sf::Vector2f lookDir;
-
 	void initMovementComponent();
 	void initAttributeComponent();
 public:
@@ -22,8 +18,6 @@ public:
  	//This is for the future
 	AttributeComponent attributeComponent;
 
- 	void setMousePosition(sf::Vector2i* mousePosition);
- 	void setMousePosition2(sf::Vector2f* mousePosition);
 	void move(const float dir_x, const float dir_y, const float& dt);
 	void move(const float offsetX, const float offsetY);
 	void resetVelocity();

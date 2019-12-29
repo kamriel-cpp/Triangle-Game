@@ -20,29 +20,15 @@ Player::Player()
 	this->defaultColor.b = 252;
 
 	this->shape.setFillColor(this->defaultColor);
-	this->mousePosition = nullptr;
 	this->intersectsWall = false;
 }
 
 Player::~Player()
 {
-	this->mousePosition = nullptr;
-	delete this->mousePosition;
-	this->mousePosition2 = nullptr;
-	delete this->mousePosition2;
+
 }
 
 //Functions
-void Player::setMousePosition(sf::Vector2i* mousePosition)
-{
-	this->mousePosition = mousePosition;
-}
-
-void Player::setMousePosition2(sf::Vector2f* mousePosition)
-{
-	this->mousePosition2 = mousePosition;
-}
-
 void Player::move(const float dir_x, const float dir_y, const float& dt)
 {
 	this->movementComponent.move(dir_x, dir_y, dt);
@@ -60,16 +46,11 @@ void Player::resetVelocity()
 
 void Player::update(const float& dt)
 {
+	//Update some components
 	this->movementComponent.update(dt);
 	this->attributeComponent.update();
 
-	this->lookDir.x = (*this->mousePosition).x - 1130 / 2;
-	this->lookDir.y = (*this->mousePosition).y - 640 / 2;
-
-	const double pi = 3.14159265358979323846;
-	float angle = atan2(this->lookDir.y, this->lookDir.x) * (180.f/pi) + 90.f;
-	this->shape.setRotation(angle);
-
+	//Update wallcheckers
 	char counter = 0;
 	for (auto& wallChecker : this->wallCheckers)
 	{
