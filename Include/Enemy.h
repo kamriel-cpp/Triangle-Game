@@ -11,10 +11,15 @@ public:
  	Enemy();
  	Enemy(const sf::Vector2f& position);
  	virtual ~Enemy();
+	
+	bool intersectsWall;
+	std::list<sf::RectangleShape> wallCheckers;
 
 	void move(float dir_x, float dir_y, const float& dt);
 	void move(float offsetX, float offsetY);
 	void move(const sf::Vector2f& offset);
+	void resetVelocityX();
+	void resetVelocityY();
 
 	void update(const float& dt);
 	void render(sf::RenderTarget* target = NULL);

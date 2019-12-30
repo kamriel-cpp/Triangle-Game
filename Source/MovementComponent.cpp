@@ -56,9 +56,13 @@ const bool MovementComponent::getState(const unsigned char state) const
 	return false;
 }
 
-void MovementComponent::resetVelocity()
+void MovementComponent::resetVelocityX()
 {
 	this->velocity.x = 0.f;
+}
+
+void MovementComponent::resetVelocityY()
+{
 	this->velocity.y = 0.f;
 }
 

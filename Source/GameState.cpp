@@ -25,8 +25,8 @@ void GameState::initEnemies()
 	for (int i = 0; i < 100; i++)
 	{
 		this->enemies.push_back(new Enemy(sf::Vector2f(
-			this->player.shape.getPosition().x + rand() % 450 - 450.f / 2.f,
-			this->player.shape.getPosition().y + rand() % 450 - 450.f / 2.f)));
+			this->player.shape.getPosition().x + rand() % 4500 - 4500.f / 2.f,
+			this->player.shape.getPosition().y + rand() % 4500 - 4500.f / 2.f)));
 	}
 }
 
@@ -124,16 +124,16 @@ void GameState::updateInput(const float& dt)
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key(this->keybinds.at("MOVE_DOWN"))))
 		this->player.move(0.f, 1.f, dt);
 
-	//Debug attribute component
+	//DEBUG FEATURE
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::F))
 		this->player.attributeComponent.updateStats(false);
-	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Z))
+	else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Z))
 		this->player.attributeComponent.loseEXP(this->player.attributeComponent.expNext / 10);
-	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::X))
+	else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::X))
 		this->player.attributeComponent.gainEXP(this->player.attributeComponent.expNext / 10);
-	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::C))
+	else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::C))
 		this->player.attributeComponent.loseHP(this->player.attributeComponent.hpMax / 5);
-	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::V))
+	else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::V))
 		this->player.attributeComponent.gainHP(this->player.attributeComponent.hpMax / 5);
 
 	//Arrows to control the camera
@@ -148,7 +148,7 @@ void GameState::updateInput(const float& dt)
 		this->mainCamera.move(0.f, 1000.f, dt);
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Q))
 		this->mainCamera.zoom(1.01f);
-	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::E))
+	else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::E))
 		this->mainCamera.zoom(0.99f);
 
 	//Minimap teleportation
@@ -171,7 +171,38 @@ void GameState::update(const float& dt)
 		enemy->update(dt);
 	this->cinemachine.update(dt);
 
-	//Wall checking
+	//Players mouse tracking
+	sf::Vector2f look_dir(this->window->mapPixelToCoords(sf::Mouse::getPosition(*this->window), this->mainCamera.getView())
+		- this->player.shape.getPosition());
+	float angle = atan2(look_dir.y, look_dir.x) * (180.f / 3.14159265358979323846f) + 90.f;
+	this->player.shape.setRotation(angle);
+
+	//Enemies player tracking
+	for (auto&& enemy : this->enemies)
+	{
+		sf::Vector2f look_dir(this->player.shape.getPosition() - enemy->shape.getPosition());
+		float angle = atan2(look_dir.y, look_dir.x) * (180.f / 3.14159265358979323846f) + 90.f;
+		enemy->shape.setRotation(angle);
+
+		sf::Vector2f move_dir;
+		if (this->player.shape.getPosition().x - enemy->shape.getPosition().x > 1.f)
+			move_dir.x = 1.f;
+		else if (this->player.shape.getPosition().x - enemy->shape.getPosition().x < -1.f)
+			move_dir.x = -1.f;
+		else
+			move_dir.x = 0.f;
+
+		if (this->player.shape.getPosition().y - enemy->shape.getPosition().y > 1.f)
+			move_dir.y = 1.f;
+		else if (this->player.shape.getPosition().y - enemy->shape.getPosition().y < -1.f)
+			move_dir.y = -1.f;
+		else
+			move_dir.y = 0.f;
+
+		enemy->move(move_dir.x, move_dir.y, dt);
+	}
+
+	//Wall checking for player
 	char counter = 0;
 	for (auto& wallChecker : this->player.wallCheckers)
 	{
@@ -180,7 +211,6 @@ void GameState::update(const float& dt)
 			if (wallChecker.getGlobalBounds().intersects(wall.getGlobalBounds()))
 			{
 				this->player.intersectsWall = true;
-				this->player.resetVelocity();
 				break;
 			}
 			else
@@ -191,31 +221,78 @@ void GameState::update(const float& dt)
 		if (this->player.intersectsWall)
 		{
 			if (counter == LEFT)
+			{
+				this->player.resetVelocityX();
 				this->player.move(50.f * dt, 0.f);
-			if (counter == RIGHT)
+			}
+			else if (counter == RIGHT)
+			{
+				this->player.resetVelocityX();
 				this->player.move(-50.f * dt, 0.f);
-			if (counter == UP)
+			}
+			else if (counter == UP)
+			{
+				this->player.resetVelocityY();
 				this->player.move(0.f, 50.f * dt);
-			if (counter == DOWN)
+			}
+			else if (counter == DOWN)
+			{
+				this->player.resetVelocityY();
 				this->player.move(0.f, -50.f * dt);
+			}
+			wallChecker.setFillColor(sf::Color::Red);
 		}
+		else
+			wallChecker.setFillColor(sf::Color::White);
 		counter++;
 	}
 
-	//Players mouse tracking
-	sf::Vector2f look_dir(this->window->mapPixelToCoords(sf::Mouse::getPosition(*this->window), this->mainCamera.getView())
-		- this->player.shape.getPosition());
-
-	float angle = atan2(look_dir.y, look_dir.x) * (180.f / 3.14159265358979323846f) + 90.f;
-	this->player.shape.setRotation(angle);
-
-	//Enemies player tracking
-	for (auto&& enemy : this->enemies)
+	//Wall checking for enemies
+	for (auto& enemy : this->enemies)
 	{
-		sf::Vector2f look_dir(this->player.shape.getPosition() - enemy->shape.getPosition());
-		float angle = atan2(look_dir.y, look_dir.x) * (180.f / 3.14159265358979323846f) + 90.f;
-		enemy->shape.setRotation(angle);
-		enemy->move(this->player.shape.getPosition().x - enemy->shape.getPosition().x, this->player.shape.getPosition().y - enemy->shape.getPosition().y, dt);
+		char counter = 0;
+		for (auto& wallChecker : enemy->wallCheckers)
+		{
+			for (auto& wall : this->dungeon.walls)
+			{
+				if (wallChecker.getGlobalBounds().intersects(wall.getGlobalBounds()))
+				{
+					enemy->intersectsWall = true;
+					break;
+				}
+				else
+				{
+					enemy->intersectsWall = false;
+				}
+			}
+			if (enemy->intersectsWall)
+			{
+				if (counter == LEFT)
+				{
+					enemy->resetVelocityX();
+					enemy->move(50.f * dt, 0.f);
+				}
+				else if (counter == RIGHT)
+				{
+					enemy->resetVelocityX();
+					enemy->move(-50.f * dt, 0.f);
+				}
+				else if (counter == UP)
+				{
+					enemy->resetVelocityY();
+					enemy->move(0.f, 50.f * dt);
+				}
+				else if (counter == DOWN)
+				{
+					enemy->resetVelocityY();
+					enemy->move(0.f, -50.f * dt);
+				}
+				wallChecker.setFillColor(sf::Color::Red);
+			}
+			else
+				wallChecker.setFillColor(sf::Color::White);
+			counter++;
+		}
 	}
 }
 

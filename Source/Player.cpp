@@ -21,6 +21,9 @@ Player::Player()
 
 	this->shape.setFillColor(this->defaultColor);
 	this->intersectsWall = false;
+
+	for (int i = LEFT; i <= DOWN; i++)
+		this->wallCheckers.push_back(sf::RectangleShape());
 }
 
 Player::~Player()
@@ -44,9 +47,14 @@ void Player::move(const sf::Vector2f& offset)
 	this->shape.move(offset.x, offset.y);
 }
 
-void Player::resetVelocity()
+void Player::resetVelocityX()
 {
-	this->movementComponent.resetVelocity();
+	this->movementComponent.resetVelocityX();
+}
+
+void Player::resetVelocityY()
+{
+	this->movementComponent.resetVelocityY();
 }
 
 void Player::update(const float& dt)
@@ -67,15 +75,15 @@ void Player::update(const float& dt)
 			wallChecker.setPosition(sf::Vector2f(
 				this->shape.getPosition().x - this->shape.getGlobalBounds().width / 2.f,
 				this->shape.getPosition().y));
-		if (counter == RIGHT)
+		else if (counter == RIGHT)
 			wallChecker.setPosition(sf::Vector2f(
 				this->shape.getPosition().x + this->shape.getGlobalBounds().width / 2.f,
 				this->shape.getPosition().y));
-		if (counter == UP)
+		else if (counter == UP)
 			wallChecker.setPosition(sf::Vector2f(
 				this->shape.getPosition().x,
 				this->shape.getPosition().y - this->shape.getGlobalBounds().height / 2.f));
-		if (counter == DOWN)
+		else if (counter == DOWN)
 			wallChecker.setPosition(sf::Vector2f(
 				this->shape.getPosition().x,
 				this->shape.getPosition().y + this->shape.getGlobalBounds().height / 2.f));
@@ -90,7 +98,7 @@ void Player::update(const float& dt)
 
 void Player::render(sf::RenderTarget* target)
 {
-	//This is for the future.
+	//DEBUG FEATURE
 	//for (auto& wallChecker : this->wallCheckers)
 	//	target->draw(wallChecker);
 	target->draw(this->shape);

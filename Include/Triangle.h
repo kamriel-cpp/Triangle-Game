@@ -28,8 +28,6 @@ class Triangle
 public:
 	sf::CircleShape shape;
 
-	std::list<sf::RectangleShape> wallCheckers;
-
 	sf::Color defaultColor;
 	float defaultRadius;
 	sf::Vector2f defaultOrigin;

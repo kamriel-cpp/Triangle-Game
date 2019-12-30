@@ -14,6 +14,7 @@ public:
 
  	//Until I completely complete the work on the player’s movement system, it will be here
  	bool intersectsWall;
+	std::list<sf::RectangleShape> wallCheckers;
 
  	//This is for the future
 	AttributeComponent attributeComponent;
@@ -21,7 +22,8 @@ public:
 	void move(float dir_x, float dir_y, const float& dt);
 	void move(float offsetX, float offsetY);
 	void move(const sf::Vector2f& offset);
-	void resetVelocity();
+	void resetVelocityX();
+	void resetVelocityY();
 
 	void update(const float& dt) override;
 	void render(sf::RenderTarget* target = NULL) override;

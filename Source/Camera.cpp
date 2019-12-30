@@ -22,6 +22,11 @@ const sf::View& Camera::getView() const
 	return this->view;
 }
 
+const sf::RenderWindow* Camera::getWindow() const
+{
+	return this->window;
+}
+
 void Camera::setWindow(sf::RenderWindow* window)
 {
 	this->window = window;

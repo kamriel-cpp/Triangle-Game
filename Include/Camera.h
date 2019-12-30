@@ -11,6 +11,7 @@ public:
 	virtual ~Camera();
 
 	const sf::View& getView() const;
+	const sf::RenderWindow* getWindow() const;
 
 	void setWindow(sf::RenderWindow* window);
 	void setSize(const sf::Vector2f& size);

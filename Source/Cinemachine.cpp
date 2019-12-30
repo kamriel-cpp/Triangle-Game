@@ -79,26 +79,88 @@ void Cinemachine::update(const float& dt)
 {
 	if (this->camera != nullptr && this->target != nullptr)
 	{
-		if (this->camera->getView().getCenter().x + this->deadZone.x * this->camera->getView().getSize().x * 0.5f
+		/*if (this->camera->getView().getCenter().x
+			+ (this->camera->getView().getSize().x * this->deadZone.x) * 0.5f
 			< this->target->getPosition().x)
 		{
-			this->camera->move((this->target->getPosition().x - this->camera->getView().getCenter().x) * (1.f + this->damping), 0.f, dt);
+			this->camera->move((this->target->getPosition().x
+				- this->camera->getView().getCenter().x) * (1.f + this->damping), 0.f, dt);
 		}
-		else if (this->camera->getView().getCenter().x - this->deadZone.x * this->camera->getView().getSize().x * 0.5f
+		else if (this->camera->getView().getCenter().x
+			- (this->camera->getView().getSize().x * this->deadZone.x) * 0.5f
 			> this->target->getPosition().x)
 		{
-			this->camera->move((this->target->getPosition().x - this->camera->getView().getCenter().x) * (1.f + this->damping), 0.f, dt);
+			this->camera->move((this->target->getPosition().x
+				- this->camera->getView().getCenter().x) * (1.f + this->damping), 0.f, dt);
 		}
 
-		if (this->camera->getView().getCenter().y + this->deadZone.y * this->camera->getView().getSize().y * 0.5f
+		if (this->camera->getView().getCenter().y
+			+ (this->camera->getView().getSize().y * this->deadZone.x) * 0.5f
 			< this->target->getPosition().y)
 		{
-			this->camera->move(0.f, (this->target->getPosition().y - this->camera->getView().getCenter().y) * (1.f + this->damping), dt);
+			this->camera->move(0.f, (this->target->getPosition().y
+				- this->camera->getView().getCenter().y) * (1.f + this->damping), dt);
 		}
-		else if (this->camera->getView().getCenter().y - this->deadZone.y * this->camera->getView().getSize().y * 0.5f
+		else if (this->camera->getView().getCenter().y
+			- (this->camera->getView().getSize().y * this->deadZone.x) * 0.5f
 			> this->target->getPosition().y)
 		{
-			this->camera->move(0.f, (this->target->getPosition().y - this->camera->getView().getCenter().y) * (1.f + this->damping), dt);
+			this->camera->move(0.f, (this->target->getPosition().y
+				- this->camera->getView().getCenter().y) * (1.f + this->damping), dt);
+		}*/
+		if (this->camera->getView().getCenter().x
+			+ (this->camera->getView().getSize().x * this->deadZone.x) * 0.5f
+			< this->target->getPosition().x)
+		{
+			this->camera->move((this->target->getPosition().x
+				- this->camera->getView().getCenter().x) * (1.f + this->damping), 0.f, dt);
 		}
+		else if (this->camera->getView().getCenter().x
+			- (this->camera->getView().getSize().x * this->deadZone.x) * 0.5f
+			> this->target->getPosition().x)
+		{
+			this->camera->move((this->target->getPosition().x
+				- this->camera->getView().getCenter().x) * (1.f + this->damping), 0.f, dt);
+		}
+
+		if (this->camera->getView().getCenter().y
+			+ (this->camera->getView().getSize().y * this->deadZone.x) * 0.5f
+			< this->target->getPosition().y)
+		{
+			this->camera->move(0.f, (this->target->getPosition().y
+				- this->camera->getView().getCenter().y) * (1.f + this->damping), dt);
+		}
+		else if (this->camera->getView().getCenter().y
+			- (this->camera->getView().getSize().y * this->deadZone.x) * 0.5f
+			> this->target->getPosition().y)
+		{
+			this->camera->move(0.f, (this->target->getPosition().y
+				- this->camera->getView().getCenter().y) * (1.f + this->damping), dt);
+		}
+
+		if (this->camera->getView().getCenter().x
+			+ (this->camera->getView().getSize().x * 0.19f) * 0.5f
+			> this->target->getPosition().x
+			&& this->camera->getView().getCenter().x
+			- (this->camera->getView().getSize().x * 0.19f) * 0.5f
+			< this->target->getPosition().x
+			&& this->camera->getView().getCenter().y
+			+ (this->camera->getView().getSize().y * 0.19f) * 0.5f
+			> this->target->getPosition().y
+			&& this->camera->getView().getCenter().y
+			- (this->camera->getView().getSize().y * 0.19f) * 0.5f
+			< this->target->getPosition().y)
+		{
+			this->camera->move(
+				(this->camera->getWindow()->mapPixelToCoords(sf::Mouse::getPosition(*this->camera->getWindow()), this->camera->getView()).x
+					- this->camera->getView().getCenter().x) * 1.f,
+				(this->camera->getWindow()->mapPixelToCoords(sf::Mouse::getPosition(*this->camera->getWindow()), this->camera->getView()).y
+					- this->camera->getView().getCenter().y) * 1.f, dt);
+		}
+		/*this->camera->move(
+			(this->camera->getWindow()->mapPixelToCoords(sf::Mouse::getPosition(*this->camera->getWindow()), this->camera->getView()).x
+				- this->camera->getView().getCenter().x) * 0.1f,
+			(this->camera->getWindow()->mapPixelToCoords(sf::Mouse::getPosition(*this->camera->getWindow()), this->camera->getView()).y
+				- this->camera->getView().getCenter().y) * 0.1f, dt);*/
 	}
 }

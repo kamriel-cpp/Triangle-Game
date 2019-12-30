@@ -18,7 +18,8 @@ public:
 	const float& getMaxVelocity() const;
 	const sf::Vector2f& getVelocity() const;
 	const bool getState(const unsigned char state) const;
-	void resetVelocity();
+	void resetVelocityX();
+	void resetVelocityY();
 
 	void move(float dir_x, float dir_y, const float& dt);
 	void update(const float& dt);
