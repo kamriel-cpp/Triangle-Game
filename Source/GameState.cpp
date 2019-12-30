@@ -24,9 +24,9 @@ void GameState::initEnemies()
 {
 	for (int i = 0; i < 100; i++)
 	{
-		this->enemies.push_back(Enemy(sf::Vector2f(
-			this->player.shape.getPosition().x + rand() % 450 - 225,
-			this->player.shape.getPosition().y + rand() % 450 - 225)));
+		this->enemies.push_back(new Enemy(sf::Vector2f(
+			this->player.shape.getPosition().x + rand() % 450 - 450.f / 2.f,
+			this->player.shape.getPosition().y + rand() % 450 - 450.f / 2.f)));
 	}
 }
 
@@ -45,6 +45,14 @@ void GameState::initCameras()
 	this->thirdCamera.setWindow(this->window);
 	this->thirdCamera.setViewport(sf::FloatRect(0.75f, 0.f, 0.25f, 0.25f));
 	this->thirdCamera.zoom(20.f);
+}
+
+void GameState::initCinemachine()
+{
+	this->cinemachine.setCamera(&this->mainCamera);
+	this->cinemachine.setTarget(&this->player.shape);
+	this->cinemachine.setDamping(2.5f);
+	this->cinemachine.setDeadZone(0.2f, 0.2f);
 }
 
 void GameState::initMinimap()
@@ -73,13 +81,6 @@ void GameState::initTexts()
 		this->window->getView().getSize().y / 2.f - this->tips.getGlobalBounds().height / 1.f));
 }
 
-void GameState::initCinemachine()
-{
-	//ENABLE THIS
-	this->cinemachine.setCamera(&this->mainCamera);
-	this->cinemachine.setTarget(&this->player.shape);
-}
-
 //Constructors/Destructors
 GameState::GameState(sf::RenderWindow* window, std::map<std::string,
 	int>* supportedKeys, std::stack<State*>* states)
@@ -98,6 +99,11 @@ GameState::GameState(sf::RenderWindow* window, std::map<std::string,
 
 GameState::~GameState()
 {
+	while (!this->enemies.empty())
+	{
+	    delete this->enemies.back();
+	    this->enemies.pop_back();
+	}
 	std::cout << "Ending GameState" << std::endl;
 }
 
@@ -162,7 +168,7 @@ void GameState::update(const float& dt)
 	this->updateInput(dt);
 	this->player.update(dt);
 	for (auto& enemy : this->enemies)
-		enemy.update(dt);
+		enemy->update(dt);
 	this->cinemachine.update(dt);
 
 	//Wall checking
@@ -204,12 +210,12 @@ void GameState::update(const float& dt)
 	this->player.shape.setRotation(angle);
 
 	//Enemies player tracking
-	for (auto& enemy : this->enemies)
+	for (auto&& enemy : this->enemies)
 	{
-		sf::Vector2f look_dir(this->player.shape.getPosition() - enemy.shape.getPosition());
-
+		sf::Vector2f look_dir(this->player.shape.getPosition() - enemy->shape.getPosition());
 		float angle = atan2(look_dir.y, look_dir.x) * (180.f / 3.14159265358979323846f) + 90.f;
-		enemy.shape.setRotation(angle);
+		enemy->shape.setRotation(angle);
+		enemy->move(this->player.shape.getPosition().x - enemy->shape.getPosition().x, this->player.shape.getPosition().y - enemy->shape.getPosition().y, dt);
 	}
 }
 
@@ -222,7 +228,7 @@ void GameState::render(sf::RenderTarget* target)
 	this->window->setView(this->mainCamera.getView());
 	this->dungeon.render(target);
 	for (auto& enemy : this->enemies)
-		enemy.render(target);
+		enemy->render(target);
 	this->player.render(target);
 
 	//Tips

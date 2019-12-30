@@ -62,7 +62,7 @@ void MovementComponent::resetVelocity()
 	this->velocity.y = 0.f;
 }
 
-void MovementComponent::move(const float dir_x, const float dir_y, const float& dt)
+void MovementComponent::move(float dir_x, float dir_y, const float& dt)
 {
 	/*Acceleration a shape until it reaches the max velocity*/
 	this->velocity.x += this->acceleration * dir_x;

@@ -29,14 +29,19 @@ Player::~Player()
 }
 
 //Functions
-void Player::move(const float dir_x, const float dir_y, const float& dt)
+void Player::move(float dir_x, float dir_y, const float& dt)
 {
 	this->movementComponent.move(dir_x, dir_y, dt);
 }
 
-void Player::move(const float offsetX, const float offsetY)
+void Player::move(float offsetX, float offsetY)
 {
 	this->shape.move(offsetX, offsetY);
+}
+
+void Player::move(const sf::Vector2f& offset)
+{
+	this->shape.move(offset.x, offset.y);
 }
 
 void Player::resetVelocity()
@@ -55,9 +60,9 @@ void Player::update(const float& dt)
 	for (auto& wallChecker : this->wallCheckers)
 	{
 		if (counter == LEFT || counter == RIGHT)
-			wallChecker.setSize(sf::Vector2f(1.f, this->shape.getGlobalBounds().height));
+			wallChecker.setSize(sf::Vector2f(2.f, this->shape.getGlobalBounds().height * 0.75f));
 		else if (counter == UP || counter == DOWN)
-			wallChecker.setSize(sf::Vector2f(this->shape.getGlobalBounds().width, 1.f));
+			wallChecker.setSize(sf::Vector2f(this->shape.getGlobalBounds().width * 0.75f, 2.f));
 		if (counter == LEFT)
 			wallChecker.setPosition(sf::Vector2f(
 				this->shape.getPosition().x - this->shape.getGlobalBounds().width / 2.f,

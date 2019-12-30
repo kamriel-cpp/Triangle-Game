@@ -18,8 +18,9 @@ public:
  	//This is for the future
 	AttributeComponent attributeComponent;
 
-	void move(const float dir_x, const float dir_y, const float& dt);
-	void move(const float offsetX, const float offsetY);
+	void move(float dir_x, float dir_y, const float& dt);
+	void move(float offsetX, float offsetY);
+	void move(const sf::Vector2f& offset);
 	void resetVelocity();
 
 	void update(const float& dt) override;

@@ -11,7 +11,7 @@ private:
 	sf::Vector2f velocity;
 public:
 	MovementComponent();
-	~MovementComponent();
+	virtual ~MovementComponent();
 
 	void initVariables(sf::Shape* shape,
 		float maxVelocity, float accelererion, float deceleration);
@@ -20,7 +20,7 @@ public:
 	const bool getState(const unsigned char state) const;
 	void resetVelocity();
 
-	void move(const float dir_x, const float dir_y, const float& dt);
+	void move(float dir_x, float dir_y, const float& dt);
 	void update(const float& dt);
 };
 
