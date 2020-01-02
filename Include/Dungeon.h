@@ -5,20 +5,19 @@ class Dungeon
 {
 private:
 	unsigned char	floor[50][50];
+
+	//Rooms settings
 	unsigned char	roomCounter;
 	sf::Vector2f	roomSize;
 	float			corridorWidth;
 	float			corridorLength;
+	sf::Color 		floorColor;
+
+	//Walls settings
 	float			wallThickness;
+	sf::Color 		wallColor;
 
-	sf::Color 		mainColor;
-	sf::Color 		mainRoomColor;
-	sf::Color 		startRoomColor;
-	sf::Color 		lastRoomColor;
-	sf::Color 		corridorColor;
-
-	float 			roomsOutlineThickness;
-
+	//Lists the positions of rooms of each type in the array floor[][]
 	std::list<sf::Vector2u> rooms;
 	std::list<sf::Vector2u> bonusRooms;
 	std::list<sf::Vector2u> corridorsHorizontal;
@@ -26,13 +25,15 @@ private:
 
 	void initVariables();
 public:
+	Dungeon();
+	Dungeon(const Dungeon& other) = default;
+	virtual ~Dungeon() = default;
+
 	sf::Vector2f center;
 	std::list<sf::RectangleShape> shapes;
 	std::list<sf::RectangleShape> walls;
 	
-	Dungeon();
-	Dungeon(const Dungeon& other) = default;
-	virtual ~Dungeon() = default;
+	const sf::Vector2f getRoomSize();
 
 	void setRoomSize(sf::Vector2f room_size);
 	void addStartRoom();

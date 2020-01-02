@@ -63,7 +63,10 @@ void GameState::initMinimap()
 		this->minimap.shapes.back().setSize(shape.getSize());
 		this->minimap.shapes.back().setPosition(shape.getPosition());
 		this->minimap.shapes.back().setOrigin(shape.getOrigin());
-		this->minimap.shapes.back().setFillColor(shape.getOutlineColor());
+		if (shape.getSize() == this->dungeon.getRoomSize())
+			this->minimap.shapes.back().setFillColor(this->minimap.roomColor);
+		else
+			this->minimap.shapes.back().setFillColor(this->minimap.corridorColor);
 	}
 }
 

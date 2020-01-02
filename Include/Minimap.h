@@ -8,6 +8,9 @@ public:
 public:
 	Minimap();
 	
+	sf::Color roomColor;
+	sf::Color corridorColor;
+	
 	void render(sf::RenderTarget* target = NULL);
 };
 

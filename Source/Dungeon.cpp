@@ -8,33 +8,19 @@ void Dungeon::initVariables()
 	this->roomSize.y = 500.f;
 	this->corridorLength = this->roomSize.x / 2.f;
 	this->corridorWidth = this->corridorLength * 0.5f;
-	this->wallThickness = 3.f;
+	this->wallThickness = 6.f;
 
 	sf::VideoMode window_bounds = sf::VideoMode::getDesktopMode();
 	this->center.x = window_bounds.width / 2.f;
 	this->center.y = window_bounds.height / 2.f;
 
-	this->mainColor.r = 31;
-	this->mainColor.g = 31;
-	this->mainColor.b = 31;
+	this->floorColor.r = 31;
+	this->floorColor.g = 31;
+	this->floorColor.b = 31;
 
-	this->mainRoomColor.r = 125;
-	this->mainRoomColor.g = 225;
-	this->mainRoomColor.b = 125;
-
-	this->startRoomColor.r = 125;
-	this->startRoomColor.g = 125;
-	this->startRoomColor.b = 225;
-	
-	this->lastRoomColor.r = 225;
-	this->lastRoomColor.g = 125;
-	this->lastRoomColor.b = 125;
-	
-	this->corridorColor.r = 125;
-	this->corridorColor.g = 125;
-	this->corridorColor.b = 125;
-
-	this->roomsOutlineThickness = -3.f;
+	this->wallColor.r = 255;
+	this->wallColor.g = 255;
+	this->wallColor.b = 255;
 }
 
 //Constructors/Destructors
@@ -44,6 +30,11 @@ Dungeon::Dungeon()
 }
 
 //Functions
+const sf::Vector2f Dungeon::getRoomSize()
+{
+	return this->roomSize;
+}
+
 void Dungeon::setRoomSize(sf::Vector2f room_size)
 {
 	this->roomSize = room_size;
@@ -113,28 +104,14 @@ void Dungeon::fillShapesList()
 			{
 				this->shapes.push_back(sf::RectangleShape(this->roomSize));
 
-				if (this->floor[i][j] == FRONT)
+				if (this->floor[i][j] == CORRIDOR_HORIZONTAL || this->floor[i][j] == CORRIDOR_VERTICAL)
 				{
-					this->shapes.back().setOutlineColor(this->startRoomColor);
-				}
-				else if (this->floor[i][j] == BACK)
-				{
-					this->shapes.back().setOutlineColor(this->lastRoomColor);
-				}
-				else if (this->floor[i][j] == DEFAULT || this->floor[i][j] == BONUS)
-				{
-					this->shapes.back().setOutlineColor(this->mainRoomColor);
-				}
-				else if (this->floor[i][j] == CORRIDOR_HORIZONTAL || this->floor[i][j] == CORRIDOR_VERTICAL)
-				{
-					this->shapes.back().setOutlineColor(this->corridorColor);
 					if (this->floor[i][j] == CORRIDOR_HORIZONTAL)
 						this->shapes.back().setSize(sf::Vector2f(this->corridorLength, this->corridorWidth));
 					else if (this->floor[i][j] == CORRIDOR_VERTICAL)
 						this->shapes.back().setSize(sf::Vector2f(this->corridorWidth, this->corridorLength));
 				}
-				this->shapes.back().setFillColor(this->mainColor);
-				this->shapes.back().setOutlineThickness(this->roomsOutlineThickness);
+				this->shapes.back().setFillColor(this->floorColor);
 				this->shapes.back().setPosition(sf::Vector2f(
 					this->roomSize.x * 0.75f * i - this->roomSize.x * 0.75f * 25.f + this->center.x,
 					this->roomSize.y * 0.75f * j - this->roomSize.x * 0.75f * 25.f + this->center.y));
@@ -146,128 +123,181 @@ void Dungeon::fillShapesList()
 
 void Dungeon::fillWallsList()
 {
+	sf::Vector2f position;
 	for (size_t i = 0; i < 50; i++)
 	{
 		for (size_t j = 0; j < 50; j++)
 		{
 			if (this->floor[i][j])
 			{
-				for (int k = 0; k < 4; k++)
+				position.x = this->roomSize.x * 0.75f * i - this->roomSize.x * 0.75f * 25.f + this->center.x;
+				position.y = this->roomSize.y * 0.75f * j - this->roomSize.y * 0.75f * 25.f + this->center.y;
+
+				//LEFT
+				if (this->floor[i][j] != CORRIDOR_HORIZONTAL)
 				{
-					this->walls.push_back(sf::RectangleShape(this->roomSize));
-					this->walls.back().setFillColor(sf::Color(225, 225, 0, 10));
-
-					sf::Vector2f position(sf::Vector2f(
-						this->roomSize.x * 0.75f * i - this->roomSize.x * 0.75f * 25.f + this->center.x,
-						this->roomSize.y * 0.75f * j - this->roomSize.x * 0.75f * 25.f + this->center.y));
-
-					if (k == LEFT)
+					this->walls.push_back(sf::RectangleShape());
+					this->walls.back().setFillColor(this->wallColor);
+					if (this->floor[i][j] == CORRIDOR_VERTICAL)
 					{
-						if (this->floor[i][j] == CORRIDOR_HORIZONTAL)
+						this->walls.back().setSize(sf::Vector2f(this->wallThickness, this->corridorLength + this->wallThickness));
+						this->walls.back().setPosition(sf::Vector2f(
+							position.x - this->corridorWidth / 2.f,
+							position.y));
+						this->walls.back().setOrigin(this->walls.back().getSize() / 2.f);
+					}
+					else
+					{
+						if (this->floor[i - 1][j] == NONE)
 						{
-							this->walls.back().setSize(sf::Vector2f(this->wallThickness, this->corridorWidth));
-							this->walls.back().setPosition(sf::Vector2f(
-								position.x - this->corridorLength / 2.f,
-								position.y));
-						}
-						else if (this->floor[i][j] == CORRIDOR_VERTICAL)
-						{
-							this->walls.back().setSize(sf::Vector2f(this->wallThickness, this->corridorLength));
-							this->walls.back().setPosition(sf::Vector2f(
-								position.x - this->corridorWidth / 2.f,
-								position.y));
-						}
-						else if (this->floor[i][j] != NONE)
-						{
-							this->walls.back().setSize(sf::Vector2f(this->wallThickness, this->roomSize.y));
+							this->walls.back().setSize(sf::Vector2f(this->wallThickness, this->roomSize.y + this->wallThickness));
 							this->walls.back().setPosition(sf::Vector2f(
 								position.x - this->roomSize.x / 2.f,
 								position.y));
+							this->walls.back().setOrigin(this->walls.back().getSize() / 2.f);
 						}
-						this->walls.back().setOrigin(sf::Vector2f(
-							0.f,
-							this->walls.back().getSize().y / 2.f));
+						else 
+						{
+							this->walls.back().setSize(sf::Vector2f(this->wallThickness, (this->roomSize.y - this->corridorWidth) / 2.f + this->wallThickness));
+							this->walls.back().setPosition(sf::Vector2f(
+								position.x - this->roomSize.x / 2.f,
+								position.y - (this->corridorWidth / 2.f + (this->roomSize.y - this->corridorWidth) / 4.f)));
+							this->walls.back().setOrigin(this->walls.back().getSize() / 2.f);
+
+							this->walls.push_back(sf::RectangleShape());
+							this->walls.back().setFillColor(this->wallColor);
+							this->walls.back().setSize(sf::Vector2f(this->wallThickness, (this->roomSize.y - this->corridorWidth) / 2.f + this->wallThickness));
+							this->walls.back().setPosition(sf::Vector2f(
+								position.x - this->roomSize.x / 2.f,
+								position.y + (this->corridorWidth / 2.f + (this->roomSize.y - this->corridorWidth) / 4.f)));
+							this->walls.back().setOrigin(this->walls.back().getSize() / 2.f);
+						}
 					}
-					else if (k == RIGHT)
+				}
+
+				//RIGHT
+				if (this->floor[i][j] != CORRIDOR_HORIZONTAL)
+				{
+					this->walls.push_back(sf::RectangleShape());
+					this->walls.back().setFillColor(this->wallColor);
+					if (this->floor[i][j] == CORRIDOR_VERTICAL)
 					{
-						if (this->floor[i][j] == CORRIDOR_HORIZONTAL)
+						this->walls.back().setSize(sf::Vector2f(this->wallThickness, this->corridorLength + this->wallThickness));
+						this->walls.back().setPosition(sf::Vector2f(
+							position.x + this->corridorWidth / 2.f,
+							position.y));
+						this->walls.back().setOrigin(this->walls.back().getSize() / 2.f);
+					}
+					else
+					{
+						if (this->floor[i + 1][j] == NONE)
 						{
-							this->walls.back().setSize(sf::Vector2f(this->wallThickness, this->corridorWidth));
-							this->walls.back().setPosition(sf::Vector2f(
-								position.x + this->corridorLength / 2.f,
-								position.y));
-						}
-						else if (this->floor[i][j] == CORRIDOR_VERTICAL)
-						{
-							this->walls.back().setSize(sf::Vector2f(this->wallThickness, this->corridorLength));
-							this->walls.back().setPosition(sf::Vector2f(
-								position.x + this->corridorWidth / 2.f,
-								position.y));
-						}
-						else if (this->floor[i][j] != NONE)
-						{
-							this->walls.back().setSize(sf::Vector2f(this->wallThickness, this->roomSize.y));
+							this->walls.back().setSize(sf::Vector2f(this->wallThickness, this->roomSize.y + this->wallThickness));
 							this->walls.back().setPosition(sf::Vector2f(
 								position.x + this->roomSize.x / 2.f,
 								position.y));
+							this->walls.back().setOrigin(this->walls.back().getSize() / 2.f);
 						}
-						this->walls.back().setOrigin(sf::Vector2f(
-							this->walls.back().getSize().x,
-							this->walls.back().getSize().y / 2.f));
+						else 
+						{
+							this->walls.back().setSize(sf::Vector2f(this->wallThickness, (this->roomSize.y - this->corridorWidth) / 2.f + this->wallThickness));
+							this->walls.back().setPosition(sf::Vector2f(
+								position.x + this->roomSize.x / 2.f,
+								position.y - (this->corridorWidth / 2.f + (this->roomSize.y - this->corridorWidth) / 4.f)));
+							this->walls.back().setOrigin(this->walls.back().getSize() / 2.f);
+
+							this->walls.push_back(sf::RectangleShape());
+							this->walls.back().setFillColor(this->wallColor);
+							this->walls.back().setSize(sf::Vector2f(this->wallThickness, (this->roomSize.y - this->corridorWidth) / 2.f + this->wallThickness));
+							this->walls.back().setPosition(sf::Vector2f(
+								position.x + this->roomSize.x / 2.f,
+								position.y + (this->corridorWidth / 2.f + (this->roomSize.y - this->corridorWidth) / 4.f)));
+							this->walls.back().setOrigin(this->walls.back().getSize() / 2.f);
+						}
 					}
-					else if (k == UP)
+				}
+
+				//UP
+				if (this->floor[i][j] != CORRIDOR_VERTICAL)
+				{
+					this->walls.push_back(sf::RectangleShape());
+					this->walls.back().setFillColor(this->wallColor);
+					if (this->floor[i][j] == CORRIDOR_HORIZONTAL)
 					{
-						if (this->floor[i][j] == CORRIDOR_HORIZONTAL)
+						this->walls.back().setSize(sf::Vector2f(this->corridorLength + this->wallThickness, this->wallThickness));
+						this->walls.back().setPosition(sf::Vector2f(
+							position.x,
+							position.y - this->corridorWidth / 2.f));
+						this->walls.back().setOrigin(this->walls.back().getSize() / 2.f);
+					}
+					else
+					{
+						if (this->floor[i][j - 1] == NONE)
 						{
-							this->walls.back().setSize(sf::Vector2f(this->corridorLength, this->wallThickness));
-							this->walls.back().setPosition(sf::Vector2f(
-								position.x,
-								position.y - this->corridorWidth / 2.f));
-						}
-						else if (this->floor[i][j] == CORRIDOR_VERTICAL)
-						{
-							this->walls.back().setSize(sf::Vector2f(this->corridorWidth, this->wallThickness));
-							this->walls.back().setPosition(sf::Vector2f(
-								position.x,
-								position.y - this->corridorLength / 2.f));
-						}
-						else if (this->floor[i][j] != NONE)
-						{
-							this->walls.back().setSize(sf::Vector2f(this->roomSize.x, this->wallThickness));
+							this->walls.back().setSize(sf::Vector2f(this->roomSize.y + this->wallThickness, this->wallThickness));
 							this->walls.back().setPosition(sf::Vector2f(
 								position.x,
 								position.y - this->roomSize.y / 2.f));
+							this->walls.back().setOrigin(this->walls.back().getSize() / 2.f);
 						}
-						this->walls.back().setOrigin(sf::Vector2f(
-							this->walls.back().getSize().x / 2.f,
-							0.f));
+						else 
+						{
+							this->walls.back().setSize(sf::Vector2f((this->roomSize.y - this->corridorWidth) / 2.f + this->wallThickness, this->wallThickness));
+							this->walls.back().setPosition(sf::Vector2f(
+								position.x - (this->corridorWidth / 2.f + (this->roomSize.y - this->corridorWidth) / 4.f),
+								position.y - this->roomSize.x / 2.f));
+							this->walls.back().setOrigin(this->walls.back().getSize() / 2.f);
+
+							this->walls.push_back(sf::RectangleShape());
+							this->walls.back().setFillColor(this->wallColor);
+							this->walls.back().setSize(sf::Vector2f((this->roomSize.y - this->corridorWidth) / 2.f + this->wallThickness, this->wallThickness));
+							this->walls.back().setPosition(sf::Vector2f(
+								position.x + (this->corridorWidth / 2.f + (this->roomSize.y - this->corridorWidth) / 4.f),
+								position.y - this->roomSize.x / 2.f));
+							this->walls.back().setOrigin(this->walls.back().getSize() / 2.f);
+						}
 					}
-					else if (k == DOWN)
+				}
+
+				//DOWN
+				if (this->floor[i][j] != CORRIDOR_VERTICAL)
+				{
+					this->walls.push_back(sf::RectangleShape());
+					this->walls.back().setFillColor(this->wallColor);
+					if (this->floor[i][j] == CORRIDOR_HORIZONTAL)
 					{
-						if (this->floor[i][j] == CORRIDOR_HORIZONTAL)
+						this->walls.back().setSize(sf::Vector2f(this->corridorLength + this->wallThickness, this->wallThickness));
+						this->walls.back().setPosition(sf::Vector2f(
+							position.x,
+							position.y + this->corridorWidth / 2.f));
+						this->walls.back().setOrigin(this->walls.back().getSize() / 2.f);
+					}
+					else
+					{
+						if (this->floor[i][j + 1] == NONE)
 						{
-							this->walls.back().setSize(sf::Vector2f(this->corridorLength, this->wallThickness));
-							this->walls.back().setPosition(sf::Vector2f(
-								position.x,
-								position.y + this->corridorWidth / 2.f));
-						}
-						else if (this->floor[i][j] == CORRIDOR_VERTICAL)
-						{
-							this->walls.back().setSize(sf::Vector2f(this->corridorWidth, this->wallThickness));
-							this->walls.back().setPosition(sf::Vector2f(
-								position.x,
-								position.y + this->corridorLength / 2.f));
-						}
-						else if (this->floor[i][j] != NONE)
-						{
-							this->walls.back().setSize(sf::Vector2f(this->roomSize.x, this->wallThickness));
+							this->walls.back().setSize(sf::Vector2f(this->roomSize.y + this->wallThickness, this->wallThickness));
 							this->walls.back().setPosition(sf::Vector2f(
 								position.x,
 								position.y + this->roomSize.y / 2.f));
+							this->walls.back().setOrigin(this->walls.back().getSize() / 2.f);
 						}
-						this->walls.back().setOrigin(sf::Vector2f(
-							this->walls.back().getSize().x / 2.f,
-							this->walls.back().getSize().y));
+						else 
+						{
+							this->walls.back().setSize(sf::Vector2f((this->roomSize.y - this->corridorWidth) / 2.f + this->wallThickness, this->wallThickness));
+							this->walls.back().setPosition(sf::Vector2f(
+								position.x - (this->corridorWidth / 2.f + (this->roomSize.y - this->corridorWidth) / 4.f),
+								position.y + this->roomSize.x / 2.f));
+							this->walls.back().setOrigin(this->walls.back().getSize() / 2.f);
+
+							this->walls.push_back(sf::RectangleShape());
+							this->walls.back().setFillColor(this->wallColor);
+							this->walls.back().setSize(sf::Vector2f((this->roomSize.y - this->corridorWidth) / 2.f + this->wallThickness, this->wallThickness));
+							this->walls.back().setPosition(sf::Vector2f(
+								position.x + (this->corridorWidth / 2.f + (this->roomSize.y - this->corridorWidth) / 4.f),
+								position.y + this->roomSize.x / 2.f));
+							this->walls.back().setOrigin(this->walls.back().getSize() / 2.f);
+						}
 					}
 				}
 			}
