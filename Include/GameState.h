@@ -5,12 +5,12 @@
 #include <Include/MovementComponent.h>
 #include <Include/AttributeComponent.h>
 #include <Include/Dungeon.h>
-#include <Include/Camera.h>
-#include <Include/Cinemachine.h>
-#include <Include/Minimap.h>
 #include <Include/Triangle.h>
 #include <Include/Player.h>
 #include <Include/Enemy.h>
+#include <Include/Camera.h>
+#include <Include/Cinemachine.h>
+#include <Include/Minimap.h>
 
 class GameState : public State
 {

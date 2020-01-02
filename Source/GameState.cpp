@@ -44,7 +44,7 @@ void GameState::initCameras()
 	this->secondCamera.zoom(1.35f);
 	this->thirdCamera.setWindow(this->window);
 	this->thirdCamera.setViewport(sf::FloatRect(0.75f, 0.f, 0.25f, 0.25f));
-	this->thirdCamera.zoom(20.f);
+	this->thirdCamera.zoom(10.f);
 }
 
 void GameState::initCinemachine()
@@ -57,17 +57,7 @@ void GameState::initCinemachine()
 
 void GameState::initMinimap()
 {
-	for (auto& shape : this->dungeon.shapes)
-	{
-		this->minimap.shapes.push_back(sf::RectangleShape());
-		this->minimap.shapes.back().setSize(shape.getSize());
-		this->minimap.shapes.back().setPosition(shape.getPosition());
-		this->minimap.shapes.back().setOrigin(shape.getOrigin());
-		if (shape.getSize() == this->dungeon.getRoomSize())
-			this->minimap.shapes.back().setFillColor(this->minimap.roomColor);
-		else
-			this->minimap.shapes.back().setFillColor(this->minimap.corridorColor);
-	}
+	this->minimap.initShapes(this->dungeon, *this->player);
 }
 
 void GameState::initTexts()
@@ -153,15 +143,6 @@ void GameState::updateInput(const float& dt)
 		this->mainCamera.zoom(1.01f);
 	else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::E))
 		this->mainCamera.zoom(0.99f);
-
-	//Minimap teleportation
-	//REMOVE LATER
-	if (sf::Mouse::isButtonPressed(sf::Mouse::Left))
-		if (sf::Mouse::getPosition(*this->window).x >= this->window->getDefaultView().getSize().x * 0.75f &&
-			sf::Mouse::getPosition(*this->window).x <= this->window->getDefaultView().getSize().x &&
-			sf::Mouse::getPosition(*this->window).y >= 0 &&
-			sf::Mouse::getPosition(*this->window).y <= this->window->getDefaultView().getSize().y * 0.25f)
-			this->player->shape.setPosition(this->window->mapPixelToCoords(sf::Mouse::getPosition(*this->window), this->thirdCamera.getView()));
 }
 
 void GameState::update(const float& dt)
@@ -173,6 +154,7 @@ void GameState::update(const float& dt)
 	for (auto& enemy : this->enemies)
 		enemy->update(dt);
 	this->cinemachine.update(dt);
+	this->minimap.update(dt);
 
 	//Players mouse tracking
 	sf::Vector2f look_dir(this->window->mapPixelToCoords(sf::Mouse::getPosition(*this->window), this->mainCamera.getView())
@@ -318,14 +300,6 @@ void GameState::render(sf::RenderTarget* target)
 	//Minimap
 	this->window->setView(this->thirdCamera.getView());
 	this->minimap.render(target);
-
-	this->player->shape.setFillColor(sf::Color::White);
-	this->player->shape.setRadius(200.f);
-	this->player->shape.setOrigin(sf::Vector2f(200.f, 200.f));
-	this->player->render(target);
-	this->player->shape.setFillColor(this->player->defaultColor);
-	this->player->shape.setRadius(this->player->defaultRadius);
-	this->player->shape.setOrigin(this->player->defaultOrigin);
 
 	//Set window view to default
 	this->window->setView(this->window->getDefaultView());
