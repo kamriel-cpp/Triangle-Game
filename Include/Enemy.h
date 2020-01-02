@@ -4,11 +4,10 @@
 class Enemy : public Triangle
 {
 private:
-	MovementComponent movementComponent;
+	MovementComponent* movementComponent;
 
 	void initMovementComponent();
 public:
- 	Enemy();
  	Enemy(const sf::Vector2f& position);
  	virtual ~Enemy();
 	

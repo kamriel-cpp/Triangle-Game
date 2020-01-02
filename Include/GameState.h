@@ -15,7 +15,7 @@
 class GameState : public State
 {
 private:
-	Player				player;
+	Player*				player;
 	std::list<Enemy*>	enemies;
 	Dungeon				dungeon;
 	Camera				mainCamera;

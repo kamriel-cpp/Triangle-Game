@@ -1,20 +1,10 @@
 //Initialization
 void Enemy::initMovementComponent()
 {
-	this->movementComponent.initVariables(&this->shape, 100.f, 15.f, 5.f);
+	this->movementComponent = new MovementComponent(&this->shape, 100.f, 15.f, 5.f);
 }
 
 //Constructors/Destructors
-Enemy::Enemy()
-{
-	this->shape.setFillColor(sf::Color(252, 49, 49));
-	this->initMovementComponent();
-	this->intersectsWall = false;
-
-	for (int i = LEFT; i <= DOWN; i++)
-		this->wallCheckers.push_back(sf::RectangleShape());
-}
-
 Enemy::Enemy(const sf::Vector2f& position)
 {
 	this->shape.setPosition(position);
@@ -28,13 +18,15 @@ Enemy::Enemy(const sf::Vector2f& position)
 
 Enemy::~Enemy()
 {
-	/* code */
+	this->movementComponent = nullptr;
+	delete movementComponent;
 }
 
 //Functions
 void Enemy::move(float dir_x, float dir_y, const float& dt)
 {
-	this->movementComponent.move(dir_x, dir_y, dt);
+	if (this->movementComponent)
+		this->movementComponent->move(dir_x, dir_y, dt);
 }
 
 void Enemy::move(float offsetX, float offsetY)
@@ -49,17 +41,19 @@ void Enemy::move(const sf::Vector2f& offset)
 
 void Enemy::resetVelocityX()
 {
-	this->movementComponent.resetVelocityX();
+	if (this->movementComponent)
+		this->movementComponent->resetVelocityX();
 }
 
 void Enemy::resetVelocityY()
 {
-	this->movementComponent.resetVelocityY();
+	if (this->movementComponent)
+		this->movementComponent->resetVelocityY();
 }
 
 void Enemy::update(const float& dt)
 {
-	this->movementComponent.update(dt);
+	this->movementComponent->update(dt);
 
 	//Update wallcheckers
 	char counter = 0;

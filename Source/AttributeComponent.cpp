@@ -1,23 +1,5 @@
 //Constructors/Destructors
-AttributeComponent::AttributeComponent()
-{
-	this->level = 1;
-	this->exp = 0;
-	this->expNext = static_cast<int>((50 / 3) * (pow(this->level + 1, 3) - 6 * pow(this->level + 1, 2) + ((this->level + 1) * 17) - 12));
-	this->attributePoints = 2;
-
-	this->vitality = 1;
-	this->strength = 1;
-	this->dexterity = 1;
-	this->agility = 1;
-	this->intelligence = 1;
-
-	this->updateLevel();
-	this->updateStats(true);
-}
-
-//Functions
-void AttributeComponent::initVariables(const int level)
+AttributeComponent::AttributeComponent(const int level)
 {
 	this->level = level;
 	this->exp = 0;
@@ -34,6 +16,7 @@ void AttributeComponent::initVariables(const int level)
 	this->updateStats(true);
 }
 
+//Functions
 std::string AttributeComponent::debugPrint() const
 {
 	std::stringstream ss;

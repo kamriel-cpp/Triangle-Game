@@ -27,10 +27,9 @@ public:
 	int luck;
 
 	//Constructors/Destructors
-	AttributeComponent();
+	AttributeComponent(const int level);
 
 	//Functions
-	void initVariables(const int level);
 	std::string debugPrint() const;
 
 	void loseHP(const int hp);

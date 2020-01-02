@@ -4,6 +4,15 @@ MovementComponent::MovementComponent()
 	this->shape = nullptr;
 }
 
+MovementComponent::MovementComponent(sf::Shape* shape,
+	float maxVelocity, float acceleration, float deceleration)
+{
+	this->shape = shape;
+	this->maxVelocity = maxVelocity;
+	this->acceleration = acceleration;
+	this->deceleration = deceleration;
+}
+
 MovementComponent::~MovementComponent()
 {
 	this->shape = nullptr;

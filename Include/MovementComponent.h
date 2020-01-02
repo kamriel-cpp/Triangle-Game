@@ -11,6 +11,8 @@ private:
 	sf::Vector2f velocity;
 public:
 	MovementComponent();
+	MovementComponent(sf::Shape* shape,
+		float maxVelocity, float accelererion, float deceleration);
 	virtual ~MovementComponent();
 
 	void initVariables(sf::Shape* shape,

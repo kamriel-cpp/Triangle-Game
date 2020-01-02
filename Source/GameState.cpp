@@ -15,9 +15,14 @@ void GameState::initKeybinds()
 	ifs.close();
 }
 
+void GameState::initDungeon()
+{
+	this->dungeon.generate();
+}
+
 void GameState::initPlayer()
 {
-	this->player.shape.setPosition(this->dungeon.center);
+	this->player = new Player(this->dungeon.center);
 }
 
 void GameState::initEnemies()
@@ -25,14 +30,9 @@ void GameState::initEnemies()
 	for (int i = 0; i < 100; i++)
 	{
 		this->enemies.push_back(new Enemy(sf::Vector2f(
-			this->player.shape.getPosition().x + rand() % 4500 - 4500.f / 2.f,
-			this->player.shape.getPosition().y + rand() % 4500 - 4500.f / 2.f)));
+			this->player->shape.getPosition().x + rand() % 4500 - 4500.f / 2.f,
+			this->player->shape.getPosition().y + rand() % 4500 - 4500.f / 2.f)));
 	}
-}
-
-void GameState::initDungeon()
-{
-	this->dungeon.generate();
 }
 
 void GameState::initCameras()
@@ -50,7 +50,7 @@ void GameState::initCameras()
 void GameState::initCinemachine()
 {
 	this->cinemachine.setCamera(&this->mainCamera);
-	this->cinemachine.setTarget(&this->player.shape);
+	this->cinemachine.setTarget(&this->player->shape);
 	this->cinemachine.setDamping(2.5f);
 	this->cinemachine.setDeadZone(0.2f, 0.2f);
 }
@@ -102,6 +102,8 @@ GameState::GameState(sf::RenderWindow* window, std::map<std::string,
 
 GameState::~GameState()
 {
+	this->player = nullptr;
+	delete this->player;
 	while (!this->enemies.empty())
 	{
 	    delete this->enemies.back();
@@ -119,25 +121,23 @@ void GameState::updateInput(const float& dt)
 
 	//Update player input
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key(this->keybinds.at("MOVE_LEFT"))))
-		this->player.move(-1.f, 0.f, dt);
+		this->player->move(-1.f, 0.f, dt);
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key(this->keybinds.at("MOVE_RIGHT"))))
-		this->player.move(1.f, 0.f, dt);
+		this->player->move(1.f, 0.f, dt);
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key(this->keybinds.at("MOVE_UP"))))
-		this->player.move(0.f, -1.f, dt);
+		this->player->move(0.f, -1.f, dt);
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key(this->keybinds.at("MOVE_DOWN"))))
-		this->player.move(0.f, 1.f, dt);
+		this->player->move(0.f, 1.f, dt);
 
 	//DEBUG FEATURE
-	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::F))
-		this->player.attributeComponent.updateStats(false);
-	else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Z))
-		this->player.attributeComponent.loseEXP(this->player.attributeComponent.expNext / 10);
+	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Z))
+		this->player->loseEXP(rand() % 100);
 	else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::X))
-		this->player.attributeComponent.gainEXP(this->player.attributeComponent.expNext / 10);
+		this->player->gainEXP(rand() % 100);
 	else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::C))
-		this->player.attributeComponent.loseHP(this->player.attributeComponent.hpMax / 5);
+		this->player->loseHP(rand() % 100);
 	else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::V))
-		this->player.attributeComponent.gainHP(this->player.attributeComponent.hpMax / 5);
+		this->player->gainHP(rand() % 100);
 
 	//Arrows to control the camera
 	//Q/E to zoom
@@ -161,7 +161,7 @@ void GameState::updateInput(const float& dt)
 			sf::Mouse::getPosition(*this->window).x <= this->window->getDefaultView().getSize().x &&
 			sf::Mouse::getPosition(*this->window).y >= 0 &&
 			sf::Mouse::getPosition(*this->window).y <= this->window->getDefaultView().getSize().y * 0.25f)
-			this->player.shape.setPosition(this->window->mapPixelToCoords(sf::Mouse::getPosition(*this->window), this->thirdCamera.getView()));
+			this->player->shape.setPosition(this->window->mapPixelToCoords(sf::Mouse::getPosition(*this->window), this->thirdCamera.getView()));
 }
 
 void GameState::update(const float& dt)
@@ -169,35 +169,35 @@ void GameState::update(const float& dt)
 	//Update some components
 	this->updateMousePositions();
 	this->updateInput(dt);
-	this->player.update(dt);
+	this->player->update(dt);
 	for (auto& enemy : this->enemies)
 		enemy->update(dt);
 	this->cinemachine.update(dt);
 
 	//Players mouse tracking
 	sf::Vector2f look_dir(this->window->mapPixelToCoords(sf::Mouse::getPosition(*this->window), this->mainCamera.getView())
-		- this->player.shape.getPosition());
+		- this->player->shape.getPosition());
 	float angle = atan2(look_dir.y, look_dir.x) * (180.f / 3.14159265358979323846f) + 90.f;
-	this->player.shape.setRotation(angle);
+	this->player->shape.setRotation(angle);
 
 	//Enemies player tracking
 	for (auto&& enemy : this->enemies)
 	{
-		sf::Vector2f look_dir(this->player.shape.getPosition() - enemy->shape.getPosition());
+		sf::Vector2f look_dir(this->player->shape.getPosition() - enemy->shape.getPosition());
 		float angle = atan2(look_dir.y, look_dir.x) * (180.f / 3.14159265358979323846f) + 90.f;
 		enemy->shape.setRotation(angle);
 
 		sf::Vector2f move_dir;
-		if (this->player.shape.getPosition().x - enemy->shape.getPosition().x > 1.f)
+		if (this->player->shape.getPosition().x - enemy->shape.getPosition().x > 1.f)
 			move_dir.x = 1.f;
-		else if (this->player.shape.getPosition().x - enemy->shape.getPosition().x < -1.f)
+		else if (this->player->shape.getPosition().x - enemy->shape.getPosition().x < -1.f)
 			move_dir.x = -1.f;
 		else
 			move_dir.x = 0.f;
 
-		if (this->player.shape.getPosition().y - enemy->shape.getPosition().y > 1.f)
+		if (this->player->shape.getPosition().y - enemy->shape.getPosition().y > 1.f)
 			move_dir.y = 1.f;
-		else if (this->player.shape.getPosition().y - enemy->shape.getPosition().y < -1.f)
+		else if (this->player->shape.getPosition().y - enemy->shape.getPosition().y < -1.f)
 			move_dir.y = -1.f;
 		else
 			move_dir.y = 0.f;
@@ -207,41 +207,41 @@ void GameState::update(const float& dt)
 
 	//Wall checking for player
 	char counter = 0;
-	for (auto& wallChecker : this->player.wallCheckers)
+	for (auto& wallChecker : this->player->wallCheckers)
 	{
 		for (auto& wall : this->dungeon.walls)
 		{
 			if (wallChecker.getGlobalBounds().intersects(wall.getGlobalBounds()))
 			{
-				this->player.intersectsWall = true;
+				this->player->intersectsWall = true;
 				break;
 			}
 			else
 			{
-				this->player.intersectsWall = false;
+				this->player->intersectsWall = false;
 			}
 		}
-		if (this->player.intersectsWall)
+		if (this->player->intersectsWall)
 		{
 			if (counter == LEFT)
 			{
-				this->player.resetVelocityX();
-				this->player.move(50.f * dt, 0.f);
+				this->player->resetVelocityX();
+				this->player->move(50.f * dt, 0.f);
 			}
 			else if (counter == RIGHT)
 			{
-				this->player.resetVelocityX();
-				this->player.move(-50.f * dt, 0.f);
+				this->player->resetVelocityX();
+				this->player->move(-50.f * dt, 0.f);
 			}
 			else if (counter == UP)
 			{
-				this->player.resetVelocityY();
-				this->player.move(0.f, 50.f * dt);
+				this->player->resetVelocityY();
+				this->player->move(0.f, 50.f * dt);
 			}
 			else if (counter == DOWN)
 			{
-				this->player.resetVelocityY();
-				this->player.move(0.f, -50.f * dt);
+				this->player->resetVelocityY();
+				this->player->move(0.f, -50.f * dt);
 			}
 			wallChecker.setFillColor(sf::Color::Red);
 		}
@@ -309,7 +309,7 @@ void GameState::render(sf::RenderTarget* target)
 	this->dungeon.render(target);
 	for (auto& enemy : this->enemies)
 		enemy->render(target);
-	this->player.render(target);
+	this->player->render(target);
 
 	//Tips
 	this->window->setView(this->secondCamera.getView());
@@ -319,13 +319,13 @@ void GameState::render(sf::RenderTarget* target)
 	this->window->setView(this->thirdCamera.getView());
 	this->minimap.render(target);
 
-	this->player.shape.setFillColor(sf::Color::White);
-	this->player.shape.setRadius(200.f);
-	this->player.shape.setOrigin(sf::Vector2f(200.f, 200.f));
-	this->player.render(target);
-	this->player.shape.setFillColor(this->player.defaultColor);
-	this->player.shape.setRadius(this->player.defaultRadius);
-	this->player.shape.setOrigin(this->player.defaultOrigin);
+	this->player->shape.setFillColor(sf::Color::White);
+	this->player->shape.setRadius(200.f);
+	this->player->shape.setOrigin(sf::Vector2f(200.f, 200.f));
+	this->player->render(target);
+	this->player->shape.setFillColor(this->player->defaultColor);
+	this->player->shape.setRadius(this->player->defaultRadius);
+	this->player->shape.setOrigin(this->player->defaultOrigin);
 
 	//Set window view to default
 	this->window->setView(this->window->getDefaultView());

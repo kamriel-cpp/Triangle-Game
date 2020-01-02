@@ -1,40 +1,78 @@
 //Initialization
-void Player::initMovementComponent()
+void Player::initVariables()
 {
-	this->movementComponent.initVariables(&this->shape, 300.f, 15.f, 5.f);
-}
-
-void Player::initAttributeComponent()
-{
-	this->attributeComponent.initVariables(1);
-}
-
-//Constructors/Destructors
-Player::Player()
-{
-	this->initMovementComponent();
-	this->initAttributeComponent();
-
 	this->defaultColor.r = 49;
 	this->defaultColor.g = 252;
 	this->defaultColor.b = 252;
 
 	this->shape.setFillColor(this->defaultColor);
 	this->intersectsWall = false;
+}
 
+void Player::initWallCheckers()
+{
 	for (int i = LEFT; i <= DOWN; i++)
 		this->wallCheckers.push_back(sf::RectangleShape());
 }
 
+void Player::initMovementComponent()
+{
+	this->movementComponent = new MovementComponent(&this->shape, 300.f, 15.f, 5.f);
+}
+
+void Player::initAttributeComponent()
+{
+	this->attributeComponent = new AttributeComponent(1);
+}
+
+//Constructors/Destructors
+Player::Player(const sf::Vector2f& position)
+{
+	this->initVariables();
+	this->initWallCheckers();
+	this->initMovementComponent();
+	this->initAttributeComponent();
+
+	this->shape.setPosition(position);
+}
+
 Player::~Player()
 {
-
+	this->movementComponent = nullptr;
+	this->attributeComponent = nullptr;
+	delete this->movementComponent;
+	delete this->attributeComponent;
 }
 
 //Functions
+void Player::loseHP(const int hp)
+{
+	if (this->attributeComponent)
+		this->attributeComponent->loseHP(hp);
+}
+
+void Player::gainHP(const int hp)
+{
+	if (this->attributeComponent)
+		this->attributeComponent->gainHP(hp);
+}
+
+void Player::loseEXP(const int exp)
+{
+	if (this->attributeComponent)
+		this->attributeComponent->loseEXP(exp);
+}
+
+void Player::gainEXP(const int exp)
+{
+	if (this->attributeComponent)
+		this->attributeComponent->gainEXP(exp);
+}
+
 void Player::move(float dir_x, float dir_y, const float& dt)
 {
-	this->movementComponent.move(dir_x, dir_y, dt);
+	if (this->movementComponent)
+		this->movementComponent->move(dir_x, dir_y, dt);
 }
 
 void Player::move(float offsetX, float offsetY)
@@ -49,19 +87,21 @@ void Player::move(const sf::Vector2f& offset)
 
 void Player::resetVelocityX()
 {
-	this->movementComponent.resetVelocityX();
+	if (this->movementComponent)
+		this->movementComponent->resetVelocityX();
 }
 
 void Player::resetVelocityY()
 {
-	this->movementComponent.resetVelocityY();
+	if (this->movementComponent)
+		this->movementComponent->resetVelocityY();
 }
 
 void Player::update(const float& dt)
 {
 	//Update some components
-	this->movementComponent.update(dt);
-	this->attributeComponent.update();
+	this->movementComponent->update(dt);
+	this->attributeComponent->update();
 
 	//Update wallcheckers
 	char counter = 0;
