@@ -95,8 +95,11 @@ MainMenuState::~MainMenuState()
 //Update
 void MainMenuState::updateInput(const float& dt)
 {
-	//Update player input
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key(this->keybinds.at("NEW_GAME"))))
+		this->states->push(new GameState(this->window, this->supportedKeys, this->states));
+
+	//DEBUG FEATURE
+	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Space))
 		this->states->push(new GameState(this->window, this->supportedKeys, this->states));
 }
 

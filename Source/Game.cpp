@@ -33,13 +33,18 @@ void Game::initWindow()
 	this->windowSettings.antialiasingLevel = antialiasing_level;
 
 	if (this->fullscreen)
+	{
 		this->window = new sf::RenderWindow(window_bounds, title, sf::Style::Fullscreen, this->windowSettings);
+	}
 	else
+	{
 		this->window = new sf::RenderWindow(window_bounds, title, sf::Style::Titlebar | sf::Style::Close, this->windowSettings);
+		//DEBUG FEATURE
+		this->window->setPosition(sf::Vector2i(sf::VideoMode::getDesktopMode().width - this->window->getSize().x - 10, 5));
+	}
 	
 	this->window->setFramerateLimit(framerate_limit);
 	this->window->setVerticalSyncEnabled(vertical_sync_enabled);
-	this->window->setPosition(sf::Vector2i(sf::VideoMode::getDesktopMode().width - this->window->getSize().x - 10, 5));
 }
 
 void Game::initKeys()
