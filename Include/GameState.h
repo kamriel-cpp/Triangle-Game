@@ -4,6 +4,8 @@
 #include <Include/Button.h>
 #include <Include/MovementComponent.h>
 #include <Include/AttributeComponent.h>
+#include <Include/Room.h>
+#include <Include/Corridor.h>
 #include <Include/Dungeon.h>
 #include <Include/Triangle.h>
 #include <Include/Player.h>

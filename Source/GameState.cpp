@@ -18,20 +18,29 @@ void GameState::initKeybinds()
 void GameState::initDungeon()
 {
 	this->dungeon.generate();
+	std::cout << "centerPosition:   " << '\t' << this->dungeon.centerPosition.x << '\t' << this->dungeon.centerPosition.y << std::endl;
+	std::cout << "startRoomPosition:" << '\t' << this->dungeon.startRoomPosition.x << '\t' << this->dungeon.startRoomPosition.y << std::endl;
+	std::cout << "lastRoomPosition: " << '\t' << this->dungeon.lastRoomPosition.x << '\t' << this->dungeon.lastRoomPosition.y << std::endl;
 }
 
 void GameState::initPlayer()
 {
-	this->player = new Player(this->dungeon.center);
+	this->player = new Player(this->dungeon.centerPosition);
 }
 
 void GameState::initEnemies()
 {
+	//for (int i = 0; i < 100; i++)
+	//{
+	//	this->enemies.push_back(new Enemy(sf::Vector2f(
+	//		this->player->shape.getPosition().x + rand() % 4500 - 4500.f / 2.f,
+	//		this->player->shape.getPosition().y + rand() % 4500 - 4500.f / 2.f)));
+	//}
 	for (int i = 0; i < 100; i++)
 	{
 		this->enemies.push_back(new Enemy(sf::Vector2f(
-			this->player->shape.getPosition().x + rand() % 4500 - 4500.f / 2.f,
-			this->player->shape.getPosition().y + rand() % 4500 - 4500.f / 2.f)));
+			this->dungeon.lastRoomPosition.x + rand() % (int)(this->dungeon.getRoomSize().x * 0.9) - this->dungeon.getRoomSize().x * 0.9 / 2.f,
+			this->dungeon.lastRoomPosition.y + rand() % (int)(this->dungeon.getRoomSize().y * 0.9) - this->dungeon.getRoomSize().y * 0.9 / 2.f)));
 	}
 }
 
@@ -150,8 +159,8 @@ void GameState::update(const float& dt)
 	this->updateMousePositions();
 	this->updateInput(dt);
 	this->player->update(dt);
-	for (auto& enemy : this->enemies)
-		enemy->update(dt);
+	//for (auto& enemy : this->enemies)
+	//	enemy->update(dt);
 	this->cinemachine.update(dt);
 	this->minimap.update(dt);
 

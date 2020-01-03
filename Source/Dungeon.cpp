@@ -4,15 +4,17 @@ void Dungeon::initVariables()
 	for (size_t i = 0; i < 50; i++)
 		for (size_t j = 0; j < 50; j++)
 			this->floor[i][j] = NONE;
-	this->roomSize.x = 500.f;
-	this->roomSize.y = 500.f;
+	this->roomSize.x = 1000.f;
+	this->roomSize.y = 1000.f;
 	this->corridorLength = this->roomSize.x / 2.f;
-	this->corridorWidth = this->corridorLength * 0.5f;
+	this->corridorWidth = this->corridorLength / 2.f;
 	this->wallThickness = 6.f;
 
-	sf::VideoMode window_bounds = sf::VideoMode::getDesktopMode();
-	this->center.x = window_bounds.width / 2.f;
-	this->center.y = window_bounds.height / 2.f;
+	this->centerPosition.x = sf::VideoMode::getDesktopMode().width / 2.f;
+	this->centerPosition.y = sf::VideoMode::getDesktopMode().height / 2.f;
+
+	this->startRoomPosition = this->centerPosition;
+	this->lastRoomPosition = this->centerPosition;
 
 	this->floorColor.r = 31;
 	this->floorColor.g = 31;
@@ -39,83 +41,48 @@ void Dungeon::setRoomSize(sf::Vector2f room_size)
 {
 	this->roomSize = room_size;
 	this->corridorLength = this->roomSize.x / 2.f;
-	this->corridorWidth = this->corridorLength * 0.5f;
+	this->corridorWidth = this->corridorLength / 2.f;
 }
 
-void Dungeon::addStartRoom()
+void Dungeon::closeRoom(unsigned int index)
 {
-	this->rooms.push_back(sf::Vector2u(25, 25));
-	this->roomCounter++;
-}
-
-void Dungeon::addRoom(sf::Vector2u position)
-{
-	this->rooms.push_back(position);
-	this->roomCounter++;
-}
-
-void Dungeon::addBonusRoom(sf::Vector2u position)
-{
-	this->bonusRooms.push_back(position);
-	this->roomCounter++;
-}
-
-void Dungeon::addCorridorHorizontal(sf::Vector2u position)
-{
-	this->corridorsHorizontal.push_back(position);
-}
-
-void Dungeon::addCorridorVertical(sf::Vector2u position)
-{
-	this->corridorsVertical.push_back(position);
-}
-
-void Dungeon::fillFloor()
-{
-	if (!this->rooms.empty())
+	//closing room at index
+	/*int i = 0;
+	for (auto& room : this->rooms)
 	{
-		for (auto& room : this->rooms)
-			this->floor[room.x][room.y] = DEFAULT;
-
-		this->floor[this->rooms.front().x][this->rooms.front().y] = FRONT;
-		this->floor[this->rooms.back().x][this->rooms.back().y] = BACK;
-	}
-
-	if (!this->bonusRooms.empty())
-		for (auto& bonus_room : this->bonusRooms)
-			this->floor[bonus_room.x][bonus_room.y] = BONUS;
-
-	if (!this->corridorsHorizontal.empty())
-		for (auto& corridor : this->corridorsHorizontal)
-			this->floor[corridor.x][corridor.y] = CORRIDOR_HORIZONTAL;
-
-	if (!this->corridorsVertical.empty())
-		for (auto& corridor : this->corridorsVertical)
-			this->floor[corridor.x][corridor.y] = CORRIDOR_VERTICAL;
+		if (i == index)
+		{
+			//do something
+		}
+		i++;
+	}*/
 }
 
-void Dungeon::fillShapesList()
+void Dungeon::fillRoomsList()
 {
+	sf::Vector2f position;
+	sf::Vector2f size;
 	for (size_t i = 0; i < 50; i++)
 	{
 		for (size_t j = 0; j < 50; j++)
 		{
 			if (this->floor[i][j])
 			{
-				this->shapes.push_back(sf::RectangleShape(this->roomSize));
+				position.x = (this->corridorLength + this->roomSize.x) / 2.f * i - (this->corridorLength + this->roomSize.x) / 2.f * 25.f + this->centerPosition.x;
+				position.y = (this->corridorLength + this->roomSize.y) / 2.f * j - (this->corridorLength + this->roomSize.y) / 2.f * 25.f + this->centerPosition.y;
+				if (this->floor[i][j] == CORRIDOR_HORIZONTAL)
+					size = sf::Vector2f(this->corridorLength, this->corridorWidth);
+				else if (this->floor[i][j] == CORRIDOR_VERTICAL)
+					size = sf::Vector2f(this->corridorWidth, this->corridorLength);
+				else
+					size = this->roomSize;
 
 				if (this->floor[i][j] == CORRIDOR_HORIZONTAL || this->floor[i][j] == CORRIDOR_VERTICAL)
-				{
-					if (this->floor[i][j] == CORRIDOR_HORIZONTAL)
-						this->shapes.back().setSize(sf::Vector2f(this->corridorLength, this->corridorWidth));
-					else if (this->floor[i][j] == CORRIDOR_VERTICAL)
-						this->shapes.back().setSize(sf::Vector2f(this->corridorWidth, this->corridorLength));
-				}
-				this->shapes.back().setFillColor(this->floorColor);
-				this->shapes.back().setPosition(sf::Vector2f(
-					this->roomSize.x * 0.75f * i - this->roomSize.x * 0.75f * 25.f + this->center.x,
-					this->roomSize.y * 0.75f * j - this->roomSize.x * 0.75f * 25.f + this->center.y));
-				this->shapes.back().setOrigin(this->shapes.back().getSize() / 2.f);
+					this->rooms.push_back(new Corridor(position, size, this->floorColor, this->floor[i][j]));
+				else if (this->floor[i][j] == CORRIDOR_VERTICAL)
+					this->rooms.push_back(new Corridor(position, size, this->floorColor, this->floor[i][j]));
+				else
+					this->rooms.push_back(new Room(position, size, this->floorColor, this->floor[i][j]));
 			}
 		}
 	}
@@ -130,8 +97,8 @@ void Dungeon::fillWallsList()
 		{
 			if (this->floor[i][j])
 			{
-				position.x = this->roomSize.x * 0.75f * i - this->roomSize.x * 0.75f * 25.f + this->center.x;
-				position.y = this->roomSize.y * 0.75f * j - this->roomSize.y * 0.75f * 25.f + this->center.y;
+				position.x = (this->corridorLength + this->roomSize.x) / 2.f * i - (this->corridorLength + this->roomSize.x) / 2.f * 25.f + this->centerPosition.x;
+				position.y = (this->corridorLength + this->roomSize.y) / 2.f * j - (this->corridorLength + this->roomSize.y) / 2.f * 25.f + this->centerPosition.y;
 
 				//LEFT
 				if (this->floor[i][j] != CORRIDOR_HORIZONTAL)
@@ -234,7 +201,7 @@ void Dungeon::fillWallsList()
 					{
 						if (this->floor[i][j - 1] == NONE)
 						{
-							this->walls.back().setSize(sf::Vector2f(this->roomSize.y + this->wallThickness, this->wallThickness));
+							this->walls.back().setSize(sf::Vector2f(this->roomSize.x + this->wallThickness, this->wallThickness));
 							this->walls.back().setPosition(sf::Vector2f(
 								position.x,
 								position.y - this->roomSize.y / 2.f));
@@ -242,18 +209,18 @@ void Dungeon::fillWallsList()
 						}
 						else 
 						{
-							this->walls.back().setSize(sf::Vector2f((this->roomSize.y - this->corridorWidth) / 2.f + this->wallThickness, this->wallThickness));
+							this->walls.back().setSize(sf::Vector2f((this->roomSize.x - this->corridorWidth) / 2.f + this->wallThickness, this->wallThickness));
 							this->walls.back().setPosition(sf::Vector2f(
-								position.x - (this->corridorWidth / 2.f + (this->roomSize.y - this->corridorWidth) / 4.f),
-								position.y - this->roomSize.x / 2.f));
+								position.x - (this->corridorWidth / 2.f + (this->roomSize.x - this->corridorWidth) / 4.f),
+								position.y - this->roomSize.y / 2.f));
 							this->walls.back().setOrigin(this->walls.back().getSize() / 2.f);
 
 							this->walls.push_back(sf::RectangleShape());
 							this->walls.back().setFillColor(this->wallColor);
-							this->walls.back().setSize(sf::Vector2f((this->roomSize.y - this->corridorWidth) / 2.f + this->wallThickness, this->wallThickness));
+							this->walls.back().setSize(sf::Vector2f((this->roomSize.x - this->corridorWidth) / 2.f + this->wallThickness, this->wallThickness));
 							this->walls.back().setPosition(sf::Vector2f(
-								position.x + (this->corridorWidth / 2.f + (this->roomSize.y - this->corridorWidth) / 4.f),
-								position.y - this->roomSize.x / 2.f));
+								position.x + (this->corridorWidth / 2.f + (this->roomSize.x - this->corridorWidth) / 4.f),
+								position.y - this->roomSize.y / 2.f));
 							this->walls.back().setOrigin(this->walls.back().getSize() / 2.f);
 						}
 					}
@@ -276,7 +243,7 @@ void Dungeon::fillWallsList()
 					{
 						if (this->floor[i][j + 1] == NONE)
 						{
-							this->walls.back().setSize(sf::Vector2f(this->roomSize.y + this->wallThickness, this->wallThickness));
+							this->walls.back().setSize(sf::Vector2f(this->roomSize.x + this->wallThickness, this->wallThickness));
 							this->walls.back().setPosition(sf::Vector2f(
 								position.x,
 								position.y + this->roomSize.y / 2.f));
@@ -284,18 +251,18 @@ void Dungeon::fillWallsList()
 						}
 						else 
 						{
-							this->walls.back().setSize(sf::Vector2f((this->roomSize.y - this->corridorWidth) / 2.f + this->wallThickness, this->wallThickness));
+							this->walls.back().setSize(sf::Vector2f((this->roomSize.x - this->corridorWidth) / 2.f + this->wallThickness, this->wallThickness));
 							this->walls.back().setPosition(sf::Vector2f(
-								position.x - (this->corridorWidth / 2.f + (this->roomSize.y - this->corridorWidth) / 4.f),
-								position.y + this->roomSize.x / 2.f));
+								position.x - (this->corridorWidth / 2.f + (this->roomSize.x - this->corridorWidth) / 4.f),
+								position.y + this->roomSize.y / 2.f));
 							this->walls.back().setOrigin(this->walls.back().getSize() / 2.f);
 
 							this->walls.push_back(sf::RectangleShape());
 							this->walls.back().setFillColor(this->wallColor);
-							this->walls.back().setSize(sf::Vector2f((this->roomSize.y - this->corridorWidth) / 2.f + this->wallThickness, this->wallThickness));
+							this->walls.back().setSize(sf::Vector2f((this->roomSize.x - this->corridorWidth) / 2.f + this->wallThickness, this->wallThickness));
 							this->walls.back().setPosition(sf::Vector2f(
-								position.x + (this->corridorWidth / 2.f + (this->roomSize.y - this->corridorWidth) / 4.f),
-								position.y + this->roomSize.x / 2.f));
+								position.x + (this->corridorWidth / 2.f + (this->roomSize.x - this->corridorWidth) / 4.f),
+								position.y + this->roomSize.y / 2.f));
 							this->walls.back().setOrigin(this->walls.back().getSize() / 2.f);
 						}
 					}
@@ -307,7 +274,13 @@ void Dungeon::fillWallsList()
 
 void Dungeon::generate()
 {
-	this->addStartRoom();
+	//Lists the positions of rooms of each type in the array floor[][]
+	std::list<sf::Vector2u> rooms_coords;
+	std::list<sf::Vector2u> bonus_rooms_coords;
+	std::list<sf::Vector2u> horizontal_corridors_coords;
+	std::list<sf::Vector2u> vertical_corridors_coords;
+
+	rooms_coords.push_back(sf::Vector2u(25, 25));
 
 	unsigned int main_rooms_count = rand() % 2 + 4;
 	unsigned int bonus_rooms_count = rand() % 2 + 5;
@@ -328,54 +301,57 @@ void Dungeon::generate()
 			if (new_direction == LEFT)
 			{
 				new_corridor_position = sf::Vector2u(
-					this->rooms.back().x - 1,
-					this->rooms.back().y);
+					rooms_coords.back().x - 1,
+					rooms_coords.back().y);
 				new_room_position = sf::Vector2u(
-					this->rooms.back().x - 2,
-					this->rooms.back().y);
+					rooms_coords.back().x - 2,
+					rooms_coords.back().y);
 				is_horizontal = true;
 			}
 			else if (new_direction == RIGHT)
 			{
 				new_corridor_position = sf::Vector2u(
-					this->rooms.back().x + 1,
-					this->rooms.back().y);
+					rooms_coords.back().x + 1,
+					rooms_coords.back().y);
 				new_room_position = sf::Vector2u(
-					this->rooms.back().x + 2,
-					this->rooms.back().y);
+					rooms_coords.back().x + 2,
+					rooms_coords.back().y);
 				is_horizontal = true;
 			}
 			else if (new_direction == UP)
 			{
 				new_corridor_position = sf::Vector2u(
-					this->rooms.back().x,
-					this->rooms.back().y - 1);
+					rooms_coords.back().x,
+					rooms_coords.back().y - 1);
 				new_room_position = sf::Vector2u(
-					this->rooms.back().x,
-					this->rooms.back().y - 2);
+					rooms_coords.back().x,
+					rooms_coords.back().y - 2);
 				is_horizontal = false;
 			}
 			else if (new_direction == DOWN)
 			{
 				new_corridor_position = sf::Vector2u(
-					this->rooms.back().x,
-					this->rooms.back().y + 1);
+					rooms_coords.back().x,
+					rooms_coords.back().y + 1);
 				new_room_position = sf::Vector2u(
-					this->rooms.back().x,
-					this->rooms.back().y + 2);
+					rooms_coords.back().x,
+					rooms_coords.back().y + 2);
 				is_horizontal = false;
 			}
-			for (auto& room : this->rooms)
+			for (auto& room : rooms_coords)
 				if (room.x == new_room_position.x && room.y == new_room_position.y)
 					is_empty = false;
 		} while (!is_empty);
 
 		//spawning new room and corridor
-		this->addRoom(new_room_position);
+		rooms_coords.push_back(new_room_position);
 		if (is_horizontal)
-			this->addCorridorHorizontal(new_corridor_position);
+			horizontal_corridors_coords.push_back(new_corridor_position);
 		else
-			this->addCorridorVertical(new_corridor_position);
+			vertical_corridors_coords.push_back(new_corridor_position);
+
+		this->lastRoomPosition.x = (this->corridorLength + this->roomSize.x) / 2.f * new_room_position.x - (this->corridorLength + this->roomSize.x) / 2.f * 25.f + this->centerPosition.x;
+		this->lastRoomPosition.y = (this->corridorLength + this->roomSize.y) / 2.f * new_room_position.y - (this->corridorLength + this->roomSize.y) / 2.f * 25.f + this->centerPosition.y;
 
 		main_rooms_count--;
 	}
@@ -390,9 +366,9 @@ void Dungeon::generate()
 
 		//parent-room type selection
 		start_room_type = rand() % 2 ? DEFAULT : BONUS;
-		if (this->bonusRooms.size() == 0)
+		if (bonus_rooms_coords.size() == 0)
 			start_room_type = DEFAULT;
-		else if (this->bonusRooms.size() >= this->rooms.size() - 2)
+		else if (bonus_rooms_coords.size() >= rooms_coords.size() - 2)
 			start_room_type = BONUS;
 
 		bool is_empty = false;
@@ -401,14 +377,14 @@ void Dungeon::generate()
 			//random selection of the parent-room from the list
 			if (start_room_type == DEFAULT)
 			{
-				auto room = this->rooms.begin();
-				std::advance(room, rand() % (this->rooms.size() - 2) + 1);
+				auto room = rooms_coords.begin();
+				std::advance(room, rand() % (rooms_coords.size() - 2) + 1);
 				start_room = sf::Vector2u((*room).x, (*room).y);
 			}
 			else
 			{
-				auto room = this->bonusRooms.begin();
-				std::advance(room, rand() % this->bonusRooms.size());
+				auto room = bonus_rooms_coords.begin();
+				std::advance(room, rand() % bonus_rooms_coords.size());
 				start_room = sf::Vector2u((*room).x, (*room).y);
 			}
 
@@ -459,32 +435,48 @@ void Dungeon::generate()
 
 			//comparing the coordinates of each room from the lists with the new coordinates
 			//and if they coincide, then the cycle starts again
-			for (auto& room : this->rooms)
+			for (auto& room : rooms_coords)
 				if (room.x == new_room_position.x && room.y == new_room_position.y)
 					is_empty = false;
-			for (auto& room : this->bonusRooms)
+			for (auto& room : bonus_rooms_coords)
 				if (room.x == new_room_position.x && room.y == new_room_position.y)
 					is_empty = false;
 		} while (!is_empty);
 
 		//spawning new room and corridor
-		this->addBonusRoom(new_room_position);
+		bonus_rooms_coords.push_back(new_room_position);
 		if (is_horizontal)
-			this->addCorridorHorizontal(new_corridor_position);
+			horizontal_corridors_coords.push_back(new_corridor_position);
 		else
-			this->addCorridorVertical(new_corridor_position);
+			vertical_corridors_coords.push_back(new_corridor_position);
 
 		bonus_rooms_count--;
 	}
-	this->fillFloor();
-	this->fillShapesList();
+
+	//Filling the floor[][]
+	for (auto& room : rooms_coords)
+		this->floor[room.x][room.y] = DEFAULT;
+
+	this->floor[rooms_coords.front().x][rooms_coords.front().y] = FRONT;
+	this->floor[rooms_coords.back().x][rooms_coords.back().y] = BACK;
+
+	for (auto& bonus_room : bonus_rooms_coords)
+		this->floor[bonus_room.x][bonus_room.y] = BONUS;
+
+	for (auto& corridor : horizontal_corridors_coords)
+		this->floor[corridor.x][corridor.y] = CORRIDOR_HORIZONTAL;
+
+	for (auto& corridor : vertical_corridors_coords)
+		this->floor[corridor.x][corridor.y] = CORRIDOR_VERTICAL;
+
+	this->fillRoomsList();
 	this->fillWallsList();
 }
 
 void Dungeon::render(sf::RenderTarget* target)
 {
-	for (auto& shape : this->shapes)
-		target->draw(shape);
+	for (auto& room : this->rooms)
+		room->render(target);
 
 	for (auto& wall : this->walls)
 		target->draw(wall);
