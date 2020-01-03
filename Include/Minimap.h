@@ -7,7 +7,7 @@ public:
 	std::list<sf::RectangleShape> dungeon;
 	sf::CircleShape player;
 
-	Player* realPlayer;
+	Player* ptrPlayer;
 public:
 	Minimap();
 	

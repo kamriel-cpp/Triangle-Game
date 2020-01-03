@@ -132,8 +132,8 @@ void Player::update(const float& dt)
 	}
 
 	//Print all attributes in the console
-	system("cls");
-	std::cout << this->attributeComponent->debugPrint() << std::endl;
+	//system("cls");
+	//std::cout << this->attributeComponent->debugPrint() << std::endl;
 }
 
 void Player::render(sf::RenderTarget* target)
