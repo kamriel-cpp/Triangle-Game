@@ -51,8 +51,7 @@ void GameState::initCinemachine()
 {
 	this->cinemachine.setCamera(&this->mainCamera);
 	this->cinemachine.setTarget(&this->player->shape);
-	this->cinemachine.setDamping(2.5f);
-	this->cinemachine.setDeadZone(0.2f, 0.2f);
+	this->cinemachine.smoothing = 5.f;
 }
 
 void GameState::initMinimap()
