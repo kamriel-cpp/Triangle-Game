@@ -7,8 +7,10 @@ void Enemy::initMovementComponent()
 //Constructors/Destructors
 Enemy::Enemy(const sf::Vector2f& position = sf::Vector2f(0.f, 0.f), sf::Color color = sf::Color(250, 50, 50))
 {
+	this->defaultColor = color;
+	
 	this->shape.setPosition(position);
-	this->shape.setFillColor(color);
+	this->shape.setFillColor(this->defaultColor);
 	this->initMovementComponent();
 	this->intersectsWall = false;
 

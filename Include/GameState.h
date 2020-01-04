@@ -24,7 +24,6 @@ private:
 	Camera*				thirdCamera;
 	Cinemachine*		cinemachine;
 	Minimap*			minimap;
-	//Button			button;
 	sf::Font			font;
 	sf::Text			tips;
 	sf::Clock 			gameClock;
