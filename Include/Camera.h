@@ -10,6 +10,7 @@ public:
 	virtual ~Camera();
 
 	const sf::View& getView() const;
+	const sf::Vector2f& getSize() const;
 
 	void setSize(const sf::Vector2f& size);
 	void setCenter(const sf::Vector2f& center);

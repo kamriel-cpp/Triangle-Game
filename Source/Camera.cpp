@@ -16,6 +16,11 @@ const sf::View& Camera::getView() const
 	return this->view;
 }
 
+const sf::Vector2f& Camera::getSize() const
+{
+	return this->view.getSize();
+}
+
 void Camera::setSize(const sf::Vector2f& size)
 {
 	this->view.setSize(size);

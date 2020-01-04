@@ -5,7 +5,6 @@ Cinemachine::Cinemachine(Camera* camera, sf::Shape* target, sf::RenderWindow* wi
 	this->target = target;
 	this->window = window;
 	this->smoothing = 10.f;
-	std::cout << this->camera->getView().getCenter().x << ' ' << this->camera->getView().getCenter().y << std::endl;
 }
 
 Cinemachine::~Cinemachine()
@@ -29,5 +28,13 @@ void Cinemachine::update(const float& dt)
 		this->camera->move(
 			(this->window->mapPixelToCoords(sf::Mouse::getPosition(*this->window), this->camera->getView())
 			- this->camera->getView().getCenter()) * (this->smoothing * 0.25f), dt);
+
+		if (this->camera->getSize() != this->window->getDefaultView().getSize())
+		{
+			if (this->camera->getSize().x < this->window->getDefaultView().getSize().x || this->camera->getSize().y < this->window->getDefaultView().getSize().y)
+				this->camera->setSize(this->camera->getSize() * (1.f + dt * 2.f));
+			if (this->camera->getSize().x > this->window->getDefaultView().getSize().x || this->camera->getSize().y > this->window->getDefaultView().getSize().y)
+				this->camera->setSize(this->window->getDefaultView().getSize());
+		}
 	}
 }

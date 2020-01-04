@@ -17,9 +17,7 @@ void GameState::initKeybinds()
 
 void GameState::initDungeon()
 {
-	this->window->setView(this->window->getDefaultView());
 	this->dungeon.generate();
-	std::cout << this->dungeon.centerPosition.x << ' ' << this->dungeon.centerPosition.y << std::endl;
 }
 
 void GameState::initPlayer()
@@ -50,6 +48,7 @@ void GameState::initEnemies()
 void GameState::initCameras()
 {
 	this->mainCamera = new Camera(this->window);
+	this->mainCamera->zoom(0.1f);
 	this->secondCamera = new Camera(this->window);
 	this->secondCamera->setViewport(sf::FloatRect(0.f, 0.f, 0.3f, 0.3f));
 	this->secondCamera->zoom(1.f);
