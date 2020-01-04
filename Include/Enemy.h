@@ -8,7 +8,7 @@ private:
 
 	void initMovementComponent();
 public:
- 	Enemy(const sf::Vector2f& position);
+ 	Enemy(const sf::Vector2f& position, sf::Color color);
  	virtual ~Enemy();
 	
 	bool intersectsWall;

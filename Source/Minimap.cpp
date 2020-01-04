@@ -1,25 +1,21 @@
 //Constructors/Destructors
-Minimap::Minimap()
+Minimap::Minimap(Dungeon& dungeon, Player& player)
 {
-	this->roomColor.r = 86;
-	this->roomColor.g = 156;
-	this->roomColor.b = 214;
+	this->roomColor.r = 150;
+	this->roomColor.g = 150;
+	this->roomColor.b = 150;
 
-	this->corridorColor.r = 156;
-	this->corridorColor.g = 156;
-	this->corridorColor.b = 156;
+	this->corridorColor.r = 100;
+	this->corridorColor.g = 100;
+	this->corridorColor.b = 100;
 
-	this->playerColor.r = 255;
-	this->playerColor.g = 255;
-	this->playerColor.b = 255;
+	this->playerColor.r = 50;
+	this->playerColor.g = 250;
+	this->playerColor.b = 250;
 
 	this->mapFactor = 0.25f;
-	this->playerFactor = 10.f;
-}
+	this->playerFactor = 20.f;
 
-//Functions
-void Minimap::initShapes(Dungeon& dungeon, Player& player)
-{
 	for (auto& room : dungeon.rooms)
 	{
 		this->dungeon.push_back(sf::RectangleShape());
@@ -42,6 +38,7 @@ void Minimap::initShapes(Dungeon& dungeon, Player& player)
 	this->ptrPlayer = &player;
 }
 
+//Functions
 void Minimap::update(const float& dt)
 {
 	this->player.setPosition(this->ptrPlayer->shape.getPosition() * this->mapFactor);

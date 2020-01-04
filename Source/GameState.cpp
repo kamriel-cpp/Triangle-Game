@@ -17,10 +17,9 @@ void GameState::initKeybinds()
 
 void GameState::initDungeon()
 {
+	this->window->setView(this->window->getDefaultView());
 	this->dungeon.generate();
-	std::cout << "centerPosition:   " << '\t' << this->dungeon.centerPosition.x << '\t' << this->dungeon.centerPosition.y << std::endl;
-	std::cout << "startRoomPosition:" << '\t' << this->dungeon.startRoomPosition.x << '\t' << this->dungeon.startRoomPosition.y << std::endl;
-	std::cout << "lastRoomPosition: " << '\t' << this->dungeon.lastRoomPosition.x << '\t' << this->dungeon.lastRoomPosition.y << std::endl;
+	std::cout << this->dungeon.centerPosition.x << ' ' << this->dungeon.centerPosition.y << std::endl;
 }
 
 void GameState::initPlayer()
@@ -30,13 +29,17 @@ void GameState::initPlayer()
 
 void GameState::initEnemies()
 {
-	//for (int i = 0; i < 100; i++)
-	//{
-	//	this->enemies.push_back(new Enemy(sf::Vector2f(
-	//		this->player->shape.getPosition().x + rand() % 4500 - 4500.f / 2.f,
-	//		this->player->shape.getPosition().y + rand() % 4500 - 4500.f / 2.f)));
-	//}
-	for (int i = 0; i < 100; i++)
+	//Around the player
+	for (int i = 0; i < 50; i++)
+	{
+		this->enemies.push_back(new Enemy(sf::Vector2f(
+			this->dungeon.startRoomPosition.x + rand() % (int)(this->dungeon.getRoomSize().x * 0.9) - this->dungeon.getRoomSize().x * 0.9 / 2.f,
+			this->dungeon.startRoomPosition.y + rand() % (int)(this->dungeon.getRoomSize().y * 0.9) - this->dungeon.getRoomSize().y * 0.9 / 2.f),
+			sf::Color(rand() % 2 ?(rand() % 2 ? sf::Color(250, 250, 50) : sf::Color(250, 50, 50)) : (rand() % 2 ? sf::Color(50, 250, 50) : sf::Color(50, 50, 250)))));
+	}
+
+	//In the last room
+	for (int i = 0; i < 50; i++)
 	{
 		this->enemies.push_back(new Enemy(sf::Vector2f(
 			this->dungeon.lastRoomPosition.x + rand() % (int)(this->dungeon.getRoomSize().x * 0.9) - this->dungeon.getRoomSize().x * 0.9 / 2.f,
@@ -46,40 +49,37 @@ void GameState::initEnemies()
 
 void GameState::initCameras()
 {
-	this->mainCamera.setWindow(this->window);
-	this->mainCamera.setViewport(sf::FloatRect(0.f, 0.f, 1.f, 1.f));
-	this->secondCamera.setWindow(this->window);
-	this->secondCamera.setViewport(sf::FloatRect(0.f, 0.f, 0.35f, 0.35f));
-	this->secondCamera.zoom(1.35f);
-	this->thirdCamera.setWindow(this->window);
-	this->thirdCamera.setViewport(sf::FloatRect(0.75f, 0.f, 0.25f, 0.25f));
-	this->thirdCamera.zoom(10.f);
+	this->mainCamera = new Camera(this->window);
+	this->secondCamera = new Camera(this->window);
+	this->secondCamera->setViewport(sf::FloatRect(0.f, 0.f, 0.3f, 0.3f));
+	this->secondCamera->zoom(1.f);
+	this->thirdCamera = new Camera(this->window);
+	this->thirdCamera->setViewport(sf::FloatRect(0.65f, 0.f, 0.3f, 0.3f));
+	this->thirdCamera->zoom(7.5f);
 }
 
 void GameState::initCinemachine()
 {
-	this->cinemachine.setCamera(&this->mainCamera);
-	this->cinemachine.setTarget(&this->player->shape);
-	this->cinemachine.smoothing = 5.f;
+	this->cinemachine = new Cinemachine(this->mainCamera, &this->player->shape, this->window);
+	this->cinemachine->smoothing = 5.f;
 }
 
 void GameState::initMinimap()
 {
-	this->minimap.initShapes(this->dungeon, *this->player);
+	this->minimap = new Minimap(this->dungeon, *this->player);
 }
 
 void GameState::initTexts()
 {
 	this->font.loadFromFile("../Fonts/Dosis-Light.ttf");
-	this->tips.setCharacterSize(40);
+	this->tips.setCharacterSize(55);
 	this->tips.setFont(this->font);
 	this->tips.setString("Press on the W/A/S/D to control the player\nPress Q/E to zoom the camera");
-	this->tips.setFillColor(sf::Color::White);
-	this->tips.setOutlineThickness(1.f);
+	this->tips.setOutlineThickness(2.f);
 	this->tips.setOutlineColor(sf::Color::White);
-	this->tips.setPosition(sf::Vector2f(
-		this->window->getView().getSize().x / 2.f - this->tips.getGlobalBounds().width / 2.f,
-		this->window->getView().getSize().y / 2.f - this->tips.getGlobalBounds().height / 1.f));
+	this->tips.setOrigin(sf::Vector2f(
+		this->tips.getGlobalBounds().width / 2.f,
+		this->tips.getGlobalBounds().height / 2.f));
 }
 
 //Constructors/Destructors
@@ -102,6 +102,16 @@ GameState::~GameState()
 {
 	this->player = nullptr;
 	delete this->player;
+	this->mainCamera = nullptr;
+	delete this->mainCamera;
+	this->secondCamera = nullptr;
+	delete this->secondCamera;
+	this->thirdCamera = nullptr;
+	delete this->thirdCamera;
+	this->cinemachine = nullptr;
+	delete this->cinemachine;
+	this->minimap = nullptr;
+	delete this->minimap;
 	while (!this->enemies.empty())
 	{
 	    delete this->enemies.back();
@@ -127,7 +137,7 @@ void GameState::updateInput(const float& dt)
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key(this->keybinds.at("MOVE_DOWN"))))
 		this->player->move(0.f, 1.f, dt);
 
-	//DEBUG FEATURE
+	//DEBUG FEATURES
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Z))
 		this->player->loseEXP(rand() % 100);
 	else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::X))
@@ -137,20 +147,22 @@ void GameState::updateInput(const float& dt)
 	else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::V))
 		this->player->gainHP(rand() % 100);
 
-	//Arrows to control the camera
-	//Q/E to zoom
+	//DEBUG FEATURES
+	//Arrows to control the camera, Q/E to zoom
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Left))
-		this->mainCamera.move(-1000.f, 0.f, dt);
+		this->mainCamera->move(-1000.f, 0.f, dt);
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Right))
-		this->mainCamera.move(1000.f, 0.f, dt);
+		this->mainCamera->move(1000.f, 0.f, dt);
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Up))
-		this->mainCamera.move(0.f, -1000.f, dt);
+		this->mainCamera->move(0.f, -1000.f, dt);
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Down))
-		this->mainCamera.move(0.f, 1000.f, dt);
-	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Q))
-		this->mainCamera.zoom(1.01f);
+		this->mainCamera->move(0.f, 1000.f, dt);
+	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Q) && sf::Keyboard::isKeyPressed(sf::Keyboard::Key::E))
+		this->mainCamera->setSize(this->window->getDefaultView().getSize());
+	else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Q))
+		this->mainCamera->zoom(1.01f);
 	else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::E))
-		this->mainCamera.zoom(0.99f);
+		this->mainCamera->zoom(0.99f);
 }
 
 void GameState::update(const float& dt)
@@ -161,11 +173,11 @@ void GameState::update(const float& dt)
 	this->player->update(dt);
 	//for (auto& enemy : this->enemies)
 	//	enemy->update(dt);
-	this->cinemachine.update(dt);
-	this->minimap.update(dt);
+	this->cinemachine->update(dt);
+	this->minimap->update(dt);
 
 	//Players mouse tracking
-	sf::Vector2f look_dir(this->window->mapPixelToCoords(sf::Mouse::getPosition(*this->window), this->mainCamera.getView())
+	sf::Vector2f look_dir(this->window->mapPixelToCoords(sf::Mouse::getPosition(*this->window), this->mainCamera->getView())
 		- this->player->shape.getPosition());
 	float angle = atan2(look_dir.y, look_dir.x) * (180.f / 3.14159265358979323846f) + 90.f;
 	this->player->shape.setRotation(angle);
@@ -295,19 +307,19 @@ void GameState::render(sf::RenderTarget* target)
 		target = this->window;
 
 	//Main view
-	this->window->setView(this->mainCamera.getView());
+	this->window->setView(this->mainCamera->getView());
 	this->dungeon.render(target);
 	for (auto& enemy : this->enemies)
 		enemy->render(target);
 	this->player->render(target);
 
 	//Tips
-	this->window->setView(this->secondCamera.getView());
+	this->window->setView(this->secondCamera->getView());
 	target->draw(this->tips);
 
 	//Minimap
-	this->window->setView(this->thirdCamera.getView());
-	this->minimap.render(target);
+	this->window->setView(this->thirdCamera->getView());
+	this->minimap->render(target);
 
 	//Set window view to default
 	this->window->setView(this->window->getDefaultView());

@@ -15,7 +15,8 @@ Triangle::Triangle()
 	this->shape.setRadius(this->defaultRadius);
 	this->shape.setOrigin(this->defaultOrigin);
 	this->shape.setScale(this->defaultScale);
-	this->shape.setPointCount(this->defaultPointCount);}
+	this->shape.setPointCount(this->defaultPointCount);
+}
 
 //Functions
 void Triangle::update(const float& dt)

@@ -1,35 +1,19 @@
 //Constructors/Destructors
-Camera::Camera()
+Camera::Camera(sf::RenderWindow* window)
 {
-	sf::VideoMode window_bounds = sf::VideoMode::getDesktopMode();
-	this->view.setCenter(sf::Vector2f(
-		window_bounds.width / 2.f,
-		window_bounds.height / 2.f));
-	this->view.setSize(sf::Vector2f(
-		window_bounds.width / 2.f,
-		window_bounds.height / 2.f));
+	this->view = window->getDefaultView();
+	this->view.setCenter(sf::Vector2f(0.f, 0.f));
 }
 
 Camera::~Camera()
 {
-	this->window = nullptr;
-	delete this->window;
+
 }
 
 //Functions
 const sf::View& Camera::getView() const
 {
 	return this->view;
-}
-
-const sf::RenderWindow* Camera::getWindow() const
-{
-	return this->window;
-}
-
-void Camera::setWindow(sf::RenderWindow* window)
-{
-	this->window = window;
 }
 
 void Camera::setSize(const sf::Vector2f& size)

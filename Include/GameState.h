@@ -5,7 +5,6 @@
 #include <Include/MovementComponent.h>
 #include <Include/AttributeComponent.h>
 #include <Include/Room.h>
-#include <Include/Corridor.h>
 #include <Include/Dungeon.h>
 #include <Include/Triangle.h>
 #include <Include/Player.h>
@@ -20,11 +19,11 @@ private:
 	Player*				player;
 	std::list<Enemy*>	enemies;
 	Dungeon				dungeon;
-	Camera				mainCamera;
-	Camera				secondCamera;
-	Camera				thirdCamera;
-	Cinemachine			cinemachine;
-	Minimap				minimap;
+	Camera*				mainCamera;
+	Camera*				secondCamera;
+	Camera*				thirdCamera;
+	Cinemachine*		cinemachine;
+	Minimap*			minimap;
 	//Button			button;
 	sf::Font			font;
 	sf::Text			tips;

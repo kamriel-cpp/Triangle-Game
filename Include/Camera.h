@@ -4,16 +4,13 @@
 class Camera
 {
 private:
-	sf::RenderWindow* window;
 	sf::View view;
 public:
-	Camera();
+	Camera(sf::RenderWindow* window = nullptr);
 	virtual ~Camera();
 
 	const sf::View& getView() const;
-	const sf::RenderWindow* getWindow() const;
 
-	void setWindow(sf::RenderWindow* window);
 	void setSize(const sf::Vector2f& size);
 	void setCenter(const sf::Vector2f& center);
 	void setViewport(const sf::FloatRect& viewport);

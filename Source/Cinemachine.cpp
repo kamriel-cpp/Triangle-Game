@@ -1,30 +1,24 @@
 //Constructors/Destructors
-Cinemachine::Cinemachine()
+Cinemachine::Cinemachine(Camera* camera, sf::Shape* target, sf::RenderWindow* window)
 {
-	this->camera = nullptr;
-	this->target = nullptr;
+	this->camera = camera;
+	this->target = target;
+	this->window = window;
 	this->smoothing = 10.f;
+	std::cout << this->camera->getView().getCenter().x << ' ' << this->camera->getView().getCenter().y << std::endl;
 }
 
 Cinemachine::~Cinemachine()
 {
 	this->camera = nullptr;
 	this->target = nullptr;
+	this->window = nullptr;
 	delete this->camera;
 	delete this->target;
+	delete this->window;
 }
 
 //Functions
-void Cinemachine::setCamera (Camera* camera)
-{
-	this->camera = camera;
-}
-
-void Cinemachine::setTarget (sf::Shape* target)
-{
-	this->target = target;
-}
-
 void Cinemachine::update(const float& dt)
 {
 	if (this->camera != nullptr && this->target != nullptr)
@@ -33,7 +27,7 @@ void Cinemachine::update(const float& dt)
 			this->camera->move((this->target->getPosition() - this->camera->getView().getCenter()) * this->smoothing, dt);
 
 		this->camera->move(
-			(this->camera->getWindow()->mapPixelToCoords(sf::Mouse::getPosition(*this->camera->getWindow()), this->camera->getView())
+			(this->window->mapPixelToCoords(sf::Mouse::getPosition(*this->window), this->camera->getView())
 			- this->camera->getView().getCenter()) * (this->smoothing * 0.25f), dt);
 	}
 }

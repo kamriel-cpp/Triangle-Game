@@ -9,7 +9,7 @@ public:
 
 	Player* ptrPlayer;
 public:
-	Minimap();
+	Minimap(Dungeon& dungeon, Player& player);
 	
 	float mapFactor;
 	float playerFactor;
@@ -17,10 +17,8 @@ public:
 	sf::Color corridorColor;
 	sf::Color playerColor;
 	
-	void initShapes(Dungeon& dungeon, Player& player);
-	
 	void update(const float& dt);
-	void render(sf::RenderTarget* target = NULL);
+	void render(sf::RenderTarget* target = nullptr);
 };
 
 #include <Source/Minimap.cpp>

@@ -18,8 +18,7 @@
 #include <SFML/Audio.hpp>
 
 //I'm not really sure where this part should be...
-//maybe I'll put it in a separate header because I'm going
-//to use this enumeration in the MovementComponent
-enum RoomSpecification { NONE, FRONT, BACK, DEFAULT, BONUS, CORRIDOR_HORIZONTAL, CORRIDOR_VERTICAL };
+//maybe I'll put it in a separate header
+enum RoomTags { NONE, FRONT, BACK, MAIN, SECONDARY, CORRIDOR_HORIZONTAL, CORRIDOR_VERTICAL };
 enum Direction { LEFT, RIGHT, UP, DOWN };
 enum MovementStates { IDLE, MOVING, MOVING_LEFT, MOVING_RIGHT, MOVING_UP, MOVING_DOWN };

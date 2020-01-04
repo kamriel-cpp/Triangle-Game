@@ -37,7 +37,7 @@ public:
 
 	void generate();
 
-	void render(sf::RenderTarget* target = NULL);
+	void render(sf::RenderTarget* target = nullptr);
 };
 
 #include <Source/Dungeon.cpp>

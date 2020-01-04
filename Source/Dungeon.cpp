@@ -10,9 +10,7 @@ void Dungeon::initVariables()
 	this->corridorWidth = this->corridorLength / 2.f;
 	this->wallThickness = 6.f;
 
-	this->centerPosition.x = sf::VideoMode::getDesktopMode().width / 2.f;
-	this->centerPosition.y = sf::VideoMode::getDesktopMode().height / 2.f;
-
+	this->centerPosition = sf::Vector2f(0.f, 0.f);
 	this->startRoomPosition = this->centerPosition;
 	this->lastRoomPosition = this->centerPosition;
 
@@ -78,11 +76,13 @@ void Dungeon::fillRoomsList()
 					size = this->roomSize;
 
 				if (this->floor[i][j] == CORRIDOR_HORIZONTAL || this->floor[i][j] == CORRIDOR_VERTICAL)
-					this->rooms.push_back(new Corridor(position, size, this->floorColor, this->floor[i][j]));
+					this->rooms.push_back(new Room(position, size, this->floorColor, this->floor[i][j]));
 				else if (this->floor[i][j] == CORRIDOR_VERTICAL)
-					this->rooms.push_back(new Corridor(position, size, this->floorColor, this->floor[i][j]));
+					this->rooms.push_back(new Room(position, size, this->floorColor, this->floor[i][j]));
 				else
 					this->rooms.push_back(new Room(position, size, this->floorColor, this->floor[i][j]));
+				this->rooms.back()->floorCoord = sf::Vector2u(i, j);
+				this->rooms.back()->index = this->rooms.size() - 1;
 			}
 		}
 	}
@@ -274,194 +274,169 @@ void Dungeon::fillWallsList()
 
 void Dungeon::generate()
 {
-	//Lists the positions of rooms of each type in the array floor[][]
+	//Lists the coordinates of rooms of each tag in the array floor[][]
 	std::list<sf::Vector2u> rooms_coords;
-	std::list<sf::Vector2u> bonus_rooms_coords;
+	std::list<sf::Vector2u> secondary_rooms_coords;
 	std::list<sf::Vector2u> horizontal_corridors_coords;
 	std::list<sf::Vector2u> vertical_corridors_coords;
 
+	//creating a start room
 	rooms_coords.push_back(sf::Vector2u(25, 25));
 
 	unsigned int main_rooms_count = rand() % 2 + 4;
-	unsigned int bonus_rooms_count = rand() % 2 + 5;
+	unsigned int secondary_rooms_count = rand() % 2 + 5;
 	unsigned int new_direction = 4;
+	sf::Vector2u room_coords(25, 25);
+	sf::Vector2u corridor_coords;
+	bool is_horizontal;
+	bool is_empty;
 
 	while (main_rooms_count)
 	{
-		sf::Vector2u new_room_position(25, 25);
-		sf::Vector2u new_corridor_position;
-		bool is_horizontal;
-
-		bool is_empty = false;
+		is_empty = false;
 		do
 		{
-			//random direction to spawn a new room
+			//random direction for creating future room
 			is_empty = true;
 			new_direction = rand() % 4;
 			if (new_direction == LEFT)
 			{
-				new_corridor_position = sf::Vector2u(
-					rooms_coords.back().x - 1,
-					rooms_coords.back().y);
-				new_room_position = sf::Vector2u(
-					rooms_coords.back().x - 2,
-					rooms_coords.back().y);
+				corridor_coords = room_coords = rooms_coords.back();
+				corridor_coords.x -= 1;
+				room_coords.x -= 2;
 				is_horizontal = true;
 			}
 			else if (new_direction == RIGHT)
 			{
-				new_corridor_position = sf::Vector2u(
-					rooms_coords.back().x + 1,
-					rooms_coords.back().y);
-				new_room_position = sf::Vector2u(
-					rooms_coords.back().x + 2,
-					rooms_coords.back().y);
+				corridor_coords = room_coords = rooms_coords.back();
+				corridor_coords.x += 1;
+				room_coords.x += 2;
 				is_horizontal = true;
 			}
 			else if (new_direction == UP)
 			{
-				new_corridor_position = sf::Vector2u(
-					rooms_coords.back().x,
-					rooms_coords.back().y - 1);
-				new_room_position = sf::Vector2u(
-					rooms_coords.back().x,
-					rooms_coords.back().y - 2);
+				corridor_coords = room_coords = rooms_coords.back();
+				corridor_coords.y -= 1;
+				room_coords.y -= 2;
 				is_horizontal = false;
 			}
 			else if (new_direction == DOWN)
 			{
-				new_corridor_position = sf::Vector2u(
-					rooms_coords.back().x,
-					rooms_coords.back().y + 1);
-				new_room_position = sf::Vector2u(
-					rooms_coords.back().x,
-					rooms_coords.back().y + 2);
+				corridor_coords = room_coords = rooms_coords.back();
+				corridor_coords.y += 1;
+				room_coords.y += 2;
 				is_horizontal = false;
 			}
 			for (auto& room : rooms_coords)
-				if (room.x == new_room_position.x && room.y == new_room_position.y)
+				if (room.x == room_coords.x && room.y == room_coords.y)
 					is_empty = false;
 		} while (!is_empty);
 
-		//spawning new room and corridor
-		rooms_coords.push_back(new_room_position);
+		//recording new rooms and corridors coordinates
+		rooms_coords.push_back(room_coords);
 		if (is_horizontal)
-			horizontal_corridors_coords.push_back(new_corridor_position);
+			horizontal_corridors_coords.push_back(corridor_coords);
 		else
-			vertical_corridors_coords.push_back(new_corridor_position);
+			vertical_corridors_coords.push_back(corridor_coords);
 
-		this->lastRoomPosition.x = (this->corridorLength + this->roomSize.x) / 2.f * new_room_position.x - (this->corridorLength + this->roomSize.x) / 2.f * 25.f + this->centerPosition.x;
-		this->lastRoomPosition.y = (this->corridorLength + this->roomSize.y) / 2.f * new_room_position.y - (this->corridorLength + this->roomSize.y) / 2.f * 25.f + this->centerPosition.y;
+		this->lastRoomPosition.x = (this->corridorLength + this->roomSize.x) / 2.f * room_coords.x - (this->corridorLength + this->roomSize.x) / 2.f * 25.f + this->centerPosition.x;
+		this->lastRoomPosition.y = (this->corridorLength + this->roomSize.y) / 2.f * room_coords.y - (this->corridorLength + this->roomSize.y) / 2.f * 25.f + this->centerPosition.y;
 
 		main_rooms_count--;
 	}
 
-	while (bonus_rooms_count)
+	while (secondary_rooms_count)
 	{
-		sf::Vector2u new_room_position(25, 25);
-		sf::Vector2u new_corridor_position;
-		sf::Vector2u start_room;
-		unsigned int start_room_type;
-		bool is_horizontal;
+		room_coords = sf::Vector2u(25, 25);
+		sf::Vector2u selected_room_coords;
+		unsigned int selected_room_tag;
 
-		//parent-room type selection
-		start_room_type = rand() % 2 ? DEFAULT : BONUS;
-		if (bonus_rooms_coords.size() == 0)
-			start_room_type = DEFAULT;
-		else if (bonus_rooms_coords.size() >= rooms_coords.size() - 2)
-			start_room_type = BONUS;
+		//random selection type of the room
+		selected_room_tag = rand() % 2 ? MAIN : SECONDARY;
+		if (secondary_rooms_coords.size() == 0)
+			selected_room_tag = MAIN;
+		else if (secondary_rooms_coords.size() >= rooms_coords.size() - 2)
+			selected_room_tag = SECONDARY;
 
-		bool is_empty = false;
+		is_empty = false;
 		do
 		{
-			//random selection of the parent-room from the list
-			if (start_room_type == DEFAULT)
+			//random selection room from the list
+			if (selected_room_tag == MAIN)
 			{
 				auto room = rooms_coords.begin();
 				std::advance(room, rand() % (rooms_coords.size() - 2) + 1);
-				start_room = sf::Vector2u((*room).x, (*room).y);
+				selected_room_coords = sf::Vector2u((*room).x, (*room).y);
 			}
 			else
 			{
-				auto room = bonus_rooms_coords.begin();
-				std::advance(room, rand() % bonus_rooms_coords.size());
-				start_room = sf::Vector2u((*room).x, (*room).y);
+				auto room = secondary_rooms_coords.begin();
+				std::advance(room, rand() % secondary_rooms_coords.size());
+				selected_room_coords = sf::Vector2u((*room).x, (*room).y);
 			}
 
-			//random selection of the direction for spawning the parent room
-			//and recording the received coordinates in new_room_position
+			//random selection of the direction for creating the future room
+			//and recording the received coordinates in room_coords
 			is_empty = true;
 			new_direction = rand() % 4;
 			if (new_direction == LEFT)
 			{
-				new_corridor_position = sf::Vector2u(
-					start_room.x - 1,
-					start_room.y);
-				new_room_position = sf::Vector2u(
-					start_room.x - 2,
-					start_room.y);
+				corridor_coords = room_coords = selected_room_coords;
+				corridor_coords.x -= 1;
+				room_coords.x -= 2;
 				is_horizontal = true;
 			}
 			else if (new_direction == RIGHT)
 			{
-				new_corridor_position = sf::Vector2u(
-					start_room.x + 1,
-					start_room.y);
-				new_room_position = sf::Vector2u(
-					start_room.x + 2,
-					start_room.y);
+				corridor_coords = room_coords = selected_room_coords;
+				corridor_coords.x += 1;
+				room_coords.x += 2;
 				is_horizontal = true;
 			}
 			else if (new_direction == UP)
 			{
-				new_corridor_position = sf::Vector2u(
-					start_room.x,
-					start_room.y - 1);
-				new_room_position = sf::Vector2u(
-					start_room.x,
-					start_room.y - 2);
+				corridor_coords = room_coords = selected_room_coords;
+				corridor_coords.y -= 1;
+				room_coords.y -= 2;
 				is_horizontal = false;
 			}
 			else if (new_direction == DOWN)
 			{
-				new_corridor_position = sf::Vector2u(
-					start_room.x,
-					start_room.y + 1);
-				new_room_position = sf::Vector2u(
-					start_room.x,
-					start_room.y + 2);
+				corridor_coords = room_coords = selected_room_coords;
+				corridor_coords.y += 1;
+				room_coords.y += 2;
 				is_horizontal = false;
 			}
 
 			//comparing the coordinates of each room from the lists with the new coordinates
 			//and if they coincide, then the cycle starts again
 			for (auto& room : rooms_coords)
-				if (room.x == new_room_position.x && room.y == new_room_position.y)
+				if (room.x == room_coords.x && room.y == room_coords.y)
 					is_empty = false;
-			for (auto& room : bonus_rooms_coords)
-				if (room.x == new_room_position.x && room.y == new_room_position.y)
+			for (auto& room : secondary_rooms_coords)
+				if (room.x == room_coords.x && room.y == room_coords.y)
 					is_empty = false;
 		} while (!is_empty);
 
-		//spawning new room and corridor
-		bonus_rooms_coords.push_back(new_room_position);
+		//recording new rooms and corridors coordinates
+		secondary_rooms_coords.push_back(room_coords);
 		if (is_horizontal)
-			horizontal_corridors_coords.push_back(new_corridor_position);
+			horizontal_corridors_coords.push_back(corridor_coords);
 		else
-			vertical_corridors_coords.push_back(new_corridor_position);
+			vertical_corridors_coords.push_back(corridor_coords);
 
-		bonus_rooms_count--;
+		secondary_rooms_count--;
 	}
 
 	//Filling the floor[][]
 	for (auto& room : rooms_coords)
-		this->floor[room.x][room.y] = DEFAULT;
+		this->floor[room.x][room.y] = MAIN;
 
 	this->floor[rooms_coords.front().x][rooms_coords.front().y] = FRONT;
 	this->floor[rooms_coords.back().x][rooms_coords.back().y] = BACK;
 
-	for (auto& bonus_room : bonus_rooms_coords)
-		this->floor[bonus_room.x][bonus_room.y] = BONUS;
+	for (auto& secondary_room : secondary_rooms_coords)
+		this->floor[secondary_room.x][secondary_room.y] = SECONDARY;
 
 	for (auto& corridor : horizontal_corridors_coords)
 		this->floor[corridor.x][corridor.y] = CORRIDOR_HORIZONTAL;
@@ -471,6 +446,25 @@ void Dungeon::generate()
 
 	this->fillRoomsList();
 	this->fillWallsList();
+
+	//DEBUG FEATURE
+	/*for (auto& room : this->rooms)
+	{
+		std::cout << room->centerPosition.x << ' ' << room->centerPosition.y << ' ';
+		if (room->tag == FRONT)
+			std::cout << "FRONT";
+		else if (room->tag == BACK)
+			std::cout << "BACK";
+		else if (room->tag == MAIN)
+			std::cout << "MAIN";
+		else if (room->tag == SECONDARY)
+			std::cout << "SECONDARY";
+		else if (room->tag == CORRIDOR_HORIZONTAL)
+			std::cout << "CORRIDOR_HORIZONTAL";
+		else if (room->tag == CORRIDOR_VERTICAL)
+			std::cout << "CORRIDOR_VERTICAL";
+		std::cout << std::endl;
+	}*/
 }
 
 void Dungeon::render(sf::RenderTarget* target)
