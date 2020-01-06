@@ -11,6 +11,7 @@ public:
 
 	const sf::View& getView() const;
 	const sf::Vector2f& getSize() const;
+	const sf::Vector2f& getCenter() const;
 
 	void setSize(const sf::Vector2f& size);
 	void setCenter(const sf::Vector2f& center);
