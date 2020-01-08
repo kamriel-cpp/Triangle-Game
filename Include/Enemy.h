@@ -4,15 +4,11 @@
 class Enemy : public Triangle
 {
 private:
-	MovementComponent* movementComponent;
-
-	void initMovementComponent();
+	void initVariables();
+	void initComponents();
 public:
  	Enemy(const sf::Vector2f& position, sf::Color color);
  	virtual ~Enemy();
-	
-	bool intersectsWall;
-	std::list<sf::RectangleShape> wallCheckers;
 
 	void move(float dir_x, float dir_y, const float& dt);
 	void move(float offsetX, float offsetY);
@@ -20,8 +16,8 @@ public:
 	void resetVelocityX();
 	void resetVelocityY();
 
-	void update(const float& dt);
-	void render(sf::RenderTarget* target = NULL);
+	void update(const float& dt, const sf::Vector2f& target_position) override;
+	void render(sf::RenderTarget* target = NULL) override;
 };
 
 #include <Source/Enemy.cpp>

@@ -20,23 +20,14 @@ MovementComponent::~MovementComponent()
 }
 
 //Functions
-void MovementComponent::initVariables(sf::Shape* shape,
-	float maxVelocity, float acceleration, float deceleration)
+const sf::Vector2f& MovementComponent::getVelocity() const
 {
-	this->shape = shape;
-	this->maxVelocity = maxVelocity;
-	this->acceleration = acceleration;
-	this->deceleration = deceleration;
+	return this->velocity;
 }
 
 const float& MovementComponent::getMaxVelocity() const
 {
 	return this->maxVelocity;
-}
-
-const sf::Vector2f& MovementComponent::getVelocity() const
-{
-	return this->velocity;
 }
 
 const bool MovementComponent::getState(const unsigned char state) const
@@ -63,6 +54,11 @@ const bool MovementComponent::getState(const unsigned char state) const
 	    break;
 	}
 	return false;
+}
+
+void MovementComponent::setMaxVelocity(float max_velocity)
+{
+	this->maxVelocity = max_velocity;
 }
 
 void MovementComponent::resetVelocityX()

@@ -14,6 +14,19 @@ State::~State()
 }
 
 //Functions
+void State::updateMousePositions(const sf::View* view)
+{
+	this->mousePosScreen = sf::Mouse::getPosition();
+	this->mousePosWindow = sf::Mouse::getPosition(*this->window);
+
+	if (view)
+		this->window->setView(*view);
+
+	this->mousePosView = this->window->mapPixelToCoords(sf::Mouse::getPosition(*this->window));
+	
+	this->window->setView(this->window->getDefaultView());
+}
+
 const bool& State::getQuit() const
 {
 	return this->quit;
@@ -22,16 +35,4 @@ const bool& State::getQuit() const
 void State::endState()
 {
 	this->quit = true;
-}
-
-void State::updateMousePositions()
-{
-	this->mousePosScreen = sf::Mouse::getPosition();
-	this->mousePosWindow = sf::Mouse::getPosition(*this->window);
-	this->mousePosView = this->window->mapPixelToCoords(sf::Mouse::getPosition(*this->window));
-}
-
-void State::showMousePosition()
-{
-	std::cout << "(" << this->mousePosView.x << "," << this->mousePosView.y << ")" << std::endl;
 }

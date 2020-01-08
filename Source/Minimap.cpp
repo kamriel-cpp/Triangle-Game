@@ -1,5 +1,5 @@
 //Constructors/Destructors
-Minimap::Minimap(Dungeon& dungeon, Player& player)
+Minimap::Minimap(Floor& floor, Player& player, const sf::RenderWindow* window)
 {
 	this->roomColor.r = 150;
 	this->roomColor.g = 150;
@@ -13,24 +13,28 @@ Minimap::Minimap(Dungeon& dungeon, Player& player)
 	this->playerColor.g = 250;
 	this->playerColor.b = 250;
 
-	this->mapFactor = 0.25f;
+	this->mapFactor = 0.01f;
 	this->playerFactor = 20.f;
 
-	for (auto& room : dungeon.rooms)
+	this->windowOffset = sf::Vector2f(window->getDefaultView().getSize().x * 0.3f, -window->getDefaultView().getSize().y * 0.35f);
+	this->floorOffset = floor.centerPosition;
+
+	for (auto& room : floor.rooms)
 	{
-		this->dungeon.push_back(sf::RectangleShape());
-		this->dungeon.back().setSize(room->shape.getSize() * this->mapFactor);
-		this->dungeon.back().setOrigin(this->dungeon.back().getSize() / 2.f);
-		this->dungeon.back().setPosition(room->shape.getPosition() * this->mapFactor);
-		if (room->shape.getSize() == dungeon.getRoomSize())
-			this->dungeon.back().setFillColor(this->roomColor);
+		this->floor.push_back(sf::RectangleShape());
+		this->floor.back().setSize(room->shape.getSize() * this->mapFactor);
+		this->floor.back().setOrigin(this->floor.back().getSize() / 2.f);
+		this->floor.back().setPosition((room->shape.getPosition() - this->floorOffset) * this->mapFactor + this->windowOffset);
+		if (room->shape.getSize() == floor.getRoomSize())
+			this->floor.back().setFillColor(this->roomColor);
 		else
-			this->dungeon.back().setFillColor(this->corridorColor);
+			this->floor.back().setFillColor(this->corridorColor);
 	}
+
 	this->player.setPointCount(player.shape.getPointCount());
 	this->player.setRadius(player.shape.getRadius() * this->playerFactor * this->mapFactor);
 	this->player.setOrigin(sf::Vector2f(this->player.getRadius(), this->player.getRadius()));
-	this->player.setPosition(player.shape.getPosition() * this->mapFactor);
+	this->player.setPosition((player.shape.getPosition() - this->floorOffset) * this->mapFactor + this->windowOffset);
 	this->player.setRotation(player.shape.getRotation());
 	this->player.setFillColor(this->playerColor);
 	this->player.setScale(sf::Vector2f(0.75f, 1.f));
@@ -41,13 +45,13 @@ Minimap::Minimap(Dungeon& dungeon, Player& player)
 //Functions
 void Minimap::update(const float& dt)
 {
-	this->player.setPosition(this->ptrPlayer->shape.getPosition() * this->mapFactor);
+	this->player.setPosition((this->ptrPlayer->shape.getPosition() - this->floorOffset) * this->mapFactor + this->windowOffset);
 	this->player.setRotation(this->ptrPlayer->shape.getRotation());
 }
 
 void Minimap::render(sf::RenderTarget* target)
 {
-	for (auto& shape : this->dungeon)
+	for (auto& shape : this->floor)
 		target->draw(shape);
 	target->draw(this->player);
 }

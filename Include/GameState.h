@@ -5,43 +5,53 @@
 #include <Include/MovementComponent.h>
 #include <Include/AttributeComponent.h>
 #include <Include/Room.h>
-#include <Include/Dungeon.h>
+#include <Include/Floor.h>
 #include <Include/Triangle.h>
 #include <Include/Player.h>
 #include <Include/Enemy.h>
 #include <Include/Camera.h>
 #include <Include/Cinemachine.h>
 #include <Include/Minimap.h>
+#include <Include/FPSCounter.h>
+#include <Include/WaveSpawner.h>
 
 class GameState : public State
 {
 private:
-	Player*				player;
-	std::list<Enemy*>	enemies;
-	Dungeon				dungeon;
-	Camera*				mainCamera;
-	Camera*				secondCamera;
-	Camera*				thirdCamera;
-	Cinemachine*		cinemachine;
-	Minimap*			minimap;
-	sf::Font			font;
-	sf::Text			tips;
-	sf::Clock 			gameClock;
+	sf::Font				font;
+	std::list<sf::Text*>	texts;
+	Floor					floor;
+	sf::Text*				floorText;
+	Player*					player;
+	std::list<Enemy*>		enemies;
+	Camera*					mainCamera;
+	Camera*					uiCamera;
+	Cinemachine*			cinemachine;
+	Minimap*				minimap;
+	sf::Clock 				gameClock;
+	FPSCounter*				fpscounter;
+	WaveSpawner*			waveSpawner;
+
+	bool wasPressedLeft;
+	bool wasPressedRight;
 
 	void initKeybinds();
+	void initTexts();
+	void initFloor();
 	void initPlayer();
 	void initEnemies();
-	void initDungeon();
 	void initCameras();
 	void initCinemachine();
 	void initMinimap();
-	void initTexts();
+	void initFPSCounter();
+	void initWaveSpawner();
 public:
 	GameState(sf::RenderWindow* window, std::map<std::string,
 		int>* supportedKeys, std::stack<State*>* states);
 	virtual ~GameState();
 
 	void updateInput(const float& dt) override;
+	void updatePlayerInput(const float& dt);
 	void update(const float& dt) override;
 	void render(sf::RenderTarget* target = nullptr) override;
 };

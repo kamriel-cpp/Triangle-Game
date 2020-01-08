@@ -15,11 +15,11 @@ public:
 		float maxVelocity, float accelererion, float deceleration);
 	virtual ~MovementComponent();
 
-	void initVariables(sf::Shape* shape,
-		float maxVelocity, float accelererion, float deceleration);
-	const float& getMaxVelocity() const;
 	const sf::Vector2f& getVelocity() const;
+	const float& getMaxVelocity() const;
 	const bool getState(const unsigned char state) const;
+
+	void setMaxVelocity(float max_velocity);
 	void resetVelocityX();
 	void resetVelocityY();
 

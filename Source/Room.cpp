@@ -13,6 +13,7 @@ Room::Room(const sf::Vector2f& position, const sf::Vector2f& size, const sf::Col
 	this->downSidePosition = sf::Vector2f(position.x, position.y + size.y / 2.f);
 
 	this->tag = tag;
+	this->is_active = true;
 }
 
 //Functions

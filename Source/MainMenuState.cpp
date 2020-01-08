@@ -73,7 +73,9 @@ MainMenuState::MainMenuState(sf::RenderWindow* window,std::map<std::string,
 	int>* supportedKeys, std::stack<State*>* states)
 	:	State(window, supportedKeys, states)
 {
-	std::cout << "Starting MainMenuState!" << std::endl;
+	if (debugMode)
+		if (debugConsoleOutput)
+			std::cout << "Starting MainMenuState!" << std::endl;
 
 	this->initVariables();
 	this->initBackground();
@@ -88,7 +90,9 @@ MainMenuState::~MainMenuState()
 	{
 		delete it->second;
 	}
-	std::cout << "Ending MainMenuState!" << std::endl;
+	if (debugMode)
+		if (debugConsoleOutput)
+			std::cout << "Ending MainMenuState!" << std::endl;
 }
 
 //Functions
@@ -105,7 +109,10 @@ void MainMenuState::updateInput(const float& dt)
 
 void MainMenuState::updateButtons()
 {
-	/*Updates all the buttons in the state and handles their functionality*/
+	//Update mouse position
+	this->updateMousePositions();
+
+	//Updates all the buttons in the state and handles their functionality
 	for (auto &it : this->buttons)
 	{
 		it.second->update(this->mousePosView);
@@ -128,7 +135,6 @@ void MainMenuState::updateButtons()
 
 void MainMenuState::update(const float& dt)
 {
-	this->updateMousePositions();
 	this->updateInput(dt);
 	this->updateButtons();
 }
@@ -146,14 +152,4 @@ void MainMenuState::render(sf::RenderTarget* target)
 		target = this->window;
 	target->draw(this->background);
 	this->renderButtons(target);
-
-	/*//REMOVE LATER
-	sf::Text mouseText;
-	mouseText.setPosition(this->mousePosView.x, this->mousePosView.y - 50);
-	mouseText.setFont(this->font);
-	mouseText.setCharacterSize(18);
-	std::stringstream ss;
-	ss << this->mousePosView.x << " " << this->mousePosView.y;
-	mouseText.setString(ss.str());
-	target->draw(mouseText);*/
 }

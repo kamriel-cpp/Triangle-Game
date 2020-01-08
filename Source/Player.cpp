@@ -1,135 +1,73 @@
 //Initialization
 void Player::initVariables()
 {
-	this->defaultColor.r = 49;
-	this->defaultColor.g = 252;
-	this->defaultColor.b = 252;
-
+	this->defaultColor.r = 50;
+	this->defaultColor.g = 250;
+	this->defaultColor.b = 250;
 	this->shape.setFillColor(this->defaultColor);
-	this->intersectsWall = false;
+	this->defaultMaxVelocity *= 2.f;
 }
 
-void Player::initWallCheckers()
+void Player::initComponents()
 {
-	for (int i = LEFT; i <= DOWN; i++)
-		this->wallCheckers.push_back(sf::RectangleShape());
-}
-
-void Player::initMovementComponent()
-{
-	this->movementComponent = new MovementComponent(&this->shape, 300.f, 15.f, 5.f);
-}
-
-void Player::initAttributeComponent()
-{
-	this->attributeComponent = new AttributeComponent(1);
+	this->createMovementComponent(this->defaultMaxVelocity, 15.f, 5.f);
+	this->createAttributeComponent(1);
 }
 
 //Constructors/Destructors
 Player::Player(const sf::Vector2f& position)
 {
 	this->initVariables();
-	this->initWallCheckers();
-	this->initMovementComponent();
-	this->initAttributeComponent();
+	this->initComponents();
 
 	this->shape.setPosition(position);
 }
 
 Player::~Player()
 {
-	this->movementComponent = nullptr;
-	this->attributeComponent = nullptr;
-	delete this->movementComponent;
-	delete this->attributeComponent;
+	//empty
 }
 
 //Functions
-void Player::loseHP(const int hp)
-{
-	if (this->attributeComponent)
-		this->attributeComponent->loseHP(hp);
-}
-
-void Player::gainHP(const int hp)
-{
-	if (this->attributeComponent)
-		this->attributeComponent->gainHP(hp);
-}
-
-void Player::loseEXP(const int exp)
-{
-	if (this->attributeComponent)
-		this->attributeComponent->loseEXP(exp);
-}
-
-void Player::gainEXP(const int exp)
-{
-	if (this->attributeComponent)
-		this->attributeComponent->gainEXP(exp);
-}
-
-void Player::move(float dir_x, float dir_y, const float& dt)
-{
-	if (this->movementComponent)
-		this->movementComponent->move(dir_x, dir_y, dt);
-}
-
-void Player::move(float offsetX, float offsetY)
-{
-	this->shape.move(offsetX, offsetY);
-}
-
-void Player::move(const sf::Vector2f& offset)
-{
-	this->shape.move(offset.x, offset.y);
-}
-
-void Player::resetVelocityX()
-{
-	if (this->movementComponent)
-		this->movementComponent->resetVelocityX();
-}
-
-void Player::resetVelocityY()
-{
-	if (this->movementComponent)
-		this->movementComponent->resetVelocityY();
-}
-
-void Player::update(const float& dt)
+void Player::update(const float& dt, const sf::Vector2f& target_position)
 {
 	//Update some components
 	this->movementComponent->update(dt);
 	this->attributeComponent->update();
 
-	//Update wallcheckers
-	char counter = 0;
-	for (auto& wallChecker : this->wallCheckers)
+	if (!this->isDashing)
 	{
-		if (counter == LEFT || counter == RIGHT)
-			wallChecker.setSize(sf::Vector2f(2.f, this->shape.getGlobalBounds().height * 0.75f));
-		else if (counter == UP || counter == DOWN)
-			wallChecker.setSize(sf::Vector2f(this->shape.getGlobalBounds().width * 0.75f, 2.f));
-		if (counter == LEFT)
-			wallChecker.setPosition(sf::Vector2f(
+		//Looking to the target
+		sf::Vector2f look_dir(target_position - this->shape.getPosition());
+		const float angle = atan2(look_dir.y, look_dir.x) * (180.f / 3.14159265358979323846f) + 90.f;
+		this->shape.setRotation(angle);
+	}
+	else
+	{
+		//Dashing
+	}
+
+	//Update collisionCheckers
+	this->collisionCheckers[LEFT].setSize(sf::Vector2f(2.f, this->shape.getGlobalBounds().height * 0.75f));
+	this->collisionCheckers[RIGHT].setSize(sf::Vector2f(2.f, this->shape.getGlobalBounds().height * 0.75f));
+	this->collisionCheckers[UP].setSize(sf::Vector2f(this->shape.getGlobalBounds().width * 0.75f, 2.f));
+	this->collisionCheckers[DOWN].setSize(sf::Vector2f(this->shape.getGlobalBounds().width * 0.75f, 2.f));
+	
+	this->collisionCheckers[LEFT].setPosition(sf::Vector2f(
 				this->shape.getPosition().x - this->shape.getGlobalBounds().width / 2.f,
 				this->shape.getPosition().y));
-		else if (counter == RIGHT)
-			wallChecker.setPosition(sf::Vector2f(
+	this->collisionCheckers[RIGHT].setPosition(sf::Vector2f(
 				this->shape.getPosition().x + this->shape.getGlobalBounds().width / 2.f,
 				this->shape.getPosition().y));
-		else if (counter == UP)
-			wallChecker.setPosition(sf::Vector2f(
+	this->collisionCheckers[UP].setPosition(sf::Vector2f(
 				this->shape.getPosition().x,
 				this->shape.getPosition().y - this->shape.getGlobalBounds().height / 2.f));
-		else if (counter == DOWN)
-			wallChecker.setPosition(sf::Vector2f(
+	this->collisionCheckers[DOWN].setPosition(sf::Vector2f(
 				this->shape.getPosition().x,
 				this->shape.getPosition().y + this->shape.getGlobalBounds().height / 2.f));
-		wallChecker.setOrigin(wallChecker.getSize() / 2.f);
-		counter++;
-	}
+
+	for (int i = LEFT; i <= DOWN; i++)
+		this->collisionCheckers[i].setOrigin(this->collisionCheckers[i].getSize() / 2.f);
 
 	//Print all attributes in the console
 	//system("cls");
@@ -138,8 +76,10 @@ void Player::update(const float& dt)
 
 void Player::render(sf::RenderTarget* target)
 {
-	//DEBUG FEATURE
-	//for (auto& wallChecker : this->wallCheckers)
-	//	target->draw(wallChecker);
+	if (debugMode)
+		if (debugShowCollisionCheckers)
+			for (int i = LEFT; i <= DOWN; i++)
+				target->draw(this->collisionCheckers[i]);
+	
 	target->draw(this->shape);
 }

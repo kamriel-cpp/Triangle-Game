@@ -6,7 +6,7 @@ class Room
 public:
 	sf::RectangleShape shape;
 
-	sf::Vector2u floorCoord; // << USE THIS
+	sf::Vector2i floorCoord;
 
 	sf::Vector2f centerPosition;
 	sf::Vector2f leftSidePosition;

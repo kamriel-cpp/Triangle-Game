@@ -4,12 +4,14 @@
 class Minimap
 {
 public:
-	std::list<sf::RectangleShape> dungeon;
+	std::list<sf::RectangleShape> floor;
 	sf::CircleShape player;
+	sf::Vector2f floorOffset;
+	sf::Vector2f windowOffset;
 
 	Player* ptrPlayer;
 public:
-	Minimap(Dungeon& dungeon, Player& player);
+	Minimap(Floor& floor, Player& player, const sf::RenderWindow* window);
 	
 	float mapFactor;
 	float playerFactor;
