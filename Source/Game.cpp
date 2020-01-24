@@ -8,7 +8,7 @@ void Game::initVariables()
 
 void Game::initWindow()
 {
-	std::ifstream ifs("../Config/Window.ini");
+	std::ifstream ifs("Config/Window.ini");
 	this->videoModes = sf::VideoMode::getFullscreenModes();
 
 	std::string title = "Title";
@@ -49,7 +49,7 @@ void Game::initWindow()
 
 void Game::initKeys()
 {
-	std::ifstream ifs("../Config/SupportedKeys.ini");
+	std::ifstream ifs("Config/SupportedKeys.ini");
 
 	if (ifs.is_open())
 	{
@@ -71,7 +71,11 @@ void Game::initStates()
 //Constructors/Destructors
 Game::Game()
 {
+	///Debug print
+	#ifdef DEBUG_CONSOLE_OUTPUT
 	std::cout << "Starting Application" << std::endl;
+	#endif
+
 	this->initVariables();
 	this->initWindow();
 	this->initKeys();
@@ -93,7 +97,10 @@ Game::~Game()
 //Functions
 void Game::endApplication()
 {
+	///Debug print
+	#ifdef DEBUG_CONSOLE_OUTPUT
 	std::cout << "Ending Application" << std::endl;
+	#endif
 }
 
 //Update

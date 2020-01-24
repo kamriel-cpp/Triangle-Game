@@ -17,25 +17,11 @@ void WaveSpawner::spawnWave(std::list<Enemy*>& enemies)
 		int enemy_amount = this->enemyAmount;
 		while (enemy_amount)
 		{
-			sf::Color type_color;
-			if (this->enemyType == "Melee")
-			{
-				type_color.r = 250;
-				type_color.g = 50;
-				type_color.b = 50;
-			}
-			else if (this->enemyType == "Shooter")
-			{
-				type_color.r = 250;
-				type_color.g = 250;
-				type_color.b = 50;
-			}
-
 			sf::Vector2f rand_position(sf::Vector2f(
 				this->position.x + rand() % (this->radius * 2) - this->radius,
 				this->position.y + rand() % (this->radius * 2) - this->radius));
 
-			enemies.push_back(new Enemy(rand_position, type_color));
+			enemies.push_back(new Enemy(rand_position, this->enemyType));
 			enemy_amount--;
 		}
 		this->wavesCount--;

@@ -11,7 +11,7 @@ public:
 	int enemyAmount;
 public:
 	WaveSpawner(const sf::Vector2f& position, const int& radius,
-	const int& waves_count, const std::string& enemy_type, const int& enemy_amount);
+		const int& waves_count, const std::string& enemy_type, const int& enemy_amount);
 
 	void spawnWave(std::list<Enemy*>& enemies);
 };

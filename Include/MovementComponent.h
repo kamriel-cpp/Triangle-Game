@@ -20,8 +20,8 @@ public:
 	const bool getState(const unsigned char state) const;
 
 	void setMaxVelocity(float max_velocity);
-	void resetVelocityX();
-	void resetVelocityY();
+	void stopVelocityX();
+	void stopVelocityY();
 
 	void move(float dir_x, float dir_y, const float& dt);
 	void update(const float& dt);

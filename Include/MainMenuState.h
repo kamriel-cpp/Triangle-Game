@@ -12,8 +12,8 @@ private:
 
 	void initVariables();
 	void initBackground();
-	void initFonts();
 	void initKeybinds();
+	void initFonts();
 	void initButtons();
 public:
 	MainMenuState(sf::RenderWindow* window, std::map<std::string,

@@ -1,7 +1,5 @@
 #ifndef GAME_H
 #define GAME_H
-#include <Include/Includes.h>
-#include <Include/Global.h>
 #include <Include/GameState.h>
 #include <Include/MainMenuState.h>
 

@@ -41,6 +41,12 @@ Floor::~Floor()
 		delete this->walls.back();
 		this->walls.pop_back();
 	}
+
+	while (!this->doors.empty())
+	{
+		delete this->doors.back();
+		this->doors.pop_back();
+	}
 }
 
 ///Functions
@@ -72,48 +78,45 @@ void Floor::closeRoom(unsigned int index)
 		if (room->index == index)
 		{
 			///LEFT
-			this->walls.push_back(new sf::RectangleShape());
-			this->walls.back()->setFillColor(this->wallColor);
-			this->walls.back()->setSize(sf::Vector2f(this->wallThickness, (this->roomSize.y - this->corridorWidth) / 2.f + this->wallThickness));
-			this->walls.back()->setPosition(room->leftSidePosition);
-			this->walls.back()->setOrigin(this->walls.back()->getSize() / 2.f);
+			this->doors.push_back(new sf::RectangleShape());
+			this->doors.back()->setFillColor(this->wallColor);
+			this->doors.back()->setSize(sf::Vector2f(this->wallThickness, this->corridorWidth - this->wallThickness));
+			this->doors.back()->setPosition(room->leftSidePosition);
+			this->doors.back()->setOrigin(this->doors.back()->getSize() / 2.f);
 
 			///RIGHT
-			this->walls.push_back(new sf::RectangleShape());
-			this->walls.back()->setFillColor(this->wallColor);
-			this->walls.back()->setSize(sf::Vector2f(this->wallThickness, (this->roomSize.y - this->corridorWidth) / 2.f + this->wallThickness));
-			this->walls.back()->setPosition(room->rightSidePosition);
-			this->walls.back()->setOrigin(this->walls.back()->getSize() / 2.f);
+			this->doors.push_back(new sf::RectangleShape());
+			this->doors.back()->setFillColor(this->wallColor);
+			this->doors.back()->setSize(sf::Vector2f(this->wallThickness, this->corridorWidth - this->wallThickness));
+			this->doors.back()->setPosition(room->rightSidePosition);
+			this->doors.back()->setOrigin(this->doors.back()->getSize() / 2.f);
 
 			///UP
-			this->walls.push_back(new sf::RectangleShape());
-			this->walls.back()->setFillColor(this->wallColor);
-			this->walls.back()->setSize(sf::Vector2f((this->roomSize.x - this->corridorWidth) / 2.f + this->wallThickness, this->wallThickness));
-			this->walls.back()->setPosition(room->upSidePosition);
-			this->walls.back()->setOrigin(this->walls.back()->getSize() / 2.f);
+			this->doors.push_back(new sf::RectangleShape());
+			this->doors.back()->setFillColor(this->wallColor);
+			this->doors.back()->setSize(sf::Vector2f(this->corridorWidth - this->wallThickness, this->wallThickness));
+			this->doors.back()->setPosition(room->upSidePosition);
+			this->doors.back()->setOrigin(this->doors.back()->getSize() / 2.f);
 
 			///DOWN
-			this->walls.push_back(new sf::RectangleShape());
-			this->walls.back()->setFillColor(this->wallColor);
-			this->walls.back()->setSize(sf::Vector2f((this->roomSize.x - this->corridorWidth) / 2.f + this->wallThickness, this->wallThickness));
-			this->walls.back()->setPosition(room->downSidePosition);
-			this->walls.back()->setOrigin(this->walls.back()->getSize() / 2.f);
+			this->doors.push_back(new sf::RectangleShape());
+			this->doors.back()->setFillColor(this->wallColor);
+			this->doors.back()->setSize(sf::Vector2f(this->corridorWidth - this->wallThickness, this->wallThickness));
+			this->doors.back()->setPosition(room->downSidePosition);
+			this->doors.back()->setOrigin(this->doors.back()->getSize() / 2.f);
 
 			///Deactivate current room
-			room->is_active = false;
+			room->isActive = false;
 		}
 	}
 }
 
-void Floor::destroyLastCreatedWalls()
+void Floor::destroyAllDoors()
 {
-	for (int i = 0; i < 4; i++)
+	while (!this->doors.empty())
 	{
-		if (!this->walls.empty())
-		{
-			delete this->walls.back();
-			this->walls.pop_back();
-		}
+		delete this->doors.back();
+		this->doors.pop_back();
 	}
 }
 
@@ -128,26 +131,27 @@ void Floor::fillRoomsList(unsigned char floor[50][50])
 				sf::Vector2f position(mapCoordsToPixel(sf::Vector2i(i, j)));
 				sf::Vector2f size;
 
-				if (floor[i][j] == CORRIDOR_HORIZONTAL)
+				if (floor[i][j] == RT_CORRIDOR_HORIZONTAL)
 					size = sf::Vector2f(this->corridorLength, this->corridorWidth);
-				else if (floor[i][j] == CORRIDOR_VERTICAL)
+				else if (floor[i][j] == RT_CORRIDOR_VERTICAL)
 					size = sf::Vector2f(this->corridorWidth, this->corridorLength);
 				else
 					size = this->roomSize;
 
-				if (floor[i][j] == CORRIDOR_HORIZONTAL || floor[i][j] == CORRIDOR_VERTICAL)
-					this->rooms.push_back(new Room(position, size, floorColor, floor[i][j]));
-				else if (floor[i][j] == CORRIDOR_VERTICAL)
-					this->rooms.push_back(new Room(position, size, floorColor, floor[i][j]));
+				if (floor[i][j] == RT_CORRIDOR_HORIZONTAL || floor[i][j] == RT_CORRIDOR_VERTICAL)
+					this->rooms.push_back(new Room(position, size, floorColor, "Corridor"));
+				else if (floor[i][j] == RT_CORRIDOR_VERTICAL)
+					this->rooms.push_back(new Room(position, size, floorColor, "Corridor"));
 				else
-					this->rooms.push_back(new Room(position, size, floorColor, floor[i][j]));
+					this->rooms.push_back(new Room(position, size, floorColor, "Hall"));
 				this->rooms.back()->floorCoord = sf::Vector2i(i, j);
 				this->rooms.back()->index = this->rooms.size() - 1;
 			}
 		}
 	}
-	this->rooms.back()->is_active = false;
-	this->rooms.front()->is_active = false;
+	for (auto& room : this->rooms)
+		if (room->shape.getPosition() == this->startRoomPosition || room->shape.getPosition() == this->lastRoomPosition)
+			room->isActive = false;
 }
 
 void Floor::fillWallsList(unsigned char floor[50][50])
@@ -161,11 +165,11 @@ void Floor::fillWallsList(unsigned char floor[50][50])
 				sf::Vector2f position(mapCoordsToPixel(sf::Vector2i(i, j)));
 
 				///LEFT
-				if (floor[i][j] != CORRIDOR_HORIZONTAL)
+				if (floor[i][j] != RT_CORRIDOR_HORIZONTAL)
 				{
 					this->walls.push_back(new sf::RectangleShape());
 					this->walls.back()->setFillColor(this->wallColor);
-					if (floor[i][j] == CORRIDOR_VERTICAL)
+					if (floor[i][j] == RT_CORRIDOR_VERTICAL)
 					{
 						this->walls.back()->setSize(sf::Vector2f(this->wallThickness, this->corridorLength + this->wallThickness));
 						this->walls.back()->setPosition(sf::Vector2f(
@@ -175,7 +179,7 @@ void Floor::fillWallsList(unsigned char floor[50][50])
 					}
 					else
 					{
-						if (floor[i - 1][j] == NONE)
+						if (floor[i - 1][j] == RT_NONE)
 						{
 							this->walls.back()->setSize(sf::Vector2f(this->wallThickness, this->roomSize.y + this->wallThickness));
 							this->walls.back()->setPosition(sf::Vector2f(
@@ -203,11 +207,11 @@ void Floor::fillWallsList(unsigned char floor[50][50])
 				}
 
 				///RIGHT
-				if (floor[i][j] != CORRIDOR_HORIZONTAL)
+				if (floor[i][j] != RT_CORRIDOR_HORIZONTAL)
 				{
 					this->walls.push_back(new sf::RectangleShape());
 					this->walls.back()->setFillColor(this->wallColor);
-					if (floor[i][j] == CORRIDOR_VERTICAL)
+					if (floor[i][j] == RT_CORRIDOR_VERTICAL)
 					{
 						this->walls.back()->setSize(sf::Vector2f(this->wallThickness, this->corridorLength + this->wallThickness));
 						this->walls.back()->setPosition(sf::Vector2f(
@@ -217,7 +221,7 @@ void Floor::fillWallsList(unsigned char floor[50][50])
 					}
 					else
 					{
-						if (floor[i + 1][j] == NONE)
+						if (floor[i + 1][j] == RT_NONE)
 						{
 							this->walls.back()->setSize(sf::Vector2f(this->wallThickness, this->roomSize.y + this->wallThickness));
 							this->walls.back()->setPosition(sf::Vector2f(
@@ -245,11 +249,11 @@ void Floor::fillWallsList(unsigned char floor[50][50])
 				}
 
 				///UP
-				if (floor[i][j] != CORRIDOR_VERTICAL)
+				if (floor[i][j] != RT_CORRIDOR_VERTICAL)
 				{
 					this->walls.push_back(new sf::RectangleShape());
 					this->walls.back()->setFillColor(this->wallColor);
-					if (floor[i][j] == CORRIDOR_HORIZONTAL)
+					if (floor[i][j] == RT_CORRIDOR_HORIZONTAL)
 					{
 						this->walls.back()->setSize(sf::Vector2f(this->corridorLength + this->wallThickness, this->wallThickness));
 						this->walls.back()->setPosition(sf::Vector2f(
@@ -259,7 +263,7 @@ void Floor::fillWallsList(unsigned char floor[50][50])
 					}
 					else
 					{
-						if (floor[i][j - 1] == NONE)
+						if (floor[i][j - 1] == RT_NONE)
 						{
 							this->walls.back()->setSize(sf::Vector2f(this->roomSize.x + this->wallThickness, this->wallThickness));
 							this->walls.back()->setPosition(sf::Vector2f(
@@ -287,11 +291,11 @@ void Floor::fillWallsList(unsigned char floor[50][50])
 				}
 
 				///DOWN
-				if (floor[i][j] != CORRIDOR_VERTICAL)
+				if (floor[i][j] != RT_CORRIDOR_VERTICAL)
 				{
 					this->walls.push_back(new sf::RectangleShape());
 					this->walls.back()->setFillColor(this->wallColor);
-					if (floor[i][j] == CORRIDOR_HORIZONTAL)
+					if (floor[i][j] == RT_CORRIDOR_HORIZONTAL)
 					{
 						this->walls.back()->setSize(sf::Vector2f(this->corridorLength + this->wallThickness, this->wallThickness));
 						this->walls.back()->setPosition(sf::Vector2f(
@@ -301,7 +305,7 @@ void Floor::fillWallsList(unsigned char floor[50][50])
 					}
 					else
 					{
-						if (floor[i][j + 1] == NONE)
+						if (floor[i][j + 1] == RT_NONE)
 						{
 							this->walls.back()->setSize(sf::Vector2f(this->roomSize.x + this->wallThickness, this->wallThickness));
 							this->walls.back()->setPosition(sf::Vector2f(
@@ -353,7 +357,7 @@ void Floor::generate()
 	bool is_horizontal;
 	bool is_empty;
 
-	unsigned char floor[50][50] = { { NONE } };
+	unsigned char floor[50][50] = { { RT_NONE } };
 
 	while (main_rooms_count)
 	{
@@ -363,28 +367,28 @@ void Floor::generate()
 			///random direction for creating future room
 			is_empty = true;
 			new_direction = rand() % 4;
-			if (new_direction == LEFT)
+			if (new_direction == DIR_LEFT)
 			{
 				corridor_coords = room_coords = rooms_coords.back();
 				corridor_coords.x -= 1;
 				room_coords.x -= 2;
 				is_horizontal = true;
 			}
-			else if (new_direction == RIGHT)
+			else if (new_direction == DIR_RIGHT)
 			{
 				corridor_coords = room_coords = rooms_coords.back();
 				corridor_coords.x += 1;
 				room_coords.x += 2;
 				is_horizontal = true;
 			}
-			else if (new_direction == UP)
+			else if (new_direction == DIR_UP)
 			{
 				corridor_coords = room_coords = rooms_coords.back();
 				corridor_coords.y -= 1;
 				room_coords.y -= 2;
 				is_horizontal = false;
 			}
-			else if (new_direction == DOWN)
+			else if (new_direction == DIR_DOWN)
 			{
 				corridor_coords = room_coords = rooms_coords.back();
 				corridor_coords.y += 1;
@@ -415,17 +419,17 @@ void Floor::generate()
 		unsigned int selected_room_tag;
 
 		///random selection type of the room
-		selected_room_tag = rand() % 2 ? MAIN : SECONDARY;
+		selected_room_tag = rand() % 2 ? RT_HALL_MAIN : RT_HALL_SECONDARY;
 		if (secondary_rooms_coords.size() == 0)
-			selected_room_tag = MAIN;
+			selected_room_tag = RT_HALL_MAIN;
 		else if (secondary_rooms_coords.size() >= rooms_coords.size() - 2)
-			selected_room_tag = SECONDARY;
+			selected_room_tag = RT_HALL_SECONDARY;
 
 		is_empty = false;
 		do
 		{
 			///random selection room from the list
-			if (selected_room_tag == MAIN)
+			if (selected_room_tag == RT_HALL_MAIN)
 			{
 				auto room = rooms_coords.begin();
 				std::advance(room, rand() % (rooms_coords.size() - 2) + 1);
@@ -442,28 +446,28 @@ void Floor::generate()
 			///and recording the received coordinates in room_coords
 			is_empty = true;
 			new_direction = rand() % 4;
-			if (new_direction == LEFT)
+			if (new_direction == DIR_LEFT)
 			{
 				corridor_coords = room_coords = selected_room_coords;
 				corridor_coords.x -= 1;
 				room_coords.x -= 2;
 				is_horizontal = true;
 			}
-			else if (new_direction == RIGHT)
+			else if (new_direction == DIR_RIGHT)
 			{
 				corridor_coords = room_coords = selected_room_coords;
 				corridor_coords.x += 1;
 				room_coords.x += 2;
 				is_horizontal = true;
 			}
-			else if (new_direction == UP)
+			else if (new_direction == DIR_UP)
 			{
 				corridor_coords = room_coords = selected_room_coords;
 				corridor_coords.y -= 1;
 				room_coords.y -= 2;
 				is_horizontal = false;
 			}
-			else if (new_direction == DOWN)
+			else if (new_direction == DIR_DOWN)
 			{
 				corridor_coords = room_coords = selected_room_coords;
 				corridor_coords.y += 1;
@@ -493,19 +497,16 @@ void Floor::generate()
 
 	///Filling the floor[][]
 	for (auto& room : rooms_coords)
-		floor[room.x][room.y] = MAIN;
-
-	floor[rooms_coords.front().x][rooms_coords.front().y] = FRONT;
-	floor[rooms_coords.back().x][rooms_coords.back().y] = BACK;
+		floor[room.x][room.y] = RT_HALL_MAIN;
 
 	for (auto& secondary_room : secondary_rooms_coords)
-		floor[secondary_room.x][secondary_room.y] = SECONDARY;
+		floor[secondary_room.x][secondary_room.y] = RT_HALL_SECONDARY;
 
 	for (auto& corridor : horizontal_corridors_coords)
-		floor[corridor.x][corridor.y] = CORRIDOR_HORIZONTAL;
+		floor[corridor.x][corridor.y] = RT_CORRIDOR_HORIZONTAL;
 
 	for (auto& corridor : vertical_corridors_coords)
-		floor[corridor.x][corridor.y] = CORRIDOR_VERTICAL;
+		floor[corridor.x][corridor.y] = RT_CORRIDOR_VERTICAL;
 
 	///Getting the real center position of the floor
 	sf::Vector2i minRoomsCoords(50, 50);
@@ -513,7 +514,7 @@ void Floor::generate()
 
 	for (int i = 0; i < 50; i++)
 		for (int j = 0; j < 50; j++)
-			if (floor[i][j] != NONE)
+			if (floor[i][j] != RT_NONE)
 			{
 				if (minRoomsCoords.x > i)
 					minRoomsCoords.x = i;
@@ -544,6 +545,12 @@ void Floor::destroy()
 		delete this->walls.back();
 		this->walls.pop_back();
 	}
+
+	while (!this->doors.empty())
+	{
+		delete this->doors.back();
+		this->doors.pop_back();
+	}
 }
 
 void Floor::render(sf::RenderTarget* target)
@@ -553,4 +560,7 @@ void Floor::render(sf::RenderTarget* target)
 
 	for (auto& wall : this->walls)
 		target->draw(*wall);
+
+	for (auto& door : this->doors)
+		target->draw(*door);
 }

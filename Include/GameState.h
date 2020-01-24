@@ -4,16 +4,17 @@
 #include <Include/Button.h>
 #include <Include/MovementComponent.h>
 #include <Include/AttributeComponent.h>
+#include <Include/AttackComponent.h>
 #include <Include/Room.h>
 #include <Include/Floor.h>
 #include <Include/Triangle.h>
 #include <Include/Player.h>
 #include <Include/Enemy.h>
 #include <Include/Camera.h>
-#include <Include/Cinemachine.h>
 #include <Include/Minimap.h>
 #include <Include/FPSCounter.h>
 #include <Include/WaveSpawner.h>
+#include <Include/Effect.h>
 
 class GameState : public State
 {
@@ -24,24 +25,26 @@ private:
 	sf::Text*				floorText;
 	Player*					player;
 	std::list<Enemy*>		enemies;
+	sf::View*				mainView;
+	sf::View*				uiView;
 	Camera*					mainCamera;
-	Camera*					uiCamera;
-	Cinemachine*			cinemachine;
 	Minimap*				minimap;
 	sf::Clock 				gameClock;
 	FPSCounter*				fpscounter;
 	WaveSpawner*			waveSpawner;
+	std::list<Effect*>		effects;
+	std::list<Bullet*>		bullets;
 
-	bool wasPressedLeft;
-	bool wasPressedRight;
-
+	bool battleState;
+private:
+	void initVariables();
 	void initKeybinds();
-	void initTexts();
+	void initFont();
 	void initFloor();
 	void initPlayer();
 	void initEnemies();
+	void initViews();
 	void initCameras();
-	void initCinemachine();
 	void initMinimap();
 	void initFPSCounter();
 	void initWaveSpawner();
@@ -52,6 +55,12 @@ public:
 
 	void updateInput(const float& dt) override;
 	void updatePlayerInput(const float& dt);
+	void updateCollisions(const float& dt);
+	void updateCombat(const float& dt);
+	void updateUnits(const float& dt);
+	void updateBullets(const float& dt);
+	void updateEffects(const float& dt);
+	void updateUI(const float& dt);
 	void update(const float& dt) override;
 	void render(sf::RenderTarget* target = nullptr) override;
 };

@@ -1,5 +1,5 @@
-//Constructors/Destructors
-Room::Room(const sf::Vector2f& position, const sf::Vector2f& size, const sf::Color& color, const unsigned char& tag)
+///Constructors/Destructors
+Room::Room(const sf::Vector2f& position, const sf::Vector2f& size, const sf::Color& color, const std::string& tag)
 {
 	this->shape.setPosition(position);
 	this->shape.setSize(size);
@@ -13,10 +13,10 @@ Room::Room(const sf::Vector2f& position, const sf::Vector2f& size, const sf::Col
 	this->downSidePosition = sf::Vector2f(position.x, position.y + size.y / 2.f);
 
 	this->tag = tag;
-	this->is_active = true;
+	this->isActive = true;
 }
 
-//Functions
+///Functions
 void Room::render(sf::RenderTarget* target)
 {
 	target->draw(this->shape);

@@ -24,6 +24,7 @@ public:
 
 	std::list<Room*> rooms;
 	std::list<sf::RectangleShape*> walls;
+	std::list<sf::RectangleShape*> doors;
 	sf::Vector2f centerPosition;
 	sf::Vector2f startRoomPosition;
 	sf::Vector2f lastRoomPosition;
@@ -33,7 +34,7 @@ public:
 	const sf::Vector2f& getRoomSize();
 	
 	void closeRoom(unsigned int index);
-	void destroyLastCreatedWalls();
+	void destroyAllDoors();
 
 	void setRoomSize(sf::Vector2f room_size);
 	void fillRoomsList(unsigned char floor[50][50]);

@@ -16,13 +16,13 @@ public:
 
 	sf::Vector2f size;
 	sf::Color color;
-	unsigned char tag;
+	std::string tag;
 	unsigned int index;
 
-	bool is_active; //enemies can spawn in the active room; in an inactive cannot be spawned
+	bool isActive; //enemies can spawn in the active room; in an inactive cannot be spawned
 public:
 	Room() = default;
-	Room(const sf::Vector2f& position, const sf::Vector2f& size, const sf::Color& color, const unsigned char& tag);
+	Room(const sf::Vector2f& position, const sf::Vector2f& size, const sf::Color& color, const std::string& tag);
 	virtual ~Room() = default;
 	
 	void render(sf::RenderTarget* target = nullptr);

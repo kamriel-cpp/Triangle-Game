@@ -4,20 +4,16 @@
 class Enemy : public Triangle
 {
 private:
-	void initVariables();
+	std::string type;
+
 	void initComponents();
 public:
- 	Enemy(const sf::Vector2f& position, sf::Color color);
+ 	Enemy(const sf::Vector2f& position, std::string type);
  	virtual ~Enemy();
 
-	void move(float dir_x, float dir_y, const float& dt);
-	void move(float offsetX, float offsetY);
-	void move(const sf::Vector2f& offset);
-	void resetVelocityX();
-	void resetVelocityY();
+ 	const std::string& getType() const;
 
 	void update(const float& dt, const sf::Vector2f& target_position) override;
-	void render(sf::RenderTarget* target = NULL) override;
 };
 
 #include <Source/Enemy.cpp>

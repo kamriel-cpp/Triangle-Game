@@ -1,57 +1,41 @@
-//Constructors/Destructors
-Camera::Camera(sf::RenderWindow* window)
+///Constructors/Destructors
+Camera::Camera(sf::View* view, sf::Shape* target, sf::RenderWindow* window)
 {
-	this->view = window->getDefaultView();
-	this->view.setCenter(sf::Vector2f(0.f, 0.f));
+	this->view = view;
+	this->target = target;
+	this->window = window;
+	this->smoothing = 10.f;
 }
 
 Camera::~Camera()
 {
-
+	this->view = nullptr;
+	this->target = nullptr;
+	this->window = nullptr;
+	delete this->view;
+	delete this->target;
+	delete this->window;
 }
 
-//Functions
-const sf::View& Camera::getView() const
+///Functions
+void Camera::update(const float& dt)
 {
-	return this->view;
-}
+	if (this->view != nullptr && this->target != nullptr)
+	{
+		if (this->view->getCenter() != this->target->getPosition())
+			this->view->move(((this->target->getPosition() - this->view->getCenter()) * this->smoothing) * dt);
 
-const sf::Vector2f& Camera::getSize() const
-{
-	return this->view.getSize();
-}
+		this->view->move(
+			((this->window->mapPixelToCoords(sf::Mouse::getPosition(*this->window), *this->view)
+			- this->view->getCenter()) * (this->smoothing * 0.25f)) * dt);
 
-const sf::Vector2f& Camera::getCenter() const
-{
-	return this->view.getCenter();
-}
-
-void Camera::setSize(const sf::Vector2f& size)
-{
-	this->view.setSize(size);
-}
-
-void Camera::setCenter(const sf::Vector2f& center)
-{
-	this->view.setCenter(center);
-}
-
-void Camera::setViewport(const sf::FloatRect& viewport)
-{
-	this->view.setViewport(viewport);
-}
-
-void Camera::move(float offsetX, float offsetY, const float& dt)
-{
-	this->view.move(offsetX * dt, offsetY * dt);
-}
-
-void Camera::move(const sf::Vector2f offset, const float& dt)
-{
-	this->view.move(offset * dt);
-}
-
-void Camera::zoom(const float factor)
-{
-	this->view.zoom(factor);
+		///FUTURE FEATURE zooming effect at the start of the game
+		//if (this->view->getSize() != this->window->getDefaultView().getSize())
+		//{
+		//	if (this->view->getSize().x < this->window->getDefaultView().getSize().x || this->view->getSize().y < this->window->getDefaultView().getSize().y)
+		//		this->view->setSize(this->view->getSize() * (1.f + dt * 2.f));
+		//	if (this->view->getSize().x > this->window->getDefaultView().getSize().x || this->view->getSize().y > this->window->getDefaultView().getSize().y)
+		//		this->view->setSize(this->window->getDefaultView().getSize());
+		//}
+	}
 }

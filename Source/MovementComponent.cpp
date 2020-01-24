@@ -34,22 +34,22 @@ const bool MovementComponent::getState(const unsigned char state) const
 {
 	switch (state)
 	{
-	case IDLE:
+	case MV_IDLE:
 		return this->velocity.x == 0.f && this->velocity.y == 0.f ? true : false;
 	    break;
-	case MOVING:
+	case MV_MOVING:
 		return this->velocity.x != 0.f || this->velocity.y != 0.f ? true : false;
 	    break;
-	case MOVING_LEFT:
+	case MV_MOVING_LEFT:
 		return this->velocity.x < 0.f ? true : false;
 	    break;
-	case MOVING_RIGHT:
+	case MV_MOVING_RIGHT:
 		return this->velocity.x > 0.f ? true : false;
 	    break;
-	case MOVING_UP:
+	case MV_MOVING_UP:
 		return this->velocity.y < 0.f ? true : false;
 	    break;
-	case MOVING_DOWN:
+	case MV_MOVING_DOWN:
 		return this->velocity.y > 0.f ? true : false;
 	    break;
 	}
@@ -61,12 +61,12 @@ void MovementComponent::setMaxVelocity(float max_velocity)
 	this->maxVelocity = max_velocity;
 }
 
-void MovementComponent::resetVelocityX()
+void MovementComponent::stopVelocityX()
 {
 	this->velocity.x = 0.f;
 }
 
-void MovementComponent::resetVelocityY()
+void MovementComponent::stopVelocityY()
 {
 	this->velocity.y = 0.f;
 }

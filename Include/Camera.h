@@ -4,22 +4,16 @@
 class Camera
 {
 private:
-	sf::View view;
+	sf::View* view;
+	sf::Shape* target;
+	sf::RenderWindow* window;
 public:
-	Camera(sf::RenderWindow* window = nullptr);
+	Camera(sf::View* view = nullptr, sf::Shape* target = nullptr, sf::RenderWindow* window = nullptr);
 	virtual ~Camera();
 
-	const sf::View& getView() const;
-	const sf::Vector2f& getSize() const;
-	const sf::Vector2f& getCenter() const;
+	float smoothing;
 
-	void setSize(const sf::Vector2f& size);
-	void setCenter(const sf::Vector2f& center);
-	void setViewport(const sf::FloatRect& viewport);
-	
-	void move(float offsetX, float offsetY, const float& dt);
-	void move(const sf::Vector2f offset, const float& dt);
-	void zoom(const float factor);
+	void update(const float& dt);
 };
 
 #include <Source/Camera.cpp>
