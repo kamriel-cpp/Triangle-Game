@@ -4,33 +4,24 @@
 class AttributeComponent
 {
 public:
-	//Leveling
 	int level;
 	int exp;
 	int expNext;
 	int attributePoints;
 
-	//Attributes
-	int vitality;
-	int strength;
-	int dexterity;
-	int agility;
-	int intelligence;
-	
-	//Stats
 	int hp;
 	int hpMax;
-	int damageMin;
-	int damageMax;
-	int accuracy;
-	int defence;
-	int luck;
-
-	//Constructors/Destructors
+	float reloadTime;
+	float spread;
+	int damage;
+	int bulletsPerShoot;
+	float bulletSpeed;
+	float bulletRadius;
+public:
 	AttributeComponent(const int level);
 
-	//Functions
-	std::string debugPrint() const;
+	void randomSelectAllAttributePoints();
+	const bool selectAttributePoints(const int& choise);
 
 	void loseHP(const int hp);
 	void gainHP(const int hp);
@@ -39,9 +30,9 @@ public:
 
 	const bool isDead() const;
 
-	void updateStats(const bool reset);
-	void updateLevel();
+	void debugPrint();
 
+	void updateLevel();
 	void update();
 };
 

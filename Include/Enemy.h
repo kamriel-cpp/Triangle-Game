@@ -5,10 +5,8 @@ class Enemy : public Triangle
 {
 private:
 	std::string type;
-
-	void initComponents();
 public:
- 	Enemy(const sf::Vector2f& position, std::string type);
+ 	Enemy(const sf::Vector2f& position, std::string type, const int& level);
  	virtual ~Enemy();
 
  	const std::string& getType() const;

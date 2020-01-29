@@ -4,7 +4,6 @@
 class Player : public Triangle
 {
 private:
-	void initComponents();
 	bool dashing;
 	bool stopped;
 public:

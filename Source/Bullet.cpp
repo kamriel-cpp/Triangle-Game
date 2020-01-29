@@ -1,13 +1,15 @@
 ///Constructors/Destructors
-Bullet::Bullet(const sf::Vector2f& position, const sf::Color& color, const float& radius, const float& rotation, const float& moving_speed, float damage)
+Bullet::Bullet(const sf::Vector2f& position, const float& rotation,
+	const sf::Color& color, const int& damage,
+	const float& moving_speed, const float& radius)
 {
 	this->setPosition(position);
+	this->setRotation(rotation);
 	this->setFillColor(color);
+	this->damage = damage;
+	this->movingSpeed = moving_speed;
 	this->setRadius(radius);
 	this->setOrigin(radius, radius);
-	this->setRotation(rotation);
-	this->movingSpeed = moving_speed;
-	this->damage = damage;
 }
 
 ///Functions

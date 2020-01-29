@@ -22,11 +22,6 @@ void GameState::initKeybinds()
 	ifs.close();
 }
 
-void GameState::initFont()
-{
-	this->font.loadFromFile("Fonts/Dosis-Light.ttf");
-}
-
 void GameState::initFloor()
 {
 	this->floor.generate();
@@ -47,12 +42,12 @@ void GameState::initPlayer()
 void GameState::initEnemies()
 {
 	///Around the player
-	for (int i = 0; i < 10; i++)
+	for (int i = 0; i < 0; i++)
 	{
 		this->enemies.push_back(new Enemy(sf::Vector2f(
 			this->floor.startRoomPosition.x + rand() % (int)(this->floor.getRoomSize().x * 0.9) - this->floor.getRoomSize().x * 0.9 / 2.f,
 			this->floor.startRoomPosition.y + rand() % (int)(this->floor.getRoomSize().y * 0.9) - this->floor.getRoomSize().y * 0.9 / 2.f),
-			std::string(rand() % 2 ? "Melee" : "Shooter")));
+			std::string(rand() % 2 ? "Melee" : "Shooter"), 1));
 	}
 
 	///In the last room
@@ -61,7 +56,7 @@ void GameState::initEnemies()
 		this->enemies.push_back(new Enemy(sf::Vector2f(
 			this->floor.lastRoomPosition.x + rand() % (int)(this->floor.getRoomSize().x * 0.9) - this->floor.getRoomSize().x * 0.9 / 2.f,
 			this->floor.lastRoomPosition.y + rand() % (int)(this->floor.getRoomSize().y * 0.9) - this->floor.getRoomSize().y * 0.9 / 2.f),
-			std::string(rand() % 2 ? "Melee" : "Shooter")));
+			std::string(rand() % 2 ? "Melee" : "Shooter"), 1));
 	}
 }
 
@@ -69,7 +64,7 @@ void GameState::initViews()
 {
 	this->mainView = new sf::View(this->window->getDefaultView());
 	this->mainView->setCenter(sf::Vector2f(0.f, 0.f));
-	this->mainView->zoom(0.75f);
+	//this->mainView->zoom(0.75f);
 	this->mainView->move(this->floor.startRoomPosition);
 
 	this->uiView = new sf::View(this->window->getDefaultView());
@@ -80,6 +75,30 @@ void GameState::initCameras()
 {
 	this->mainCamera = new Camera(this->mainView, this->player, this->window);
 	this->mainCamera->smoothing = 5.f;
+}
+
+void GameState::initFont()
+{
+	this->font.loadFromFile("Fonts/Dosis-Light.ttf");
+}
+
+void GameState::initButtons()
+{
+	//float x, float y, float width, float height,
+	//sf::Font* font, std::string text, unsigned char character_size,
+	//sf::Color text_idle_color, sf::Color text_hover_color, sf::Color text_active_color,
+	//sf::Color idle_color, sf::Color hover_color, sf::Color active_color
+	for (int i = 0; i < 7; ++i)
+		this->buttons["NUM_" + std::to_string(i)] = new Button(
+			-this->uiView->getSize().x / 2 + 30.f + i * 60.f, this->uiView->getSize().y / 2 - 30.f,
+			0.f, -10.f, 40.f, 40.f,
+			&this->font, std::to_string(i), 36,
+			sf::Color(250,250,250,200),
+			sf::Color(250,250,250,250),
+			sf::Color(50,250,50,250),
+			sf::Color(250,250,250,10),
+			sf::Color(250,250,250,20),
+			sf::Color(0,0,0,0));
 }
 
 void GameState::initMinimap()
@@ -110,12 +129,13 @@ GameState::GameState(sf::RenderWindow* window, std::map<std::string,
 	///Initialize functions
 	this->initVariables();
 	this->initKeybinds();
-	this->initFont();
 	this->initFloor();
 	this->initPlayer();
 	this->initEnemies();
 	this->initViews();
 	this->initCameras();
+	this->initFont();
+	this->initButtons();
 	this->initMinimap();
 	this->initFPSCounter();
 	this->initWaveSpawner();
@@ -188,6 +208,10 @@ GameState::~GameState()
 		this->texts.pop_back();
 	}
 
+	///buttons deleting
+	for (auto it = this->buttons.begin(); it != this->buttons.end(); ++it)
+		delete it->second;
+
 	///Debug print
 	#ifdef DEBUG_CONSOLE_OUTPUT
 	std::cout << "Ending GameState" << std::endl;
@@ -221,35 +245,6 @@ void GameState::updateInput(const float& dt)
 	if (sf::Mouse::isButtonPressed(sf::Mouse::Left))
 	{
 		this->player->shoot(&bullets);
-
-		///Correct explosion pattern
-		//this->effects.push_back(new Explosion(
-		//	this->mousePosView, 5.f,
-		//	sf::Color(250, 50, 50, 250), 4,
-		//	10.f, 12.5f,
-		//	30, 30,
-		//	4, 25.f));
-		//this->effects.push_back(new Explosion(
-		//	this->mousePosView, 2.5f,
-		//	sf::Color(250, 150, 50, 250), 8,
-		//	7.5f, 10.f,
-		//	30, 30,
-		//	5, 50.f));
-		//this->effects.push_back(new Explosion(
-		//	this->mousePosView, 1.f,
-		//	sf::Color(250, 250, 50, 250), 12,
-		//	5.f, 7.5f,
-		//	30, 30,
-		//	6, 75.f));
-
-		///Correct spawn pattern
-		//this->effects.push_back(new Spawn(
-		//	this->mousePosView, 1.f,
-		//	sf::Color(250, 50, 50), 25,
-		//	20.f / 6.f, 20.f / 3.f,
-		//	3, 4,
-		//	3, 50.f,
-		//	2.f, 0.1f));
 	}
 
 	if (sf::Mouse::isButtonPressed(sf::Mouse::Right))
@@ -258,7 +253,9 @@ void GameState::updateInput(const float& dt)
 		{
 			this->wasPressedRight = true;
 
-			this->player->dash();
+			#ifdef DEBUG_PLAYER_STATS_OUTPUT
+			this->player->statsPrint();
+			#endif
 		}
 	}
 	else
@@ -285,25 +282,6 @@ void GameState::updateInput(const float& dt)
 	{
 		this->wasPressedMiddle = false;
 	}
-
-	///Dashing prototype
-	//if (!this->player->isDashing)
-	//{
-	//	///Dashing activating
-	//	if (sf::Mouse::isButtonPressed(sf::Mouse::Right))
-	//	{
-	//		this->player->isDashing = true;
-	//		this->player->timeBuffer = this->player->clock.getElapsedTime().asSeconds();
-	//		this->player->setMaxVelocity(this->player->defaultMaxVelocity * 2.f);
-	//	}
-	//}
-	//else if (this->player->clock.getElapsedTime().asSeconds() - 0.3f > this->player->timeBuffer)
-	//{
-	//	///Dashing deactivating
-	//	this->player->isDashing = false;
-	//	this->player->timeBuffer = 0.f;
-	//	this->player->setMaxVelocity(this->player->defaultMaxVelocity);
-	//}
 }
 
 void GameState::updatePlayerInput(const float& dt)
@@ -322,17 +300,25 @@ void GameState::updatePlayerInput(const float& dt)
 
 	#ifdef DEBUG_ATTRIBUTE_MANIPULATION
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Z))
-		this->player->loseEXP(rand() % 100);
-	else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::X))
-		this->player->gainEXP(rand() % 100);
-	else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::C))
-		this->player->loseHP(rand() % 100);
-	else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::V))
-		this->player->gainHP(rand() % 100);
+		this->player->levelUp();
+	else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Num0))
+		this->player->selectAttributePoints(0);
+	else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Num1))
+		this->player->selectAttributePoints(1);
+	else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Num2))
+		this->player->selectAttributePoints(2);
+	else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Num3))
+		this->player->selectAttributePoints(3);
+	else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Num4))
+		this->player->selectAttributePoints(4);
+	else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Num5))
+		this->player->selectAttributePoints(5);
+	else if (sf::Keyboard::isKeyPressed(sf::Keyboard::Key::Num6))
+		this->player->selectAttributePoints(6);
 	#endif
 }
 
-void GameState::updateCollisions(const float& dt)
+void GameState::updateCollisionsWithWalls(const float& dt)
 {
 	///Blocking player and enemies movement direction to the wall
 	for (auto& wall : this->floor.walls)
@@ -496,8 +482,11 @@ void GameState::updateCollisions(const float& dt)
 			}
 		}
 	}
+}
 
-	///Collision with enemies
+void GameState::updateCollisionsWithBullets()
+{
+	///Units collisions with bullets
 	if (!this->bullets.empty() && !this->enemies.empty())
 	{
 		for (auto& enemy : this->enemies)
@@ -508,9 +497,11 @@ void GameState::updateCollisions(const float& dt)
 				{
 					if (bullet->getGlobalBounds().intersects(enemy->getGlobalBounds()))
 					{
+						this->player->gainEXP(enemy->getLevel() * 10);
+						
 						enemy->blink(&this->effects);
 						enemy->loseHP(bullet->damage);
-						
+
 						bullet->explode(&this->effects);
 						delete bullet;
 						bullet = nullptr;
@@ -519,65 +510,6 @@ void GameState::updateCollisions(const float& dt)
 			}
 		}
 	}
-
-	///Maybe remove later, but it's looking not bad
-	#ifdef DEBUG_DODGE_ENEMIES_COLLISIONS
-	for (auto& enemy : this->enemies)
-	{
-		if (enemy != nullptr)
-		{
-			///Checking for enemy collisions with a player
-			if (enemy->getGlobalBounds().intersects(this->player->getGlobalBounds()))
-			{
-				if (enemy->getSideOfCollision(this->player->getGlobalBounds()) == DIR_LEFT)
-				{
-					enemy->stopVelocityX();
-					enemy->move(1.f, 0.f, dt);
-				}
-				else if (enemy->getSideOfCollision(this->player->getGlobalBounds()) == DIR_RIGHT)
-				{
-					enemy->stopVelocityX();
-					enemy->move(-1.f, 0.f, dt);
-				}
-				else if (enemy->getSideOfCollision(this->player->getGlobalBounds()) == DIR_UP)
-				{
-					enemy->stopVelocityY();
-					enemy->move(0.f, 1.f, dt);
-				}
-				else if (enemy->getSideOfCollision(this->player->getGlobalBounds()) == DIR_DOWN)
-				{
-					enemy->stopVelocityY();
-					enemy->move(0.f, -1.f, dt);
-				}
-			}
-
-			///Checking for player collisions with a enemies
-			if (this->player->getGlobalBounds().intersects(enemy->getGlobalBounds()))
-			{
-				if (this->player->getSideOfCollision(enemy->getGlobalBounds()) == DIR_LEFT)
-				{
-					this->player->stopVelocityX();
-					this->player->move(1.f, 0.f, dt);
-				}
-				else if (this->player->getSideOfCollision(enemy->getGlobalBounds()) == DIR_RIGHT)
-				{
-					this->player->stopVelocityX();
-					this->player->move(-1.f, 0.f, dt);
-				}
-				else if (this->player->getSideOfCollision(enemy->getGlobalBounds()) == DIR_UP)
-				{
-					this->player->stopVelocityY();
-					this->player->move(0.f, 1.f, dt);
-				}
-				else if (this->player->getSideOfCollision(enemy->getGlobalBounds()) == DIR_DOWN)
-				{
-					this->player->stopVelocityY();
-					this->player->move(0.f, -1.f, dt);
-				}
-			}
-		}
-	}
-	#endif
 }
 
 void GameState::updateCombat(const float& dt)
@@ -599,10 +531,9 @@ void GameState::updateCombat(const float& dt)
 					this->battleState = true;
 					///Place a new wavespawner
 					if (this->waveSpawner == nullptr)
-					{
 						this->waveSpawner = new WaveSpawner(room->shape.getPosition(), 250,
-							rand() % 2 + 2, "Melee", rand() % 3 + 3);
-					}
+							rand() % 2 + 2, "Melee",
+							this->player->getLevel(), rand() % 3 + 3);
 				}
 			}
 			///If room is visited
@@ -654,6 +585,16 @@ void GameState::updateUnits(const float& dt)
 				if (enemy->isDead())
 				{
 					enemy->explode(&this->effects);
+
+					for (auto& effect : this->effects)
+					{
+						if (effect->getTarget() == enemy)
+						{
+							delete effect;
+							effect = nullptr;
+						}
+					}
+
 					delete enemy;
 					enemy = nullptr;
 				}
@@ -668,12 +609,9 @@ void GameState::updateBullets(const float& dt)
 	if (!this->bullets.empty())
 	{
 		for (auto& bullet : this->bullets)
-		{
 			if (bullet != nullptr)
-			{
 				bullet->update(dt);
-			}
-		}
+
 		this->bullets.remove(nullptr);
 	}
 }
@@ -699,11 +637,69 @@ void GameState::updateEffects(const float& dt)
 	}
 }
 
-void GameState::updateUI(const float& dt)
+void GameState::updateButtons()
+{
+	for (auto &it : this->buttons)
+		it.second->update(this->window->mapPixelToCoords(sf::Mouse::getPosition(*this->window), *this->uiView));
+
+	for (int i = 0; i < 7; i++)
+	{
+		if (this->buttons["NUM_" + std::to_string(i)]->isPressed())
+		{
+			if (!this->buttons["NUM_" + std::to_string(i)]->wasPressed)
+			{
+				this->buttons["NUM_" + std::to_string(i)]->wasPressed = true;
+				#ifdef DEBUG_BUTTONS_OUTPUT
+				switch (i)
+				{
+				case 0:
+					std::cout << "HP Max";
+					break;
+				case 1:
+					std::cout << "ReloTime";
+					break;
+				case 2:
+					std::cout << "Spread";
+					break;
+				case 3:
+					std::cout << "Damage";
+					break;
+				case 4:
+					std::cout << "BPS";
+					break;
+				case 5:
+					std::cout << "BullSpeed";
+					break;
+				default:
+					std::cout << "BullRadius";
+					break;
+				}
+				if (this->player->selectAttributePoints(i))
+					std::cout << " was choosed!" << std::endl;
+				else
+					std::cout << " cannot be choosed!" << std::endl;
+				#else
+				this->player->selectAttributePoints(i);
+				#endif
+			}
+		}
+		else
+		{
+			this->buttons["NUM_" + std::to_string(i)]->wasPressed = false;
+		}
+	}
+}
+
+void GameState::updateCameras(const float& dt)
 {
 	this->mainCamera->update(dt);
+}
+
+void GameState::updateUI(const float& dt)
+{
 	this->minimap->update(dt);
 	this->fpscounter->update();
+	this->updateButtons();
 }
 
 void GameState::update(const float& dt)
@@ -711,11 +707,13 @@ void GameState::update(const float& dt)
 	this->updateMousePositions(this->mainView);
 	this->updateInput(dt);
 	this->updatePlayerInput(dt);
-	this->updateCollisions(dt);
+	this->updateCollisionsWithWalls(dt);
+	this->updateCollisionsWithBullets();
 	this->updateCombat(dt);
 	this->updateUnits(dt);
 	this->updateBullets(dt);
 	this->updateEffects(dt);
+	this->updateCameras(dt);
 	this->updateUI(dt);
 }
 
@@ -728,7 +726,6 @@ void GameState::render(sf::RenderTarget* target)
 	target->setView(*this->mainView);
 	this->floor.render(target);
 	target->draw(*floorText);
-
 	for (auto& bullet : this->bullets)
 		target->draw(*bullet);
 	for (auto& enemy : this->enemies)
@@ -743,6 +740,8 @@ void GameState::render(sf::RenderTarget* target)
 	#ifdef DEBUG_SHOW_FPSCOUNTER
 	this->fpscounter->render(target);
 	#endif
+	for (auto &it : this->buttons)
+		it.second->render(target);
 
 	///Set window view to default
 	target->setView(target->getDefaultView());

@@ -4,7 +4,7 @@
 #include <Include/Button.h>
 #include <Include/MovementComponent.h>
 #include <Include/AttributeComponent.h>
-#include <Include/AttackComponent.h>
+#include <Include/ShootComponent.h>
 #include <Include/Room.h>
 #include <Include/Floor.h>
 #include <Include/Triangle.h>
@@ -21,6 +21,7 @@ class GameState : public State
 private:
 	sf::Font				font;
 	std::list<sf::Text*>	texts;
+	std::map<std::string, Button*>	buttons;
 	Floor					floor;
 	sf::Text*				floorText;
 	Player*					player;
@@ -40,6 +41,7 @@ private:
 	void initVariables();
 	void initKeybinds();
 	void initFont();
+	void initButtons();
 	void initFloor();
 	void initPlayer();
 	void initEnemies();
@@ -55,11 +57,14 @@ public:
 
 	void updateInput(const float& dt) override;
 	void updatePlayerInput(const float& dt);
-	void updateCollisions(const float& dt);
+	void updateCollisionsWithWalls(const float& dt);
+	void updateCollisionsWithBullets();
 	void updateCombat(const float& dt);
 	void updateUnits(const float& dt);
 	void updateBullets(const float& dt);
 	void updateEffects(const float& dt);
+	void updateCameras(const float& dt);
+	void updateButtons();
 	void updateUI(const float& dt);
 	void update(const float& dt) override;
 	void render(sf::RenderTarget* target = nullptr) override;

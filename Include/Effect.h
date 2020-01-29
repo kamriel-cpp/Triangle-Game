@@ -4,10 +4,12 @@
 class Effect
 {
 protected:
+	sf::Shape* target;
 	bool done;
 public:
-	virtual ~Effect() { this->done = false; }
-	bool isDone() { return this->done; }
+	virtual ~Effect() { this->target = nullptr; this->done = false; }
+	virtual bool isDone() { return this->done; }
+	virtual const sf::Shape* getTarget() const { return this->target; }
 	virtual void update(const float& dt) = 0;
 	virtual void render(sf::RenderTarget* target = nullptr) = 0;
 };
@@ -34,9 +36,7 @@ public:
 class Blink : public Effect
 {
 private:
-	sf::Shape* target;
-
-	sf::Color defaultColor;
+	sf::Color customFillColor;
 	sf::Color currentColor;
 
 	float fadingSpeed;

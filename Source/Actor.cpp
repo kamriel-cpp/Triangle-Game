@@ -1,34 +1,33 @@
 ///Constructors/Destructors
 Actor::Actor()
 {
-	this->defaultColor.r = 255;
-	this->defaultColor.g = 255;
-	this->defaultColor.b = 255;
-	this->defaultRadius = 20.f;
-	this->defaultOrigin = sf::Vector2f(this->defaultRadius, this->defaultRadius);
-	this->defaultScale = sf::Vector2f(1.f, 1.f);
-	this->defaultPointCount = 30;
-	this->defaultMaxVelocity = 100.f;
+	this->customFillColor.r = 255;
+	this->customFillColor.g = 255;
+	this->customFillColor.b = 255;
+	this->customRadius = 20.f;
+	this->customOrigin = sf::Vector2f(this->customRadius, this->customRadius);
+	this->customScale = sf::Vector2f(1.f, 1.f);
+	this->customPointCount = 30;
 
-	this->setFillColor(this->defaultColor);
-	this->setRadius(this->defaultRadius);
-	this->setOrigin(this->defaultOrigin);
-	this->setScale(this->defaultScale);
-	this->setPointCount(this->defaultPointCount);
+	this->setFillColor(this->customFillColor);
+	this->setRadius(this->customRadius);
+	this->setOrigin(this->customOrigin);
+	this->setScale(this->customScale);
+	this->setPointCount(this->customPointCount);
 
 	this->movementComponent = nullptr;
 	this->attributeComponent = nullptr;
-	this->attackComponent = nullptr;
+	this->shootComponent = nullptr;
 }
 
 Actor::~Actor()
 {
 	this->movementComponent = nullptr;
 	this->attributeComponent = nullptr;
-	this->attackComponent = nullptr;
+	this->shootComponent = nullptr;
 	delete this->movementComponent;
 	delete this->attributeComponent;
-	delete this->attackComponent;
+	delete this->shootComponent;
 }
 
 ///Functions
@@ -64,98 +63,101 @@ void Actor::createAttributeComponent(const unsigned level)
 	this->attributeComponent = new AttributeComponent(level);
 }
 
-void Actor::createAttackComponent(const bool can_shoot, const bool can_pick, const bool can_dash,
-	const float& shooting_cooldown, const float& picking_cooldown, const float& dashing_cooldown, float damage)
+void Actor::createShootComponent()
 {
-	this->attackComponent = new AttackComponent(can_shoot, can_pick, can_dash, shooting_cooldown, picking_cooldown, dashing_cooldown, damage);
+	this->shootComponent = new ShootComponent();
 }
 
 
 void Actor::loseHP(const int hp)
 {
-	if (this->attributeComponent)
-		this->attributeComponent->loseHP(hp);
+	this->attributeComponent->loseHP(hp);
 }
 
 void Actor::gainHP(const int hp)
 {
-	if (this->attributeComponent)
-		this->attributeComponent->gainHP(hp);
+	this->attributeComponent->gainHP(hp);
 }
 
 void Actor::loseEXP(const int exp)
 {
-	if (this->attributeComponent)
-		this->attributeComponent->loseEXP(exp);
+	this->attributeComponent->loseEXP(exp);
 }
 
 void Actor::gainEXP(const int exp)
 {
-	if (this->attributeComponent)
-		this->attributeComponent->gainEXP(exp);
+	this->attributeComponent->gainEXP(exp);
 }
 
 const bool Actor::isDead() const
 {
-	if (this->attributeComponent)
-		return this->attributeComponent->isDead();
+	return this->attributeComponent->isDead();
+	return false;
+}
 
+const int Actor::getLevel() const
+{
+	return this->attributeComponent->level;
+	return 0;
+}
+
+const bool Actor::selectAttributePoints(const int& choise)
+{
+	return this->attributeComponent->selectAttributePoints(choise);
 	return false;
 }
 
 
 void Actor::move(float dir_x, float dir_y, const float& dt)
 {
-	if (this->movementComponent)
-		this->movementComponent->move(dir_x, dir_y, dt);
+	this->movementComponent->move(dir_x, dir_y, dt);
 }
 
 void Actor::setMaxVelocity(float max_velocity)
 {
-	if (this->movementComponent)
-		this->movementComponent->setMaxVelocity(max_velocity);
+	this->movementComponent->setMaxVelocity(max_velocity);
 }
 
 void Actor::resetMaxVelocity()
 {
-	if (this->movementComponent)
-		this->movementComponent->setMaxVelocity(this->defaultMaxVelocity);
+	this->movementComponent->setMaxVelocity(200.f);
 }
 
 void Actor::stopVelocityX()
 {
-	if (this->movementComponent)
-		this->movementComponent->stopVelocityX();
+	this->movementComponent->stopVelocityX();
 }
 
 void Actor::stopVelocityY()
 {
-	if (this->movementComponent)
-		this->movementComponent->stopVelocityY();
+	this->movementComponent->stopVelocityY();
 }
 
 
 void Actor::shoot(std::list<Bullet*>* bullets)
 {
-	if (this->attackComponent)
+	if (this->shootComponent)
 	{
 		sf::Vector2f position;
 		position.x = this->getRadius() / 2.f * sin(this->getRotation() * 3.14159265358979323846f / 180.f);
 		position.y = this->getRadius() / 2.f * -cos(this->getRotation() * 3.14159265358979323846f / 180.f);
-		this->attackComponent->shoot(bullets, this->getPosition() + position, this->getRotation());
+
+		this->shootComponent->shoot(bullets,
+			this->getPosition() + position, this->getRotation(),
+			this->attributeComponent->spread, this->attributeComponent->damage,
+			this->attributeComponent->bulletsPerShoot,
+			this->attributeComponent->bulletSpeed, this->attributeComponent->bulletRadius);
 	}
 }
 
 void Actor::pick()
 {
-	if (this->attackComponent)
-		this->attackComponent->pick();
+
 }
 
 void Actor::dash()
 {
-	if (this->attackComponent)
-		this->attackComponent->dash();
+
 }
 
 
@@ -163,25 +165,25 @@ void Actor::explode(std::list<Effect*>* effects)
 {
 	effects->push_back(new Explosion(
 		this->getPosition(), 1.f,
-		this->defaultColor, 4,
+		this->customFillColor, 4,
 		this->getRadius() / 3.f, this->getRadius() / 2.f,
 		3, 4,
 		2, 25.f));
 	effects->push_back(new Explosion(
 		this->getPosition(), 1.f,
-		this->defaultColor, 6,
+		this->customFillColor, 6,
 		this->getRadius() / 3.f, this->getRadius() / 2.f,
 		3, 4,
 		3, 50.f));
 	effects->push_back(new Explosion(
 		this->getPosition(), 1.f,
-		this->defaultColor, 8,
+		this->customFillColor, 8,
 		this->getRadius() / 4.f, this->getRadius() / 3.f,
 		3, 4,
 		4, 75.f));
 	effects->push_back(new Explosion(
 		this->getPosition(), 1.f,
-		this->defaultColor, 10,
+		this->customFillColor, 10,
 		this->getRadius() / 4.f, this->getRadius() / 3.f,
 		3, 4,
 		5, 100.f));
@@ -189,7 +191,7 @@ void Actor::explode(std::list<Effect*>* effects)
 
 void Actor::blink(std::list<Effect*>* effects)
 {
-	effects->push_back(new Blink(this, this->defaultColor, 20.f, 0.25f));
+	effects->push_back(new Blink(this, this->customFillColor, 20.f, 0.25f));
 }
 
 void Actor::updateCollisionCheckers()

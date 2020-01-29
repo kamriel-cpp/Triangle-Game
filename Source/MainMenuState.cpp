@@ -40,34 +40,37 @@ void MainMenuState::initFonts()
 void MainMenuState::initButtons()
 {
 	this->buttons["GAME_STATE"] = new Button(
-		this->window->getSize().x / 2 - 75.f, this->window->getSize().y / 2 - 100.f, 150.f, 50.f,
+		this->window->getSize().x / 2, this->window->getSize().y / 2 - 100.f,
+		0.f, -10.f, 150.f, 50.f,
 		&this->font, "New Game", 36,
 		sf::Color(70,70,70,200),
 		sf::Color(250,250,250,250),
 		sf::Color(20,20,20,50),
-		sf::Color(20,40,20,0),
-		sf::Color(20,50,20,0),
-		sf::Color(20,40,20,0));
+		sf::Color(0,0,0,0),
+		sf::Color(0,0,0,0),
+		sf::Color(0,0,0,0));
 
 	this->buttons["SETTINGS"] = new Button(
-		this->window->getSize().x / 2 - 62.5f, this->window->getSize().y / 2 - 25.f, 125.f, 50.f,
+		this->window->getSize().x / 2, this->window->getSize().y / 2 - 25.f,
+		0.f, -10.f, 125.f, 50.f,
 		&this->font, "Settings", 36,
 		sf::Color(70,70,70,200),
 		sf::Color(250,250,250,250),
 		sf::Color(20,20,20,50),
-		sf::Color(20,20,40,0),
-		sf::Color(20,20,50,0),
-		sf::Color(20,20,40,0));
+		sf::Color(0,0,0,0),
+		sf::Color(0,0,0,0),
+		sf::Color(0,0,0,0));
 
 	this->buttons["EXIT_STATE"] = new Button(
-		this->window->getSize().x / 2 - 50.f, this->window->getSize().y / 2 + 50.f, 100.f, 50.f,
+		this->window->getSize().x / 2, this->window->getSize().y / 2 + 50.f,
+		0.f, -10.f, 100.f, 50.f,
 		&this->font, "Quit", 36,
 		sf::Color(70,70,70,200),
 		sf::Color(250,250,250,250),
 		sf::Color(20,20,20,50),
-		sf::Color(40,20,20,0),
-		sf::Color(40,20,20,0),
-		sf::Color(50,20,20,0));
+		sf::Color(0,0,0,0),
+		sf::Color(0,0,0,0),
+		sf::Color(0,0,0,0));
 }
 
 ///Constructors/Destructors
@@ -111,23 +114,17 @@ void MainMenuState::updateButtons()
 
 	///Updates all the buttons in the state and handles their functionality
 	for (auto &it : this->buttons)
-	{
 		it.second->update(this->mousePosView);
-	}
 
 	///New game
 	if (this->buttons["GAME_STATE"]->isPressed())
-	{
 		this->states->push(new GameState(this->window, this->supportedKeys, this->states));
-	}
 
-	///Settings
+	///Settings there
 
 	///Quit the game
 	if (this->buttons["EXIT_STATE"]->isPressed())
-	{
 		this->State::endState();
-	}
 }
 
 void MainMenuState::update(const float& dt)
@@ -137,16 +134,13 @@ void MainMenuState::update(const float& dt)
 }
 
 ///Render
-void MainMenuState::renderButtons(sf::RenderTarget* target)
-{
-	for (auto &it : this->buttons)
-		it.second->render(target);
-}
-
 void MainMenuState::render(sf::RenderTarget* target)
 {
 	if (!target)
 		target = this->window;
+
 	target->draw(this->background);
-	this->renderButtons(target);
+
+	for (auto &it : this->buttons)
+		it.second->render(target);
 }

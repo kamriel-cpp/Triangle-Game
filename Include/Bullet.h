@@ -6,9 +6,12 @@ class Bullet : public sf::CircleShape
 {
 public:
 	float movingSpeed;
-	float damage;
+	int damage;
 public:
-	Bullet(const sf::Vector2f& position, const sf::Color& color, const float& radius, const float& rotation, const float& moving_speed, float damage);
+	Bullet(const sf::Vector2f& position, const float& rotation,
+		const sf::Color& color, const int& damage,
+		const float& moving_speed, const float& radius);
+
 	void explode(std::list<Effect*>* effects);
 	void update(const float& dt);
 };

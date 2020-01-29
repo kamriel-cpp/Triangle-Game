@@ -1,37 +1,20 @@
-///Initialization
-void Enemy::initComponents()
-{
-	this->createMovementComponent(this->defaultMaxVelocity, 15.f, 5.f);
-	this->createAttributeComponent(1);
-}
-
 ///Constructors/Destructors
-Enemy::Enemy(const sf::Vector2f& position, std::string type)
+Enemy::Enemy(const sf::Vector2f& position, std::string type, const int& level)
 {
-	this->initComponents();
+	this->createAttributeComponent(level);
+	this->createMovementComponent(100.f, 15.f, 5.f);
 
 	this->type = type;
 	if (this->type == "Melee")
-	{
-		this->defaultColor.r = 250;
-		this->defaultColor.g = 50;
-		this->defaultColor.b = 50;
-	}
+		this->customFillColor = { 250, 50, 50 };
 	else if (this->type == "Shooter")
-	{
-		this->defaultColor.r = 250;
-		this->defaultColor.g = 250;
-		this->defaultColor.b = 50;
-	}
+		this->customFillColor = { 250, 250, 50 };
 
 	this->setPosition(position);
-	this->setFillColor(this->defaultColor);
+	this->setFillColor(this->customFillColor);
 }
 
-Enemy::~Enemy()
-{
-	
-}
+Enemy::~Enemy() { }
 
 ///Functions
 const std::string& Enemy::getType() const
@@ -42,10 +25,10 @@ const std::string& Enemy::getType() const
 void Enemy::update(const float& dt, const sf::Vector2f& target_position)
 {
 	///Update some components
-	if (this->movementComponent)
-		this->movementComponent->update(dt);
 	if (this->attributeComponent)
 		this->attributeComponent->update();
+	if (this->movementComponent)
+		this->movementComponent->update(dt);
 
 	///Update collisionCheckers
 	this->updateCollisionCheckers();
@@ -72,4 +55,6 @@ void Enemy::update(const float& dt, const sf::Vector2f& target_position)
 		move_dir.y = 0.f;
 	
 	this->move(move_dir.x, move_dir.y, dt);
+
+	//this->attributeComponent->debugPrint();
 }

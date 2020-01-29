@@ -1,30 +1,17 @@
-///Initialization
-void Player::initComponents()
-{
-	this->createMovementComponent(this->defaultMaxVelocity, 15.f, 5.f);
-	this->createAttributeComponent(1);
-	this->createAttackComponent(true, false, true, 0.f, 1.f, 1.f, 3);
-}
-
 ///Constructors/Destructors
 Player::Player(const sf::Vector2f& position) : stopped(false)
 {
-	this->defaultMaxVelocity *= 2.f;
-	
-	this->initComponents();
+	this->createAttributeComponent(1);
+	this->createMovementComponent(200.f, 15.f, 5.f);
+	this->createShootComponent();
 
-	this->defaultColor.r = 50;
-	this->defaultColor.g = 250;
-	this->defaultColor.b = 250;
+	this->customFillColor = { 50, 250, 250 };
 
-	this->setFillColor(this->defaultColor);
+	this->setFillColor(this->customFillColor);
 	this->setPosition(position);
 }
 
-Player::~Player()
-{
-	///empty
-}
+Player::~Player() { }
 
 ///Functions
 const bool Player::isDashing() const
@@ -50,12 +37,12 @@ void Player::setContinue()
 void Player::update(const float& dt, const sf::Vector2f& target_position)
 {
 	///Update some components
-	if (this->movementComponent)
-		this->movementComponent->update(dt);
 	if (this->attributeComponent)
 		this->attributeComponent->update();
-	if (this->attackComponent)
-		this->attackComponent->update(dt);
+	if (this->movementComponent)
+		this->movementComponent->update(dt);
+	if (this->shootComponent)
+		this->shootComponent->update(dt, this->attributeComponent->reloadTime);
 
 	///Update collisionCheckers
 	this->updateCollisionCheckers();
@@ -71,8 +58,4 @@ void Player::update(const float& dt, const sf::Vector2f& target_position)
 	{
 		///Dashing
 	}
-
-	///Print all attributes in the console
-	//system("cls");
-	//std::cout << this->attributeComponent->debugPrint() << std::endl;
 }
