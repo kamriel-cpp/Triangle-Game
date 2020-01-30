@@ -12,7 +12,7 @@ void MainMenuState::initBackground()
 		static_cast<float>(this->window->getSize().x),
 		static_cast<float>(this->window->getSize().y)));
 
-	this->background.setFillColor(sf::Color(12,12,12));
+	this->background.setFillColor({ 12, 12, 12 });
 }
 
 void MainMenuState::initKeybinds()
@@ -43,34 +43,34 @@ void MainMenuState::initButtons()
 		this->window->getSize().x / 2, this->window->getSize().y / 2 - 100.f,
 		0.f, -10.f, 150.f, 50.f,
 		&this->font, "New Game", 36,
-		sf::Color(70,70,70,200),
-		sf::Color(250,250,250,250),
-		sf::Color(20,20,20,50),
-		sf::Color(0,0,0,0),
-		sf::Color(0,0,0,0),
-		sf::Color(0,0,0,0));
+		{ 70, 70, 70, 200 },
+		{ 250, 250, 250, 250 },
+		{ 20, 20, 20, 50 },
+		{ 0, 0, 0, 0 },
+		{ 0, 0, 0, 0 },
+		{ 0, 0, 0, 0 });
 
 	this->buttons["SETTINGS"] = new Button(
 		this->window->getSize().x / 2, this->window->getSize().y / 2 - 25.f,
 		0.f, -10.f, 125.f, 50.f,
 		&this->font, "Settings", 36,
-		sf::Color(70,70,70,200),
-		sf::Color(250,250,250,250),
-		sf::Color(20,20,20,50),
-		sf::Color(0,0,0,0),
-		sf::Color(0,0,0,0),
-		sf::Color(0,0,0,0));
+		{ 70, 70, 70, 200 },
+		{ 250, 250, 250, 250 },
+		{ 20, 20, 20, 50 },
+		{ 0, 0, 0, 0 },
+		{ 0, 0, 0, 0 },
+		{ 0, 0, 0, 0 });
 
 	this->buttons["EXIT_STATE"] = new Button(
 		this->window->getSize().x / 2, this->window->getSize().y / 2 + 50.f,
 		0.f, -10.f, 100.f, 50.f,
 		&this->font, "Quit", 36,
-		sf::Color(70,70,70,200),
-		sf::Color(250,250,250,250),
-		sf::Color(20,20,20,50),
-		sf::Color(0,0,0,0),
-		sf::Color(0,0,0,0),
-		sf::Color(0,0,0,0));
+		{ 70, 70, 70, 200 },
+		{ 250, 250, 250, 250 },
+		{ 20, 20, 20, 50 },
+		{ 0, 0, 0, 0 },
+		{ 0, 0, 0, 0 },
+		{ 0, 0, 0, 0 });
 }
 
 ///Constructors/Destructors

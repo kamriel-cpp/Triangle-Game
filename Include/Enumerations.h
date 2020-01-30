@@ -3,7 +3,7 @@
 ///Enumerations
 enum RoomTags
 {
-	RT_NONE,
+	RT_NONE = 0,
 	RT_HALL_MAIN,
 	RT_HALL_SECONDARY,
 	RT_CORRIDOR_HORIZONTAL,
@@ -12,7 +12,7 @@ enum RoomTags
 
 enum Direction
 {
-	DIR_LEFT,
+	DIR_LEFT = 0,
 	DIR_RIGHT,
 	DIR_UP,
 	DIR_DOWN
@@ -20,7 +20,7 @@ enum Direction
 
 enum MovementStates
 {
-	MV_IDLE,
+	MV_IDLE = 0,
 	MV_MOVING,
 	MV_MOVING_LEFT,
 	MV_MOVING_RIGHT,
@@ -30,7 +30,7 @@ enum MovementStates
 
 enum ButtonStates
 {
-	BTN_IDLE,
+	BTN_IDLE = 0,
 	BTN_HOVER,
 	BTN_ACTIVE
 };

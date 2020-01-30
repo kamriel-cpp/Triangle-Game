@@ -1,3 +1,49 @@
+///Blink Constructors/Destructors
+Blink::Blink(sf::Shape* target, const sf::Color& default_color, float fading_speed, float effect_duration)
+	: baseFillColor(default_color), currentColor(target->getFillColor()), fadingSpeed(fading_speed), duration(effect_duration), timer(0.f)
+{
+	this->target = target;
+	this->done = false;
+}
+
+Blink::~Blink()
+{
+	this->target = nullptr;
+}
+
+///Blink Functions
+void Blink::update(const float& dt)
+{
+	this->done = false;
+	this->timer += dt;
+
+	if (this->timer < this->duration / 2.f)
+	{
+		this->currentColor.r = this->currentColor.r + this->fadingSpeed > 255 ? 255 : this->currentColor.r + this->fadingSpeed;
+		this->currentColor.g = this->currentColor.g + this->fadingSpeed > 255 ? 255 : this->currentColor.g + this->fadingSpeed;
+		this->currentColor.b = this->currentColor.b + this->fadingSpeed > 255 ? 255 : this->currentColor.b + this->fadingSpeed;
+
+		this->target->setFillColor(this->currentColor);
+	}
+	else if (this->timer < this->duration)
+	{
+		this->currentColor.r = this->currentColor.r - this->fadingSpeed < this->baseFillColor.r ? this->baseFillColor.r : this->currentColor.r - this->fadingSpeed;
+		this->currentColor.g = this->currentColor.g - this->fadingSpeed < this->baseFillColor.g ? this->baseFillColor.g : this->currentColor.g - this->fadingSpeed;
+		this->currentColor.b = this->currentColor.b - this->fadingSpeed < this->baseFillColor.b ? this->baseFillColor.b : this->currentColor.b - this->fadingSpeed;
+
+		this->target->setFillColor(this->currentColor);
+	}
+	else
+	{
+		this->done = true;
+	}
+}
+
+void Blink::render(sf::RenderTarget* target)
+{
+
+}
+
 ///Explosion Constructors/Destructors
 Explosion::Explosion(const sf::Vector2f& center, float radius,
 	const sf::Color& particles_color, int particles_count,
@@ -61,52 +107,6 @@ void Explosion::render(sf::RenderTarget* target)
 {
 	for (auto& particle : this->particles)
 		target->draw(*particle);
-}
-
-///Blink Constructors/Destructors
-Blink::Blink(sf::Shape* target, const sf::Color& default_color, float fading_speed, float effect_duration)
-	: customFillColor(default_color), currentColor(target->getFillColor()), fadingSpeed(fading_speed), duration(effect_duration), timer(0.f)
-{
-	this->target = target;
-	this->done = false;
-}
-
-Blink::~Blink()
-{
-	this->target = nullptr;
-}
-
-///Blink Functions
-void Blink::update(const float& dt)
-{
-	this->done = false;
-	this->timer += dt;
-
-	if (this->timer < this->duration / 2.f)
-	{
-		this->currentColor.r = this->currentColor.r + this->fadingSpeed > 255 ? 255 : this->currentColor.r + this->fadingSpeed;
-		this->currentColor.g = this->currentColor.g + this->fadingSpeed > 255 ? 255 : this->currentColor.g + this->fadingSpeed;
-		this->currentColor.b = this->currentColor.b + this->fadingSpeed > 255 ? 255 : this->currentColor.b + this->fadingSpeed;
-
-		this->target->setFillColor(this->currentColor);
-	}
-	else if (this->timer < this->duration)
-	{
-		this->currentColor.r = this->currentColor.r - this->fadingSpeed < this->customFillColor.r ? this->customFillColor.r : this->currentColor.r - this->fadingSpeed;
-		this->currentColor.g = this->currentColor.g - this->fadingSpeed < this->customFillColor.g ? this->customFillColor.g : this->currentColor.g - this->fadingSpeed;
-		this->currentColor.b = this->currentColor.b - this->fadingSpeed < this->customFillColor.b ? this->customFillColor.b : this->currentColor.b - this->fadingSpeed;
-
-		this->target->setFillColor(this->currentColor);
-	}
-	else
-	{
-		this->done = true;
-	}
-}
-
-void Blink::render(sf::RenderTarget* target)
-{
-
 }
 
 ///Spawn Constructors/Destructors

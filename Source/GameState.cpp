@@ -4,6 +4,8 @@ void GameState::initVariables()
 	this->wasPressedLeft = true;
 	this->wasPressedRight = true;
 	this->wasPressedMiddle = true;
+	this->battleState = false;
+	this->battleRoomIndex = 0;
 }
 
 void GameState::initKeybinds()
@@ -22,15 +24,20 @@ void GameState::initKeybinds()
 	ifs.close();
 }
 
+void GameState::initFont()
+{
+	this->font.loadFromFile("Fonts/Dosis-Light.ttf");
+}
+
 void GameState::initFloor()
 {
 	this->floor.generate();
 
 	this->floorText = new sf::Text("Floor " + std::to_string(this->floor.number), this->font, 500);
-	this->floorText->setPosition(this->floor.startRoomPosition);
 	this->floorText->setOrigin(
 		this->floorText->getGlobalBounds().width  / 2.f,
 		this->floorText->getGlobalBounds().height / 2.f);
+	this->floorText->setPosition(this->floor.startRoomPosition);
 	this->floorText->scale(0.2f, 0.2f);
 }
 
@@ -64,7 +71,7 @@ void GameState::initViews()
 {
 	this->mainView = new sf::View(this->window->getDefaultView());
 	this->mainView->setCenter(sf::Vector2f(0.f, 0.f));
-	//this->mainView->zoom(0.75f);
+	this->mainView->zoom(0.8f);
 	this->mainView->move(this->floor.startRoomPosition);
 
 	this->uiView = new sf::View(this->window->getDefaultView());
@@ -75,11 +82,6 @@ void GameState::initCameras()
 {
 	this->mainCamera = new Camera(this->mainView, this->player, this->window);
 	this->mainCamera->smoothing = 5.f;
-}
-
-void GameState::initFont()
-{
-	this->font.loadFromFile("Fonts/Dosis-Light.ttf");
 }
 
 void GameState::initButtons()
@@ -93,12 +95,12 @@ void GameState::initButtons()
 			-this->uiView->getSize().x / 2 + 30.f + i * 60.f, this->uiView->getSize().y / 2 - 30.f,
 			0.f, -10.f, 40.f, 40.f,
 			&this->font, std::to_string(i), 36,
-			sf::Color(250,250,250,200),
-			sf::Color(250,250,250,250),
-			sf::Color(50,250,50,250),
-			sf::Color(250,250,250,10),
-			sf::Color(250,250,250,20),
-			sf::Color(0,0,0,0));
+			{ 250, 250, 250, 200 },
+			{ 250, 250, 250, 250 },
+			{ 50, 250, 50, 250 },
+			{ 250, 250, 250, 10 },
+			{ 250, 250, 250, 20 },
+			{ 0, 0, 0, 0 });
 }
 
 void GameState::initMinimap()
@@ -129,18 +131,16 @@ GameState::GameState(sf::RenderWindow* window, std::map<std::string,
 	///Initialize functions
 	this->initVariables();
 	this->initKeybinds();
+	this->initFont();
 	this->initFloor();
 	this->initPlayer();
 	this->initEnemies();
 	this->initViews();
 	this->initCameras();
-	this->initFont();
 	this->initButtons();
 	this->initMinimap();
 	this->initFPSCounter();
 	this->initWaveSpawner();
-
-	this->battleState = false;
 }
 
 GameState::~GameState()
@@ -256,6 +256,12 @@ void GameState::updateInput(const float& dt)
 			#ifdef DEBUG_PLAYER_STATS_OUTPUT
 			this->player->statsPrint();
 			#endif
+
+			#ifdef DEBUG_CLOSE_CURRENT_ROOM
+			for (auto& room : this->floor.rooms)
+				if (this->player->completelyIntersects(room->shape.getGlobalBounds()))
+					this->floor.closeRoom(room->index);
+			#endif
 		}
 	}
 	else
@@ -321,140 +327,60 @@ void GameState::updatePlayerInput(const float& dt)
 void GameState::updateCollisionsWithWalls(const float& dt)
 {
 	///Blocking player and enemies movement direction to the wall
-	for (auto& wall : this->floor.walls)
+	for (auto& room : this->floor.rooms)
 	{
-		///Blocking player movement direction to the wall
-		if (this->player->getGlobalBounds().intersects(wall->getGlobalBounds()))
+		for (auto& wall : room->getWalls())
 		{
-			if (this->player->getSideOfCollision(wall->getGlobalBounds()) == DIR_LEFT)
+			///Blocking player movement direction to the wall
+			if (this->player->getGlobalBounds().intersects(wall->getGlobalBounds()))
 			{
-				this->player->stopVelocityX();
-				this->player->sf::CircleShape::move(50.f * dt, 0.f);
-			}
-			else if (this->player->getSideOfCollision(wall->getGlobalBounds()) == DIR_RIGHT)
-			{
-				this->player->stopVelocityX();
-				this->player->sf::CircleShape::move(-50.f * dt, 0.f);
-			}
-			else if (this->player->getSideOfCollision(wall->getGlobalBounds()) == DIR_UP)
-			{
-				this->player->stopVelocityY();
-				this->player->sf::CircleShape::move(0.f, 50.f * dt);
-			}
-			else if (this->player->getSideOfCollision(wall->getGlobalBounds()) == DIR_DOWN)
-			{
-				this->player->stopVelocityY();
-				this->player->sf::CircleShape::move(0.f, -50.f * dt);
-			}
-		}
-
-		///Blocking enemy movement direction to the wall
-		if (!this->enemies.empty())
-		{
-			for (auto& enemy : this->enemies)
-			{
-				if (enemy != nullptr)
-				{
-					if (enemy->getGlobalBounds().intersects(wall->getGlobalBounds()))
-					{
-						if (enemy->getSideOfCollision(wall->getGlobalBounds()) == DIR_LEFT)
-						{
-							enemy->stopVelocityX();
-							enemy->sf::CircleShape::move(50.f * dt, 0.f);
-						}
-						else if (enemy->getSideOfCollision(wall->getGlobalBounds()) == DIR_RIGHT)
-						{
-							enemy->stopVelocityX();
-							enemy->sf::CircleShape::move(-50.f * dt, 0.f);
-						}
-						else if (enemy->getSideOfCollision(wall->getGlobalBounds()) == DIR_UP)
-						{
-							enemy->stopVelocityY();
-							enemy->sf::CircleShape::move(0.f, 50.f * dt);
-						}
-						else if (enemy->getSideOfCollision(wall->getGlobalBounds()) == DIR_DOWN)
-						{
-							enemy->stopVelocityY();
-							enemy->sf::CircleShape::move(0.f, -50.f * dt);
-						}
-					}
-				}
-			}
-		}
-
-		///Explode bullet
-		if (!this->bullets.empty())
-		{
-			for (auto& bullet : this->bullets)
-			{
-				if (bullet != nullptr)
-				{
-					if (bullet->getGlobalBounds().intersects(wall->getGlobalBounds()))
-					{
-						bullet->explode(&this->effects);
-						delete bullet;
-						bullet = nullptr;
-					}
-				}
-			}
-		}
-	}
-
-	///Blocking player and enemies movement direction to the door
-	if (!this->floor.doors.empty())
-	{
-		for (auto& door : this->floor.doors)
-		{
-			///Blocking player movement direction to the door
-			if (this->player->getGlobalBounds().intersects(door->getGlobalBounds()))
-			{
-				if (this->player->getSideOfCollision(door->getGlobalBounds()) == DIR_LEFT)
+				if (this->player->getSideOfCollision(wall->getGlobalBounds()) == DIR_LEFT)
 				{
 					this->player->stopVelocityX();
 					this->player->sf::CircleShape::move(50.f * dt, 0.f);
 				}
-				else if (this->player->getSideOfCollision(door->getGlobalBounds()) == DIR_RIGHT)
+				else if (this->player->getSideOfCollision(wall->getGlobalBounds()) == DIR_RIGHT)
 				{
 					this->player->stopVelocityX();
 					this->player->sf::CircleShape::move(-50.f * dt, 0.f);
 				}
-				else if (this->player->getSideOfCollision(door->getGlobalBounds()) == DIR_UP)
+				else if (this->player->getSideOfCollision(wall->getGlobalBounds()) == DIR_UP)
 				{
 					this->player->stopVelocityY();
 					this->player->sf::CircleShape::move(0.f, 50.f * dt);
 				}
-				else if (this->player->getSideOfCollision(door->getGlobalBounds()) == DIR_DOWN)
+				else if (this->player->getSideOfCollision(wall->getGlobalBounds()) == DIR_DOWN)
 				{
 					this->player->stopVelocityY();
 					this->player->sf::CircleShape::move(0.f, -50.f * dt);
 				}
 			}
 
-			///Blocking enemy movement direction to the door
+			///Blocking enemy movement direction to the wall
 			if (!this->enemies.empty())
 			{
 				for (auto& enemy : this->enemies)
 				{
 					if (enemy != nullptr)
 					{
-						if (enemy->getGlobalBounds().intersects(door->getGlobalBounds()))
+						if (enemy->getGlobalBounds().intersects(wall->getGlobalBounds()))
 						{
-							if (enemy->getSideOfCollision(door->getGlobalBounds()) == DIR_LEFT)
+							if (enemy->getSideOfCollision(wall->getGlobalBounds()) == DIR_LEFT)
 							{
 								enemy->stopVelocityX();
 								enemy->sf::CircleShape::move(50.f * dt, 0.f);
 							}
-							else if (enemy->getSideOfCollision(door->getGlobalBounds()) == DIR_RIGHT)
+							else if (enemy->getSideOfCollision(wall->getGlobalBounds()) == DIR_RIGHT)
 							{
 								enemy->stopVelocityX();
 								enemy->sf::CircleShape::move(-50.f * dt, 0.f);
 							}
-							else if (enemy->getSideOfCollision(door->getGlobalBounds()) == DIR_UP)
+							else if (enemy->getSideOfCollision(wall->getGlobalBounds()) == DIR_UP)
 							{
 								enemy->stopVelocityY();
 								enemy->sf::CircleShape::move(0.f, 50.f * dt);
 							}
-							else if (enemy->getSideOfCollision(door->getGlobalBounds()) == DIR_DOWN)
+							else if (enemy->getSideOfCollision(wall->getGlobalBounds()) == DIR_DOWN)
 							{
 								enemy->stopVelocityY();
 								enemy->sf::CircleShape::move(0.f, -50.f * dt);
@@ -471,11 +397,97 @@ void GameState::updateCollisionsWithWalls(const float& dt)
 				{
 					if (bullet != nullptr)
 					{
-						if (bullet->getGlobalBounds().intersects(door->getGlobalBounds()))
+						if (bullet->getGlobalBounds().intersects(wall->getGlobalBounds()))
 						{
 							bullet->explode(&this->effects);
 							delete bullet;
 							bullet = nullptr;
+						}
+					}
+				}
+			}
+		}
+	}
+
+	///Blocking player and enemies movement direction to the door
+	for (auto& room : this->floor.rooms)
+	{
+		if (!room->getDoors().empty())
+		{
+			for (auto& door : room->getDoors())
+			{
+				///Blocking player movement direction to the door
+				if (this->player->getGlobalBounds().intersects(door->getGlobalBounds()))
+				{
+					if (this->player->getSideOfCollision(door->getGlobalBounds()) == DIR_LEFT)
+					{
+						this->player->stopVelocityX();
+						this->player->sf::CircleShape::move(50.f * dt, 0.f);
+					}
+					else if (this->player->getSideOfCollision(door->getGlobalBounds()) == DIR_RIGHT)
+					{
+						this->player->stopVelocityX();
+						this->player->sf::CircleShape::move(-50.f * dt, 0.f);
+					}
+					else if (this->player->getSideOfCollision(door->getGlobalBounds()) == DIR_UP)
+					{
+						this->player->stopVelocityY();
+						this->player->sf::CircleShape::move(0.f, 50.f * dt);
+					}
+					else if (this->player->getSideOfCollision(door->getGlobalBounds()) == DIR_DOWN)
+					{
+						this->player->stopVelocityY();
+						this->player->sf::CircleShape::move(0.f, -50.f * dt);
+					}
+				}
+
+				///Blocking enemy movement direction to the door
+				if (!this->enemies.empty())
+				{
+					for (auto& enemy : this->enemies)
+					{
+						if (enemy != nullptr)
+						{
+							if (enemy->getGlobalBounds().intersects(door->getGlobalBounds()))
+							{
+								if (enemy->getSideOfCollision(door->getGlobalBounds()) == DIR_LEFT)
+								{
+									enemy->stopVelocityX();
+									enemy->sf::CircleShape::move(50.f * dt, 0.f);
+								}
+								else if (enemy->getSideOfCollision(door->getGlobalBounds()) == DIR_RIGHT)
+								{
+									enemy->stopVelocityX();
+									enemy->sf::CircleShape::move(-50.f * dt, 0.f);
+								}
+								else if (enemy->getSideOfCollision(door->getGlobalBounds()) == DIR_UP)
+								{
+									enemy->stopVelocityY();
+									enemy->sf::CircleShape::move(0.f, 50.f * dt);
+								}
+								else if (enemy->getSideOfCollision(door->getGlobalBounds()) == DIR_DOWN)
+								{
+									enemy->stopVelocityY();
+									enemy->sf::CircleShape::move(0.f, -50.f * dt);
+								}
+							}
+						}
+					}
+				}
+
+				///Explode bullet
+				if (!this->bullets.empty())
+				{
+					for (auto& bullet : this->bullets)
+					{
+						if (bullet != nullptr)
+						{
+							if (bullet->getGlobalBounds().intersects(door->getGlobalBounds()))
+							{
+								bullet->explode(&this->effects);
+								delete bullet;
+								bullet = nullptr;
+							}
 						}
 					}
 				}
@@ -516,56 +528,39 @@ void GameState::updateCombat(const float& dt)
 {
 	for (auto& room : this->floor.rooms)
 	{
-		///If this room is not a corridor
-		if (room->tag == "Hall")
+		if (room->tag == RT_HALL_MAIN || room->tag == RT_HALL_SECONDARY)
 		{
-			///If room is not visited
-			if (room->isActive)
+			if (!room->isVisited)
 			{
-				///If player intersects with the room
 				if (this->player->completelyIntersects(room->shape.getGlobalBounds()))
 				{
-					///Close this room
-					this->floor.closeRoom(room->index);
-					///Start battle
 					this->battleState = true;
-					///Place a new wavespawner
-					if (this->waveSpawner == nullptr)
-						this->waveSpawner = new WaveSpawner(room->shape.getPosition(), 250,
-							rand() % 2 + 2, "Melee",
-							this->player->getLevel(), rand() % 3 + 3);
+					this->battleRoomIndex = room->index;
+					this->floor.closeRoom(this->battleRoomIndex);
+					this->waveSpawner = new WaveSpawner(room->shape.getPosition(), 250,
+						rand() % 2 + 2, "Melee",
+						this->player->getLevel(), rand() % 3 + 3);
+
+					room->isVisited = true;
 				}
 			}
-			///If room is visited
+		}
+	}
+	if (this->battleState == true)
+	{
+		if (this->enemies.empty())
+		{
+			if (this->waveSpawner->wavesCount <= 0)
+			{
+				if (this->waveSpawner)
+					this->waveSpawner = nullptr;
+				this->battleState = false;
+				this->floor.openRoom(this->battleRoomIndex);
+			}
 			else
 			{
-				///If battle is going
-				if (this->battleState == true)
-				{
-					///If enemies are not in the floor
-					if (this->enemies.empty())
-					{
-						///If wavespawner alive
-						if (this->waveSpawner != nullptr)
-						{
-							///If waves out
-							if (this->waveSpawner->wavesCount <= 0)
-							{
-								///Destroy our wavespawner
-								this->waveSpawner = nullptr;
-								///Finish the battle
-								this->battleState = false;
-								///And open this room
-								this->floor.destroyAllDoors();
-							}
-							else
-							{
-								///Spawn more enemies
-								this->waveSpawner->spawnWave(this->enemies);
-							}
-						}
-					}
-				}
+				if (this->waveSpawner)
+					this->waveSpawner->spawnWave(this->enemies);
 			}
 		}
 	}
@@ -731,6 +726,11 @@ void GameState::render(sf::RenderTarget* target)
 	for (auto& enemy : this->enemies)
 		target->draw(*enemy);
 	target->draw(*this->player);
+	#ifdef DEBUG_UNITS_VIEW
+	for (auto& enemy : this->enemies)
+		enemy->renderCollisionCheckers(target);
+	this->player->renderCollisionCheckers(target);
+	#endif
 	for (auto& effect : this->effects)
 		effect->render(this->window);
 

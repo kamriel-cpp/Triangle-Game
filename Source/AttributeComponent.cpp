@@ -13,7 +13,7 @@ AttributeComponent::AttributeComponent(const int level)
 	this->damage = 1;
 	this->bulletsPerShoot = 1;
 	this->bulletSpeed = 200.f;
-	this->bulletRadius = 2.5f;
+	this->bulletRadius = 5.f;
 
 	this->updateLevel();
 	this->randomSelectAllAttributePoints();
@@ -129,12 +129,12 @@ const bool AttributeComponent::selectAttributePoints(const int& choise)
 			break;
 		case 1:
 			///Reload Time
-			if (this->reloadTime - 0.1f < 0.1f)
+			if (this->reloadTime - 0.1f <= 0.f)
 			{
 				this->reloadTime = 0.1f;
 				return false;
 			}
-			this->reloadTime -= 0.1f;
+			this->reloadTime = this->reloadTime - 0.1f > 0.09f && this->reloadTime - 0.1f < 0.1f ? 0.1f : this->reloadTime - 0.1f;
 			this->spread = this->spread + 2.5f >= 45.f ? 45.f : this->spread + 2.5f;
 			break;
 		case 2:

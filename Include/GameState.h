@@ -37,12 +37,13 @@ private:
 	std::list<Bullet*>		bullets;
 
 	bool battleState;
+	unsigned int battleRoomIndex;
 private:
 	void initVariables();
 	void initKeybinds();
 	void initFont();
-	void initButtons();
 	void initFloor();
+	void initButtons();
 	void initPlayer();
 	void initEnemies();
 	void initViews();

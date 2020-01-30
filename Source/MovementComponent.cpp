@@ -16,7 +16,6 @@ MovementComponent::MovementComponent(sf::Shape* shape,
 MovementComponent::~MovementComponent()
 {
 	this->shape = nullptr;
-	delete this->shape;
 }
 
 ///Functions

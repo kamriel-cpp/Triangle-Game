@@ -8,8 +8,6 @@ private:
 	float			corridorWidth;
 	float			corridorLength;
 	sf::Color 		floorColor;
-	float			wallThickness;
-	sf::Color 		wallColor;
 
 	sf::Vector2i 	minRoomsCoords;
 	sf::Vector2i 	maxRoomsCoords;
@@ -23,8 +21,7 @@ public:
 	int number;
 
 	std::list<Room*> rooms;
-	std::list<sf::RectangleShape*> walls;
-	std::list<sf::RectangleShape*> doors;
+
 	sf::Vector2f centerPosition;
 	sf::Vector2f startRoomPosition;
 	sf::Vector2f lastRoomPosition;
@@ -33,12 +30,11 @@ public:
 
 	const sf::Vector2f& getRoomSize();
 	
+	void openRoom(unsigned int index);
 	void closeRoom(unsigned int index);
-	void destroyAllDoors();
 
 	void setRoomSize(sf::Vector2f room_size);
 	void fillRoomsList(unsigned char floor[50][50]);
-	void fillWallsList(unsigned char floor[50][50]);
 
 	void generate();
 	void destroy();

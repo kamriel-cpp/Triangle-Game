@@ -1,17 +1,22 @@
 ///Constructors/Destructors
-Enemy::Enemy(const sf::Vector2f& position, std::string type, const int& level)
+Enemy::Enemy(const sf::Vector2f& position, std::string type, const int& level) : type(type)
 {
 	this->createAttributeComponent(level);
 	this->createMovementComponent(100.f, 15.f, 5.f);
 
-	this->type = type;
 	if (this->type == "Melee")
-		this->customFillColor = { 250, 50, 50 };
+		this->baseFillColor = { 250, 50, 50 };
 	else if (this->type == "Shooter")
-		this->customFillColor = { 250, 250, 50 };
+		this->baseFillColor = { 250, 250, 50 };
+
+	#ifdef DEBUG_UNITS_VIEW
+	this->baseFillColor = { this->baseFillColor.r, this->baseFillColor.g, this->baseFillColor.b, 150 };
+	this->setOutlineThickness(-0.5f);
+	this->setOutlineColor({ this->baseFillColor.r, this->baseFillColor.g, this->baseFillColor.b, 250 });
+	#endif
 
 	this->setPosition(position);
-	this->setFillColor(this->customFillColor);
+	this->setFillColor(this->baseFillColor);
 }
 
 Enemy::~Enemy() { }
@@ -25,10 +30,8 @@ const std::string& Enemy::getType() const
 void Enemy::update(const float& dt, const sf::Vector2f& target_position)
 {
 	///Update some components
-	if (this->attributeComponent)
-		this->attributeComponent->update();
-	if (this->movementComponent)
-		this->movementComponent->update(dt);
+	this->attributeComponent->update();
+	this->movementComponent->update(dt);
 
 	///Update collisionCheckers
 	this->updateCollisionCheckers();

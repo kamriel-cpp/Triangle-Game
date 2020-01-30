@@ -14,6 +14,23 @@ public:
 	virtual void render(sf::RenderTarget* target = nullptr) = 0;
 };
 
+class Blink : public Effect
+{
+private:
+	sf::Color baseFillColor;
+	sf::Color currentColor;
+
+	float fadingSpeed;
+	float duration;
+	float timer;
+public:
+	Blink(sf::Shape* target, const sf::Color& default_color, float fading_speed, float effect_duration);
+	virtual ~Blink();
+	
+	void update(const float& dt) override;
+	void render(sf::RenderTarget* target = nullptr) override;
+};
+
 class Explosion : public Effect
 {
 private:
@@ -29,23 +46,6 @@ public:
 		int fading_speed, float moving_speed);
 	virtual ~Explosion();
 
-	void update(const float& dt) override;
-	void render(sf::RenderTarget* target = nullptr) override;
-};
-
-class Blink : public Effect
-{
-private:
-	sf::Color customFillColor;
-	sf::Color currentColor;
-
-	float fadingSpeed;
-	float duration;
-	float timer;
-public:
-	Blink(sf::Shape* target, const sf::Color& default_color, float fading_speed, float effect_duration);
-	virtual ~Blink();
-	
 	void update(const float& dt) override;
 	void render(sf::RenderTarget* target = nullptr) override;
 };

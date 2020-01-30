@@ -5,9 +5,15 @@ Player::Player(const sf::Vector2f& position) : stopped(false)
 	this->createMovementComponent(200.f, 15.f, 5.f);
 	this->createShootComponent();
 
-	this->customFillColor = { 50, 250, 250 };
+	this->baseFillColor = { 50, 250, 250 };
 
-	this->setFillColor(this->customFillColor);
+	#ifdef DEBUG_UNITS_VIEW
+	this->baseFillColor = { this->baseFillColor.r, this->baseFillColor.g, this->baseFillColor.b, 150 };
+	this->setOutlineThickness(-0.5f);
+	this->setOutlineColor({ this->baseFillColor.r, this->baseFillColor.g, this->baseFillColor.b, 250 });
+	#endif
+
+	this->setFillColor(this->baseFillColor);
 	this->setPosition(position);
 }
 
@@ -37,12 +43,9 @@ void Player::setContinue()
 void Player::update(const float& dt, const sf::Vector2f& target_position)
 {
 	///Update some components
-	if (this->attributeComponent)
-		this->attributeComponent->update();
-	if (this->movementComponent)
-		this->movementComponent->update(dt);
-	if (this->shootComponent)
-		this->shootComponent->update(dt, this->attributeComponent->reloadTime);
+	this->attributeComponent->update();
+	this->movementComponent->update(dt);
+	this->shootComponent->update(dt, this->attributeComponent->reloadTime);
 
 	///Update collisionCheckers
 	this->updateCollisionCheckers();

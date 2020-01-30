@@ -1,19 +1,17 @@
 ///Constructors/Destructors
 Actor::Actor()
 {
-	this->customFillColor.r = 255;
-	this->customFillColor.g = 255;
-	this->customFillColor.b = 255;
-	this->customRadius = 20.f;
-	this->customOrigin = sf::Vector2f(this->customRadius, this->customRadius);
-	this->customScale = sf::Vector2f(1.f, 1.f);
-	this->customPointCount = 30;
+	this->baseFillColor = { 255, 255, 255 };
+	this->baseRadius = 20.f;
+	this->baseOrigin = sf::Vector2f(this->baseRadius, this->baseRadius);
+	this->baseScale = sf::Vector2f(1.f, 1.f);
+	this->basePointCount = 30;
 
-	this->setFillColor(this->customFillColor);
-	this->setRadius(this->customRadius);
-	this->setOrigin(this->customOrigin);
-	this->setScale(this->customScale);
-	this->setPointCount(this->customPointCount);
+	this->setFillColor(this->baseFillColor);
+	this->setRadius(this->baseRadius);
+	this->setOrigin(this->baseOrigin);
+	this->setScale(this->baseScale);
+	this->setPointCount(this->basePointCount);
 
 	this->movementComponent = nullptr;
 	this->attributeComponent = nullptr;
@@ -22,12 +20,12 @@ Actor::Actor()
 
 Actor::~Actor()
 {
-	this->movementComponent = nullptr;
-	this->attributeComponent = nullptr;
-	this->shootComponent = nullptr;
 	delete this->movementComponent;
 	delete this->attributeComponent;
 	delete this->shootComponent;
+	this->movementComponent = nullptr;
+	this->attributeComponent = nullptr;
+	this->shootComponent = nullptr;
 }
 
 ///Functions
@@ -136,7 +134,7 @@ void Actor::stopVelocityY()
 
 void Actor::shoot(std::list<Bullet*>* bullets)
 {
-	if (this->shootComponent)
+	if (this->shootComponent != nullptr)
 	{
 		sf::Vector2f position;
 		position.x = this->getRadius() / 2.f * sin(this->getRotation() * 3.14159265358979323846f / 180.f);
@@ -165,25 +163,25 @@ void Actor::explode(std::list<Effect*>* effects)
 {
 	effects->push_back(new Explosion(
 		this->getPosition(), 1.f,
-		this->customFillColor, 4,
+		this->baseFillColor, 4,
 		this->getRadius() / 3.f, this->getRadius() / 2.f,
 		3, 4,
 		2, 25.f));
 	effects->push_back(new Explosion(
 		this->getPosition(), 1.f,
-		this->customFillColor, 6,
+		this->baseFillColor, 6,
 		this->getRadius() / 3.f, this->getRadius() / 2.f,
 		3, 4,
 		3, 50.f));
 	effects->push_back(new Explosion(
 		this->getPosition(), 1.f,
-		this->customFillColor, 8,
+		this->baseFillColor, 8,
 		this->getRadius() / 4.f, this->getRadius() / 3.f,
 		3, 4,
 		4, 75.f));
 	effects->push_back(new Explosion(
 		this->getPosition(), 1.f,
-		this->customFillColor, 10,
+		this->baseFillColor, 10,
 		this->getRadius() / 4.f, this->getRadius() / 3.f,
 		3, 4,
 		5, 100.f));
@@ -191,7 +189,7 @@ void Actor::explode(std::list<Effect*>* effects)
 
 void Actor::blink(std::list<Effect*>* effects)
 {
-	effects->push_back(new Blink(this, this->customFillColor, 20.f, 0.25f));
+	effects->push_back(new Blink(this, this->baseFillColor, 20.f, 0.25f));
 }
 
 void Actor::updateCollisionCheckers()
@@ -216,4 +214,10 @@ void Actor::updateCollisionCheckers()
 
 	for (int i = DIR_LEFT; i <= DIR_DOWN; i++)
 		this->collisionCheckers[i].setOrigin(this->collisionCheckers[i].getSize() / 2.f);
+}
+
+void Actor::renderCollisionCheckers(sf::RenderTarget* target)
+{
+	for (int i = DIR_LEFT; i <= DIR_DOWN; i++)
+		target->draw(this->collisionCheckers[i]);
 }

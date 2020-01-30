@@ -6,11 +6,11 @@
 class Actor : public sf::CircleShape
 {
 protected:
-	sf::Color customFillColor;
-	float customRadius;
-	sf::Vector2f customOrigin;
-	sf::Vector2f customScale;
-	size_t customPointCount;
+	sf::Color baseFillColor;
+	float baseRadius;
+	sf::Vector2f baseOrigin;
+	sf::Vector2f baseScale;
+	size_t basePointCount;
 
 	sf::RectangleShape collisionCheckers[4];
 
@@ -35,14 +35,8 @@ public:
 	virtual const bool isDead() const;
 	virtual const int getLevel() const;
 	virtual const bool selectAttributePoints(const int& choise);
-	void levelUp()
-	{
-		this->attributeComponent->gainEXP(this->attributeComponent->expNext);
-	}
-	void statsPrint()
-	{
-		this->attributeComponent->debugPrint();
-	}
+	void levelUp() { this->attributeComponent->gainEXP(this->attributeComponent->expNext); }
+	void statsPrint() { this->attributeComponent->debugPrint(); }
 
 	virtual void move(float dir_x, float dir_y, const float& dt);
 	virtual void setMaxVelocity(float max_velocity);
@@ -59,6 +53,7 @@ public:
 
  	virtual void update(const float& dt, const sf::Vector2f& target_position) = 0;
  	virtual void updateCollisionCheckers();
+ 	virtual void renderCollisionCheckers(sf::RenderTarget* target = nullptr);
 };
 
 #include <Source/Actor.cpp>
