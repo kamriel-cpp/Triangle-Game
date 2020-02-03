@@ -23,6 +23,7 @@ public:
 	void randomSelectAllAttributePoints();
 	const bool selectAttributePoints(const int& choise);
 
+	void resetHP();
 	void loseHP(const int hp);
 	void gainHP(const int hp);
 	void loseEXP(const int exp);

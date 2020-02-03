@@ -10,6 +10,7 @@
 #include <list>
 #include <map>
 #include <cmath>
+#include <typeinfo>
 
 ///SFML includes
 #include <SFML/Window.hpp>

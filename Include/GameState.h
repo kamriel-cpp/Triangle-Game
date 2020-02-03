@@ -7,7 +7,6 @@
 #include <Include/ShootComponent.h>
 #include <Include/Room.h>
 #include <Include/Floor.h>
-#include <Include/Triangle.h>
 #include <Include/Player.h>
 #include <Include/Enemy.h>
 #include <Include/Camera.h>

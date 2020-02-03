@@ -20,22 +20,17 @@ Player::Player(const sf::Vector2f& position) : stopped(false)
 Player::~Player() { }
 
 ///Functions
-const bool Player::isDashing() const
-{
-	return this->dashing;
-}
-
 const bool Player::isStopped() const
 {
 	return this->stopped;
 }
 
-void Player::setStop()
+void Player::stop()
 {
 	this->stopped = true;
 }
 
-void Player::setContinue()
+void Player::unstop()
 {
 	this->stopped = false;
 }
@@ -50,15 +45,8 @@ void Player::update(const float& dt, const sf::Vector2f& target_position)
 	///Update collisionCheckers
 	this->updateCollisionCheckers();
 
-	if (!this->isDashing())
-	{
-		///Looking to the target
-		sf::Vector2f look_dir(target_position - this->getPosition());
-		const float angle = atan2(look_dir.y, look_dir.x) * (180.f / 3.14159265358979323846f) + 90.f;
-		this->setRotation(angle);
-	}
-	else
-	{
-		///Dashing
-	}
+	///Looking to the target
+	sf::Vector2f look_dir(target_position - this->getPosition());
+	const float angle = atan2(look_dir.y, look_dir.x) * (180.f / 3.14159265358979323846f) + 90.f;
+	this->setRotation(angle);
 }

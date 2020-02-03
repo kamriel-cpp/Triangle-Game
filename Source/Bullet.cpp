@@ -1,15 +1,21 @@
 ///Constructors/Destructors
-Bullet::Bullet(const sf::Vector2f& position, const float& rotation,
+Bullet::Bullet(Actor* caster, const sf::Vector2f& position, const float& rotation,
 	const sf::Color& color, const int& damage,
 	const float& moving_speed, const float& radius)
+	: caster(caster)
+	, damage(damage)
+	, movingSpeed(moving_speed)
 {
 	this->setPosition(position);
 	this->setRotation(rotation);
 	this->setFillColor(color);
-	this->damage = damage;
-	this->movingSpeed = moving_speed;
 	this->setRadius(radius);
 	this->setOrigin(radius, radius);
+}
+
+Bullet::~Bullet()
+{
+	this->caster = nullptr;
 }
 
 ///Functions
@@ -17,16 +23,11 @@ void Bullet::explode(std::list<Effect*>* effects)
 {
 	effects->push_back(new Explosion(
 		this->getPosition(), 1.f,
-		this->getFillColor(), 8,
-		this->getRadius() / 3.f, this->getRadius() / 2.f,
+		this->getFillColor(), 15,
+		this->getRadius() / 4.f, this->getRadius() / 2.f,
 		3, 4,
-		5, 75.f));
-	effects->push_back(new Explosion(
-		this->getPosition(), 1.f,
-		this->getFillColor(), 10,
-		this->getRadius() / 4.f, this->getRadius() / 3.f,
-		3, 4,
-		6, 100.f));
+		4, 6,
+		25.f, 250.f));
 }
 
 void Bullet::update(const float& dt)

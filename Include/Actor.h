@@ -1,5 +1,8 @@
 #ifndef ACTOR_H
 #define ACTOR_H
+#include <Include/MovementComponent.h>
+#include <Include/AttributeComponent.h>
+#include <Include/ShootComponent.h>
 #include <Include/Bullet.h>
 #include <Include/Effect.h>
 
@@ -28,6 +31,7 @@ public:
 	virtual void createAttributeComponent(const unsigned level);
 	virtual void createShootComponent();
 
+	virtual void resetHP();
 	virtual void loseHP(const int hp);
 	virtual void gainHP(const int hp);
 	virtual void loseEXP(const int exp);
@@ -44,7 +48,7 @@ public:
 	virtual void stopVelocityX();
 	virtual void stopVelocityY();
 
-	virtual void shoot(std::list<Bullet*>* bullets);
+	virtual void shoot(Actor* caster, std::list<Bullet*>* bullets);
 	virtual void pick();
 	virtual void dash();
 

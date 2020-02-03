@@ -1,5 +1,6 @@
 #ifndef EFFECT_H
 #define EFFECT_H
+#include <Include/Particle.h>
 
 class Effect
 {
@@ -7,9 +8,9 @@ protected:
 	sf::Shape* target;
 	bool done;
 public:
-	virtual ~Effect() { this->target = nullptr; this->done = false; }
-	virtual bool isDone() { return this->done; }
-	virtual const sf::Shape* getTarget() const { return this->target; }
+	virtual ~Effect();
+	virtual bool isDone();
+	virtual const sf::Shape* getTarget() const;
 	virtual void update(const float& dt) = 0;
 	virtual void render(sf::RenderTarget* target = nullptr) = 0;
 };
@@ -20,11 +21,10 @@ private:
 	sf::Color baseFillColor;
 	sf::Color currentColor;
 
-	float fadingSpeed;
 	float duration;
 	float timer;
 public:
-	Blink(sf::Shape* target, const sf::Color& default_color, float fading_speed, float effect_duration);
+	Blink(sf::Shape* target, const sf::Color& default_color, float effect_duration);
 	virtual ~Blink();
 	
 	void update(const float& dt) override;
@@ -34,16 +34,14 @@ public:
 class Explosion : public Effect
 {
 private:
-	std::vector<sf::CircleShape*> particles;
-	
-	int fadingSpeed;
-	float movingSpeed;
+	std::vector<Particle*> particles;
 public:
 	Explosion(const sf::Vector2f& center, float radius,
 		const sf::Color& particles_color, int particles_count,
 		float particles_min_radius, float particles_max_radius,
 		int particles_min_points_count, int particles_max_points_count,
-		int fading_speed, float moving_speed);
+		int min_fading_speed, int max_fading_speed,
+		float min_moving_speed, float max_moving_speed);
 	virtual ~Explosion();
 
 	void update(const float& dt) override;
@@ -53,7 +51,7 @@ public:
 class Spawn : public Effect
 {
 private:
-	std::vector<sf::CircleShape*> particles;
+	std::vector<Particle*> particles;
 	sf::Vector2f center;
 	float radius;
 
@@ -64,8 +62,11 @@ private:
 	float particlesMaxRadius;
 	int particlesMinPointsCount;
 	int particlesMaxPointsCount;
-	int fadingSpeed;
-	float movingSpeed;
+
+	int minFadingSpeed;
+	int maxFadingSpeed;
+	float minMovingSpeed;
+	float maxMovingSpeed;
 
 	float duration;
 	float period;
@@ -76,7 +77,8 @@ public:
 		const sf::Color& particles_color, int particles_count,
 		float particles_min_radius, float particles_max_radius,
 		int particles_min_points_count, int particles_max_points_count,
-		int fading_speed, float moving_speed,
+		int min_fading_speed, int max_fading_speed,
+		float min_moving_speed, float max_moving_speed,
 		float effect_duration, float effect_period);
 	virtual ~Spawn();
 	

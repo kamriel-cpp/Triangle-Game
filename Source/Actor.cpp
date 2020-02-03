@@ -67,6 +67,11 @@ void Actor::createShootComponent()
 }
 
 
+void Actor::resetHP()
+{
+	this->attributeComponent->resetHP();
+}
+
 void Actor::loseHP(const int hp)
 {
 	this->attributeComponent->loseHP(hp);
@@ -132,7 +137,7 @@ void Actor::stopVelocityY()
 }
 
 
-void Actor::shoot(std::list<Bullet*>* bullets)
+void Actor::shoot(Actor* caster, std::list<Bullet*>* bullets)
 {
 	if (this->shootComponent != nullptr)
 	{
@@ -140,7 +145,7 @@ void Actor::shoot(std::list<Bullet*>* bullets)
 		position.x = this->getRadius() / 2.f * sin(this->getRotation() * 3.14159265358979323846f / 180.f);
 		position.y = this->getRadius() / 2.f * -cos(this->getRotation() * 3.14159265358979323846f / 180.f);
 
-		this->shootComponent->shoot(bullets,
+		this->shootComponent->shoot(caster, bullets,
 			this->getPosition() + position, this->getRotation(),
 			this->attributeComponent->spread, this->attributeComponent->damage,
 			this->attributeComponent->bulletsPerShoot,
@@ -163,34 +168,18 @@ void Actor::explode(std::list<Effect*>* effects)
 {
 	effects->push_back(new Explosion(
 		this->getPosition(), 1.f,
-		this->baseFillColor, 4,
-		this->getRadius() / 3.f, this->getRadius() / 2.f,
+		this->baseFillColor, 20,
+		this->getRadius() / 4.f, this->getRadius() / 2.f,
 		3, 4,
-		2, 25.f));
-	effects->push_back(new Explosion(
-		this->getPosition(), 1.f,
-		this->baseFillColor, 6,
-		this->getRadius() / 3.f, this->getRadius() / 2.f,
-		3, 4,
-		3, 50.f));
-	effects->push_back(new Explosion(
-		this->getPosition(), 1.f,
-		this->baseFillColor, 8,
-		this->getRadius() / 4.f, this->getRadius() / 3.f,
-		3, 4,
-		4, 75.f));
-	effects->push_back(new Explosion(
-		this->getPosition(), 1.f,
-		this->baseFillColor, 10,
-		this->getRadius() / 4.f, this->getRadius() / 3.f,
-		3, 4,
-		5, 100.f));
+		2, 4,
+		25.f, 100.f));
 }
 
 void Actor::blink(std::list<Effect*>* effects)
 {
-	effects->push_back(new Blink(this, this->baseFillColor, 20.f, 0.25f));
+	effects->push_back(new Blink(this, this->baseFillColor, 0.25f));
 }
+
 
 void Actor::updateCollisionCheckers()
 {

@@ -37,6 +37,11 @@ void AttributeComponent::debugPrint()
 			  << "Bullet Radius: " 	<< this->bulletRadius << '\n' << std::endl;
 }
 
+void AttributeComponent::resetHP()
+{
+	this->hp = this->hpMax;
+}
+
 void AttributeComponent::loseHP(const int hp)
 {
 	this->hp -= hp;

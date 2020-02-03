@@ -174,7 +174,7 @@ GameState::~GameState()
 	this->floorText = nullptr;
 
 	///waveSpawner pointer deleting
-	if (this->waveSpawner != nullptr)
+	if (this->waveSpawner)
 	{
 		delete this->waveSpawner;
 		this->waveSpawner = nullptr;
@@ -244,7 +244,7 @@ void GameState::updateInput(const float& dt)
 
 	if (sf::Mouse::isButtonPressed(sf::Mouse::Left))
 	{
-		this->player->shoot(&bullets);
+		this->player->shoot(this->player, &bullets);
 	}
 
 	if (sf::Mouse::isButtonPressed(sf::Mouse::Right))
@@ -361,7 +361,7 @@ void GameState::updateCollisionsWithWalls(const float& dt)
 			{
 				for (auto& enemy : this->enemies)
 				{
-					if (enemy != nullptr)
+					if (enemy)
 					{
 						if (enemy->getGlobalBounds().intersects(wall->getGlobalBounds()))
 						{
@@ -395,7 +395,7 @@ void GameState::updateCollisionsWithWalls(const float& dt)
 			{
 				for (auto& bullet : this->bullets)
 				{
-					if (bullet != nullptr)
+					if (bullet)
 					{
 						if (bullet->getGlobalBounds().intersects(wall->getGlobalBounds()))
 						{
@@ -446,7 +446,7 @@ void GameState::updateCollisionsWithWalls(const float& dt)
 				{
 					for (auto& enemy : this->enemies)
 					{
-						if (enemy != nullptr)
+						if (enemy)
 						{
 							if (enemy->getGlobalBounds().intersects(door->getGlobalBounds()))
 							{
@@ -480,7 +480,7 @@ void GameState::updateCollisionsWithWalls(const float& dt)
 				{
 					for (auto& bullet : this->bullets)
 					{
-						if (bullet != nullptr)
+						if (bullet)
 						{
 							if (bullet->getGlobalBounds().intersects(door->getGlobalBounds()))
 							{
@@ -501,26 +501,60 @@ void GameState::updateCollisionsWithBullets()
 	///Units collisions with bullets
 	if (!this->bullets.empty() && !this->enemies.empty())
 	{
-		for (auto& enemy : this->enemies)
+		///From Player to Enemies
+		for (auto& bullet : this->bullets)
 		{
-			for (auto& bullet : this->bullets)
+			if (bullet)
 			{
-				if (bullet != nullptr && enemy != nullptr)
+				if (typeid(*bullet->caster).name() == typeid(Player).name())
 				{
-					if (bullet->getGlobalBounds().intersects(enemy->getGlobalBounds()))
+					for (auto& enemy : this->enemies)
 					{
-						this->player->gainEXP(enemy->getLevel() * 10);
-						
-						enemy->blink(&this->effects);
-						enemy->loseHP(bullet->damage);
+						if (enemy)
+						{
+							if (bullet->getGlobalBounds().intersects(enemy->getGlobalBounds()))
+							{
+								this->player->gainEXP(enemy->getLevel() * 10);
+								
+								enemy->blink(&this->effects);
+								enemy->loseHP(bullet->damage);
 
-						bullet->explode(&this->effects);
-						delete bullet;
-						bullet = nullptr;
+								bullet->explode(&this->effects);
+								delete bullet;
+								bullet = nullptr;
+								break;
+							}
+						}
 					}
 				}
 			}
 		}
+		this->bullets.remove(nullptr);
+
+		///From Enemies to Player
+		for (auto& bullet : this->bullets)
+		{
+			if (bullet)
+			{
+				if (typeid(*bullet->caster).name() == typeid(Enemy).name())
+				{
+					if (this->player)
+					{
+						if (bullet->getGlobalBounds().intersects(this->player->getGlobalBounds()))
+						{
+							this->player->blink(&this->effects);
+							this->player->loseHP(bullet->damage);
+
+							bullet->explode(&this->effects);
+							delete bullet;
+							bullet = nullptr;
+							break;
+						}
+					}
+				}
+			}
+		}
+		this->bullets.remove(nullptr);
 	}
 }
 
@@ -556,6 +590,8 @@ void GameState::updateCombat(const float& dt)
 					this->waveSpawner = nullptr;
 				this->battleState = false;
 				this->floor.openRoom(this->battleRoomIndex);
+
+				this->player->resetHP();
 			}
 			else
 			{
@@ -568,27 +604,52 @@ void GameState::updateCombat(const float& dt)
 
 void GameState::updateUnits(const float& dt)
 {
-	this->player->update(dt, this->mousePosView);
+	if (this->player)
+		this->player->update(dt, this->mousePosView);
+
 	if (!this->enemies.empty())
 	{
 		for (auto& enemy : this->enemies)
 		{
-			if (enemy != nullptr)
+			if (enemy)
 			{
-				enemy->update(dt, this->player->getPosition());
-				
-				if (enemy->isDead())
+				if (!enemy->isDead())
+				{
+					enemy->update(dt, this->player->getPosition());
+					enemy->updateAutoShooting(enemy, &this->bullets);
+				}
+				else
 				{
 					enemy->explode(&this->effects);
 
 					for (auto& effect : this->effects)
 					{
-						if (effect->getTarget() == enemy)
+						if (effect)
 						{
-							delete effect;
-							effect = nullptr;
+							if (typeid(*effect).name() == typeid(Blink).name())
+							{
+								if (effect->getTarget() == enemy)
+								{
+									delete effect;
+									effect = nullptr;
+								}
+							}
 						}
 					}
+					this->effects.remove(nullptr);
+
+					for (auto& bullet : this->bullets)
+					{
+						if (bullet)
+						{
+							if (bullet->caster == enemy)
+							{
+								delete bullet;
+								bullet = nullptr;
+							}
+						}
+					}
+					this->bullets.remove(nullptr);
 
 					delete enemy;
 					enemy = nullptr;
@@ -604,7 +665,7 @@ void GameState::updateBullets(const float& dt)
 	if (!this->bullets.empty())
 	{
 		for (auto& bullet : this->bullets)
-			if (bullet != nullptr)
+			if (bullet)
 				bullet->update(dt);
 
 		this->bullets.remove(nullptr);
@@ -617,7 +678,7 @@ void GameState::updateEffects(const float& dt)
 	{
 		for (auto& effect : this->effects)
 		{
-			if (effect != nullptr)
+			if (effect)
 			{
 				effect->update(dt);
 
@@ -721,16 +782,24 @@ void GameState::render(sf::RenderTarget* target)
 	target->setView(*this->mainView);
 	this->floor.render(target);
 	target->draw(*floorText);
+
 	for (auto& bullet : this->bullets)
 		target->draw(*bullet);
+
 	for (auto& enemy : this->enemies)
 		target->draw(*enemy);
-	target->draw(*this->player);
-	#ifdef DEBUG_UNITS_VIEW
+
+	#ifdef DEBUG_SHOW_COLLISIONCHECKERS
 	for (auto& enemy : this->enemies)
 		enemy->renderCollisionCheckers(target);
+	#endif
+
+	target->draw(*this->player);
+
+	#ifdef DEBUG_SHOW_COLLISIONCHECKERS
 	this->player->renderCollisionCheckers(target);
 	#endif
+	
 	for (auto& effect : this->effects)
 		effect->render(this->window);
 

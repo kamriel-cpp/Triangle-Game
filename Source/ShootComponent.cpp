@@ -5,7 +5,7 @@ ShootComponent::ShootComponent()
 ShootComponent::~ShootComponent() { }
 
 ///Functions
-void ShootComponent::shoot(std::list<Bullet*>* bullets,
+void ShootComponent::shoot(Actor* caster, std::list<Bullet*>* bullets,
 		const sf::Vector2f& position, const float& rotation,
 		const int& spread, const int& damage,
 		int bullets_per_shoot,
@@ -24,7 +24,7 @@ void ShootComponent::shoot(std::list<Bullet*>* bullets,
 		{
 			float _rotation = (int)spread != 0 ? rotation + (rand() % (int)spread - spread / 2.f) : rotation;
 
-			bullets->push_back(new Bullet(position, _rotation,
+			bullets->push_back(new Bullet(caster, position, _rotation,
 				sf::Color(250, 250, 50), damage,
 				bullet_speed, bullet_radius));
 			
