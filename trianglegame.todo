@@ -1,0 +1,208 @@
+Triangle Game:
+
+Done:
+ ✔ Add Game Class                         @started(19-12-11 07:20)  @done(19-12-11 07:22)  @lasted(0:02)
+ ✔ Add GameState                          @started(19-12-11 07:22)  @done(19-12-11 07:27)  @lasted(0:05)
+ ✔ Add MainMenuState                      @started(19-12-11 07:27)  @done(19-12-11 08:34)  @lasted(1:07)
+ ✔ Add Button                             @started(19-12-11 07:27)  @done(19-12-11 08:34)  @lasted(1:07)
+ ✔ Add Dungeon Generation                 @started(19-12-11 08:34)  @done(19-12-16 22:02)  @lasted(5 days, 13:28)
+ ✔ Add Dungeon Rendering                  @started(19-12-11 08:34)  @done(19-12-19 20:51)  @lasted(8 days, 12:17)
+ ✔ Add Camera                             @started(19-12-16 23:55)  @done(19-12-19 20:51)  @lasted(2 days, 20:56)
+ ✔ Add Collision System                   @started(19-12-19 20:51)  @done(19-12-20 05:54)  @lasted(9:03)
+ ✔ Add MovementComponent                  @started(19-12-22 00:25)  @done(19-12-22 00:52)  @lasted(0:27)
+ ✔ Add Triangle                           @started(19-12-22 00:52)  @done(19-12-22 03:37)  @lasted(2:45)
+ ✔ Add Player                             @started(19-12-21 23:43)  @done(19-12-22 03:28)  @lasted(3:45)
+ ✔ Add Minimap                            @created(19-12-23 18:21)  @done(19-12-23 18:51)  @lasted(0:30)
+ ✔ Optimize Dungeon Rendering             @created(19-12-23 17:06)  @done(19-12-23 18:59)  @lasted(1:53)
+ ✔ Add Enemy                              @created(19-12-24 18:14)  @done(19-12-24 18:40)  @lasted(0:26)
+ ✔ Add AttributeComponent                 @started(19-12-25 18:53)  @done(19-12-25 19:29)  @lasted(0:36)
+ ✔ Add Walls                              @started(19-12-25 19:30)  @done(19-12-26 21:25)  @lasted(1 day, 1:55)
+ ✔ Add Camera Tracking                    @started(19-12-29 19:56)  @done(19-12-29 22:09)  @lasted(2:13)
+ ✔ Update Wall Layout                     @started(20-01-02 03:13)  @done(20-01-02 04:47)  @lasted(1:34)
+ ✔ Improve Pointers                       @started(20-01-02 04:47)  @done(20-01-02 05:39)  @lasted(0:52)
+ ✔ Add Room Class                         @started(20-01-02 18:05)  @done(20-01-03 23:09)  @lasted(1 day, 5:04)
+ ✔ Add Floor Text                         @started(20-01-06 07:01)  @done(20-01-06 07:17)  @lasted(0:16)  
+ ✔ Add Dashing Prototype                  @started(20-01-05 07:02)  @done(20-01-06 07:24)  @lasted(1 day, 0:22)
+ ✔ Rename Dungeon to Floor                @started(20-01-07 07:20)  @done(20-01-07 07:22)  @lasted(0:02)
+ ✔ Update Floor                           @started(20-01-07 07:23)  @done(20-01-07 09:23)  @lasted(2:00)
+ ✔ Update Minimap                         @started(20-01-07 07:23)  @done(20-01-07 09:23)  @lasted(2:00)
+ ✔ Add Rooms Closing                      @started(20-01-07 09:24)  @done(20-01-07 09:48)  @lasted(0:24)
+ ✔ Add FPSCounter                         @started(20-01-07 11:35)  @done(20-01-07 11:48)  @lasted(0:13)
+ ✔ Add Enemy Spawning                     @started(20-01-07 16:14)  @done(20-01-07 17:36)  @lasted(1:22)
+ ✔ Update GameState                       @started(20-01-08 04:55)  @done(20-01-08 06:35)  @lasted(1:40)
+ ✘ Add Player States System               @cancelled(20-01-09 10:25)
+ ✔ Add Some Enemy Types                   @started(20-01-09 10:26)  @done(20-01-09 10:45)  @lasted(0:19)
+ ✔ Add Combat System                      @started(20-01-09 10:46)  @done(20-01-09 20:06)  @lasted(9:20)
+ ✔ Add Doors                              @started(20-01-09 20:08)  @done(20-01-09 20:33)  @lasted(0:25)
+ ✔ Add Debug Constants                    @started(20-01-14 19:11)  @done(20-01-14 19:21)  @lasted(0:10)
+ ✔ Add Effects System                     @started(20-01-10 11:31)  @done(20-01-19 04:41)  @lasted(8 days, 17:10)
+   ✔ Add Explosion Effect                 @started(20-01-19 03:03)  @done(20-01-19 03:56)  @lasted(0:53)
+   ✔ Add Blink Effect                     @started(20-01-19 03:56)  @done(20-01-19 04:07)  @lasted(0:11)
+   ✔ Add Spawn Effect                     @started(20-01-19 04:08)  @done(20-01-19 04:41)  @lasted(0:33)
+ ✔ Update Cameras                         @started(20-01-20 09:25)  @done(20-01-20 09:44)  @lasted(0:19)
+ ✔ Add Actor Class                        @started(20-01-22 10:50)  @done(20-01-22 11:19)  @lasted(0:29)
+ ✘ Optimize Actor Class                   @cancelled(20-01-22 12:21)
+ ✘ Optimize Minimap Class                 @cancelled(20-01-22 12:21)
+ ✔ Update Player Stats                    @started(20-01-26 20:39)  @done(20-01-27 16:01)  @lasted(19:22)
+   ✔ Update AttributeComponent            @started(20-01-26 20:39)  @done(20-01-26 21:05)  @lasted(0:26)
+   ✔ Improve Changes to ShootComponent    @started(20-01-27 13:50)  @done(20-01-27 16:01)  @lasted(2:11)
+ ✔ Fix Blink                              @started(20-01-28 14:20)  @done(20-01-28 14:28)  @lasted(0:08)
+ ✔ Update Rooms                           @started(20-01-30 17:19)  @done(20-01-30 20:25)  @lasted(3:06)
+   ✔ Move Walls And Doors Inside          @started(20-01-30 17:19)  @done(20-01-30 19:37)  @lasted(2:18)
+   ✘ Move WaveSpawner Inside              @cancelled(20-01-30 20:25)
+   ✔ Improve Changes to Collision System  @started(20-01-30 19:37)  @done(20-01-30 20:02)  @lasted(0:25)
+   ✔ Improve Changes to Combat System     @started(20-01-30 20:02)  @done(20-01-30 20:25)  @lasted(0:23)
+ ✔ Update Effect System                   @started(20-01-31 23:07)  @done(20-02-01 15:27)  @lasted(12:20)
+   ✔ Update Input Parameters              @started(20-01-31 23:07)  @done(20-01-31 23:45)  @lasted(0:38)  
+   ✔ Add Particle Class                   @started(20-02-01 15:14)  @done(20-02-01 15:27)  @lasted(0:13)
+ ✔ Add Attack System                      @started(20-01-19 04:50)  @done(20-02-03 20:20)  @lasted(15 days, 15:30)
+   ✔ Add Shooting                         @started(20-01-19 04:50)  @done(20-02-03 20:20)  @lasted(15 days, 15:30)
+     ✔ Add Bullet Class                   @started(20-01-19 04:50)  @done(20-01-19 05:02)  @lasted(0:12)
+     ✔ Add ShootComponent Class           @started(20-01-21 12:06)  @done(20-01-28 13:13)  @lasted(7 days, 1:07)
+     ✔ Improve Shooting to Player         @started(20-01-21 12:06)  @done(20-01-28 13:13)  @lasted(7 days, 1:07)
+     ✔ Improve Shooting to Enemies        @started(20-02-03 19:04)  @done(20-02-03 20:20)  @lasted(1:16)
+   ✘ Add Picking                          @cancelled (20-01-29 20:40)
+   ✘ Add Dashing                          @cancelled (20-02-03 20:20)
+ ✔ Add Player`s HP Regeneration           @started(20-02-03 20:20)  @done(20-02-03 20:24)  @lasted(0:04)
+ ✔ Fix Blink                              @started(20-02-03 20:35)  @done(20-02-03 20:48)  @lasted(0:13)
+ ✔ Remove Triangle Class                  @started(20-02-05 09:00)  @done(20-02-05 09:05)  @lasted(0:05)
+ ✔ Add Unit Class                         @started(20-02-05 09:07)  @done(20-02-05 09:32)  @lasted(0:25)
+
+Doing:
+ ☐ Update UI                              @started(20-02-04 01:56)
+   ✔ Add UserInterface Class              @started(20-02-04 01:56)  @done(20-02-04 03:57)  @lasted(2:01)
+   ✔ Add StatusBar Class                  @started(20-02-04 03:57)  @done(20-02-04 05:54)  @lasted(1:57)  
+   ✔ Add HP Bar                           @started(20-02-04 05:54)  @done(20-02-04 06:01)  @lasted(0:05)
+   ✔ Add Reload Bar                       @started(20-02-04 06:01)  @done(20-02-04 06:16)  @lasted(0:15)  
+   ✔ Add EXP Bar                          @started(20-02-04 06:16)  @done(20-02-04 06:29)  @lasted(0:13)  
+   ☐ Add Stats Pane                       @started
+   ☐ Add Pause Button                     @started
+   ☐ Add Death Screen                     @started
+   ☐ Add Timer?                           @started
+
+Todo:
+ ☐ Update Wave Spawning                   @low
+ ☐ Update Game Loop                       @critical
+   ☐ Update Combat System                 
+   ☐ Add Difficulty System                
+   ☐ Add Floors Goal                      
+   ☐ Add New Enemy Types                  
+   ☐ Add Bonus Rooms                      
+ ☐ Add Pause Menu                         @low
+   ☐ Add Continue Button                  
+   ☐ Add Back to Main Menu Button         
+ ☐ Add SettingsState                      @high
+   ☐ Add SF/MX Settings                   
+   ☐ Add Video Settings                   
+   ☐ Add Control Settings?                
+ ☐ To Do Some I Never Like To Do          @critical
+   ☐ Add Sounds                           
+   ☐ Add Music                            
+
+Notes:
+ **Difficulty System**
+ _Можно сделать как у Dani таймером, но мало ли что ещё в голову прийдёт._
+
+ **Update Effect System**
+ _Добавить в конструктор новые переменные:_
+ _int minFadingSpeed, int maxFadingSpeed, float minMovingSpeed, float maxMovingSpeed_
+ _..._
+ _Бааляяяя_
+ _Прийдётся таки сделать класс Particle, унаследовав его от sf::CircleShape._
+ _Закинуть в него его параметры movingSpeed и fadingSpeed и апдейтить каждую частицу в списке._
+ _Во гемор._
+
+ **Posibillity Of Stats Upgrading**
+ _Надо всё удалить нахуй_
+ _..._
+ _Кароче думаю добавить чек на использование AP, когда аттрибут апнуть уже нельзя._
+ _Можно возвращать функцией selectAttributePoints() true, если апнуть удалось успешно и false, если нет._
+
+ **Blink Crash**
+ _Почему нахуй?????_
+ _После смерти врага, спустя немного времени, всё ломается._
+ _Мб эффект._
+ _Или же сам энэми лагает._
+ _..._
+ _Фух..._
+ _Баг из-за блинка._
+ _Так как у него нету обработки исключений, если таргет, на который он ссылался, уже удалён._
+ _А он вызывается прямо перед делитом энэми._
+ _..._
+ _Сделал таргет в блинке указателем._
+ _Вроде бы бага уже нет._
+ _А там посмотрим._
+ _..._
+ _Суууууукаааааааааааааа_
+ _..._
+ _Закинул указатель на таргет в базовый класс Effect._
+ _Затем добавил проверку с удалением на наличие эффекта с указателем, ссылающимся на врага, который будет удалён._
+ _Бага снова нет._
+ _Пока что..._
+
+ **Components**
+ _Надо разбить AttackComponent на отдельные компоненты._
+ _То есть на ShootComponent, PickComponent и DashComponent._
+ _..._
+ _Крч как-то крипово с такими названиями._
+ _Нужно оставить либо AttackCmp, либо добавить те, что выше, а его убрать._
+
+ **Player Stats**
+ _Level_
+ _MaxHP_
+ _MovingSpeed_
+ _FireRate_
+ _Spread_
+ _Damage_
+ _CountOfBulletsPerOnceShoot, vб BPS_
+ _BulletSpeed_
+ _BulletSize_
+ _В таком случае информация о стрельбе будет браться уже непосредственно у самого кастера._
+
+///Correct explosion pattern
+//this->effects.push_back(new Explosion(
+//  this->mousePosView, 5.f,
+//  sf::Color(250, 50, 50, 250), 4,
+//  10.f, 12.5f,
+//  30, 30,
+//  4, 25.f));
+//this->effects.push_back(new Explosion(
+//  this->mousePosView, 2.5f,
+//  sf::Color(250, 150, 50, 250), 8,
+//  7.5f, 10.f,
+//  30, 30,
+//  5, 50.f));
+//this->effects.push_back(new Explosion(
+//  this->mousePosView, 1.f,
+//  sf::Color(250, 250, 50, 250), 12,
+//  5.f, 7.5f,
+//  30, 30,
+//  6, 75.f));
+
+///Correct spawn pattern
+//this->effects.push_back(new Spawn(
+//  this->mousePosView, 1.f,
+//  sf::Color(250, 50, 50), 25,
+//  20.f / 6.f, 20.f / 3.f,
+//  3, 4,
+//  3, 50.f,
+//  2.f, 0.1f));
+
+///Dashing prototype
+//if (!this->player->isDashing)
+//{
+//  ///Dashing activating
+//  if (sf::Mouse::isButtonPressed(sf::Mouse::Right))
+//  {
+//    this->player->isDashing = true;
+//    this->player->timeBuffer = this->player->clock.getElapsedTime().asSeconds();
+//    this->player->setMaxVelocity(this->player->customMaxVelocity * 2.f);
+//  }
+//}
+//else if (this->player->clock.getElapsedTime().asSeconds() - 0.3f > this->player->timeBuffer)
+//{
+//  ///Dashing deactivating
+//  this->player->isDashing = false;
+//  this->player->timeBuffer = 0.f;
+//  this->player->setMaxVelocity(this->player->customMaxVelocity);
+//}

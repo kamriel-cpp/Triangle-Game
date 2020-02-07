@@ -1,18 +1,19 @@
 #ifndef SHOOTCOMPONENT_H
 #define SHOOTCOMPONENT_H
+#include <Include/Unit.h>
 #include <Include/Bullet.h>
 
 class ShootComponent
 {
-private:
-	Actor* caster;
+public:
+	Unit* caster;
 	float cooldown;
 	float timer;
 public:
 	ShootComponent();
 	virtual ~ShootComponent();
 
-	void shoot(Actor* caster, std::list<Bullet*>* bullets,
+	void shoot(Unit* caster, std::list<Bullet*>* bullets,
 		const sf::Vector2f& position, const float& rotation,
 		const int& spread, const int& damage,
 		int bullets_per_shoot,

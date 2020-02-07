@@ -17,24 +17,24 @@ Minimap::Minimap(Floor& floor, Player& player, const sf::RenderWindow* window)
 	this->playerFactor = 20.f;
 
 	this->windowOffset = sf::Vector2f(window->getDefaultView().getSize().x * 0.3f, -window->getDefaultView().getSize().y * 0.35f);
-	this->floorOffset = floor.centerPosition;
+	this->roomsOffset = floor.centerPosition;
 
 	for (auto& room : floor.rooms)
 	{
-		this->floor.push_back(sf::RectangleShape());
-		this->floor.back().setSize(room->shape.getSize() * this->mapFactor);
-		this->floor.back().setOrigin(this->floor.back().getSize() / 2.f);
-		this->floor.back().setPosition((room->shape.getPosition() - this->floorOffset) * this->mapFactor + this->windowOffset);
+		this->rooms.push_back(sf::RectangleShape());
+		this->rooms.back().setSize(room->shape.getSize() * this->mapFactor);
+		this->rooms.back().setOrigin(this->rooms.back().getSize() / 2.f);
+		this->rooms.back().setPosition((room->shape.getPosition() - this->roomsOffset) * this->mapFactor + this->windowOffset);
 		if (room->shape.getSize() == floor.getRoomSize())
-			this->floor.back().setFillColor(this->roomColor);
+			this->rooms.back().setFillColor(this->roomColor);
 		else
-			this->floor.back().setFillColor(this->corridorColor);
+			this->rooms.back().setFillColor(this->corridorColor);
 	}
 
 	this->player.setPointCount(player.getPointCount());
 	this->player.setRadius(player.getRadius() * this->playerFactor * this->mapFactor);
 	this->player.setOrigin(sf::Vector2f(this->player.getRadius(), this->player.getRadius()));
-	this->player.setPosition((player.getPosition() - this->floorOffset) * this->mapFactor + this->windowOffset);
+	this->player.setPosition((player.getPosition() - this->roomsOffset) * this->mapFactor + this->windowOffset);
 	this->player.setRotation(player.getRotation());
 	this->player.setFillColor(this->playerColor);
 	this->player.setScale(sf::Vector2f(0.75f, 1.f));
@@ -43,15 +43,15 @@ Minimap::Minimap(Floor& floor, Player& player, const sf::RenderWindow* window)
 }
 
 ///Functions
-void Minimap::update(const float& dt)
+void Minimap::update()
 {
-	this->player.setPosition((this->ptrPlayer->getPosition() - this->floorOffset) * this->mapFactor + this->windowOffset);
+	this->player.setPosition((this->ptrPlayer->getPosition() - this->roomsOffset) * this->mapFactor + this->windowOffset);
 	this->player.setRotation(this->ptrPlayer->getRotation());
 }
 
 void Minimap::render(sf::RenderTarget* target)
 {
-	for (auto& shape : this->floor)
+	for (auto& shape : this->rooms)
 		target->draw(shape);
 	target->draw(this->player);
 }

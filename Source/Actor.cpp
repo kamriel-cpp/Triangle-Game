@@ -3,9 +3,15 @@ Actor::Actor()
 {
 	this->baseFillColor = { 255, 255, 255 };
 	this->baseRadius = 20.f;
-	this->baseOrigin = sf::Vector2f(this->baseRadius, this->baseRadius);
-	this->baseScale = sf::Vector2f(1.f, 1.f);
-	this->basePointCount = 30;
+	this->baseOrigin.x = this->baseRadius;
+	this->baseOrigin.y = this->baseRadius * 0.75f;
+	this->baseScale.x = 0.75f;
+	this->baseScale.y = 1.f;
+	this->basePointCount = 3;
+
+	this->setOrigin(this->baseOrigin);
+	this->setScale(this->baseScale);
+	this->setPointCount(this->basePointCount);
 
 	this->setFillColor(this->baseFillColor);
 	this->setRadius(this->baseRadius);
@@ -95,13 +101,41 @@ void Actor::gainEXP(const int exp)
 const bool Actor::isDead() const
 {
 	return this->attributeComponent->isDead();
-	return false;
 }
 
 const int Actor::getLevel() const
 {
 	return this->attributeComponent->level;
-	return 0;
+}
+
+const int Actor::getHP() const
+{
+	return this->attributeComponent->hp;
+}
+
+const int Actor::getHPMax() const
+{
+	return this->attributeComponent->hpMax;
+}
+
+const int Actor::getEXP() const
+{
+	return this->attributeComponent->exp;
+}
+
+const long Actor::getEXPNext() const
+{
+	return this->attributeComponent->expNext;
+}
+
+const float Actor::getReloadTime() const
+{
+	return this->attributeComponent->reloadTime;
+}
+
+const float Actor::getReloadTimer() const
+{
+	return this->shootComponent->timer;
 }
 
 const bool Actor::selectAttributePoints(const int& choise)
@@ -110,6 +144,15 @@ const bool Actor::selectAttributePoints(const int& choise)
 	return false;
 }
 
+void Actor::levelUp()
+{
+	this->attributeComponent->gainEXP(this->attributeComponent->expNext);
+}
+
+void Actor::debugPrint()
+{
+	this->attributeComponent->debugPrint();
+}
 
 void Actor::move(float dir_x, float dir_y, const float& dt)
 {
@@ -137,7 +180,7 @@ void Actor::stopVelocityY()
 }
 
 
-void Actor::shoot(Actor* caster, std::list<Bullet*>* bullets)
+void Actor::shoot(Unit* caster, std::list<Bullet*>* bullets)
 {
 	if (this->shootComponent != nullptr)
 	{

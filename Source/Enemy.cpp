@@ -28,7 +28,7 @@ const std::string& Enemy::getType() const
 	return this->type;
 }
 
-void Enemy::updateAutoShooting(Actor* caster, std::list<Bullet*>* bullets)
+void Enemy::updateAutoShooting(Unit* caster, std::list<Bullet*>* bullets)
 {
 	this->shoot(caster, bullets);
 }

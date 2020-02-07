@@ -6,7 +6,7 @@ class AttributeComponent
 public:
 	int level;
 	int exp;
-	int expNext;
+	long expNext;
 	int attributePoints;
 
 	int hp;
@@ -28,7 +28,6 @@ public:
 	void gainHP(const int hp);
 	void loseEXP(const int exp);
 	void gainEXP(const int exp);
-
 	const bool isDead() const;
 
 	void debugPrint();

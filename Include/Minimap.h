@@ -4,9 +4,9 @@
 class Minimap
 {
 public:
-	std::list<sf::RectangleShape> floor;
+	std::list<sf::RectangleShape> rooms;
 	sf::CircleShape player;
-	sf::Vector2f floorOffset;
+	sf::Vector2f roomsOffset;
 	sf::Vector2f windowOffset;
 
 	Player* ptrPlayer;
@@ -19,7 +19,7 @@ public:
 	sf::Color corridorColor;
 	sf::Color playerColor;
 	
-	void update(const float& dt);
+	void update();
 	void render(sf::RenderTarget* target = nullptr);
 };
 

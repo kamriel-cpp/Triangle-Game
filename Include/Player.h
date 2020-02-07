@@ -1,8 +1,8 @@
 #ifndef PLAYER_H
 #define PLAYER_H
-#include <Include/Triangle.h>
+#include <Include/Actor.h>
 
-class Player : public Triangle
+class Player : public Actor
 {
 private:
 	bool stopped;
@@ -16,6 +16,7 @@ public:
 	void unstop();
 
 	void update(const float& dt, const sf::Vector2f& target_position) override;
+	void updateAutoShooting(Unit* caster, std::list<Bullet*>* bullets) override { }
 };
 
 #include <Source/Player.cpp>

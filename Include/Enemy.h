@@ -1,8 +1,8 @@
 #ifndef ENEMY_H
 #define ENEMY_H
-#include <Include/Triangle.h>
+#include <Include/Actor.h>
 
-class Enemy : public Triangle
+class Enemy : public Actor
 {
 private:
 	std::string type;
@@ -12,7 +12,7 @@ public:
 
  	const std::string& getType() const;
 
-	void updateAutoShooting(Actor* caster, std::list<Bullet*>* bullets);
+	void updateAutoShooting(Unit* caster, std::list<Bullet*>* bullets);
 	void update(const float& dt, const sf::Vector2f& target_position) override;
 };
 

@@ -1,7 +1,6 @@
 #ifndef GAMESTATE_H
 #define GAMESTATE_H
 #include <Include/State.h>
-#include <Include/Button.h>
 #include <Include/MovementComponent.h>
 #include <Include/AttributeComponent.h>
 #include <Include/ShootComponent.h>
@@ -10,8 +9,7 @@
 #include <Include/Player.h>
 #include <Include/Enemy.h>
 #include <Include/Camera.h>
-#include <Include/Minimap.h>
-#include <Include/FPSCounter.h>
+#include <Include/UserInterface.h>
 #include <Include/WaveSpawner.h>
 #include <Include/Effect.h>
 
@@ -19,21 +17,22 @@ class GameState : public State
 {
 private:
 	sf::Font				font;
-	std::list<sf::Text*>	texts;
-	std::map<std::string, Button*>	buttons;
 	Floor					floor;
 	sf::Text*				floorText;
+
+	std::list<Unit*>		units;
+
 	Player*					player;
 	std::list<Enemy*>		enemies;
+	std::list<Effect*>		effects;
+	std::list<Bullet*>		bullets;
+	sf::Clock 				gameClock;
+	WaveSpawner*			waveSpawner;
+
 	sf::View*				mainView;
 	sf::View*				uiView;
 	Camera*					mainCamera;
-	Minimap*				minimap;
-	sf::Clock 				gameClock;
-	FPSCounter*				fpscounter;
-	WaveSpawner*			waveSpawner;
-	std::list<Effect*>		effects;
-	std::list<Bullet*>		bullets;
+	UserInterface*			ui;
 
 	bool battleState;
 	unsigned int battleRoomIndex;
@@ -42,18 +41,18 @@ private:
 	void initKeybinds();
 	void initFont();
 	void initFloor();
-	void initButtons();
 	void initPlayer();
 	void initEnemies();
 	void initViews();
 	void initCameras();
-	void initMinimap();
-	void initFPSCounter();
+	void initUI();
 	void initWaveSpawner();
 public:
 	GameState(sf::RenderWindow* window, std::map<std::string,
 		int>* supportedKeys, std::stack<State*>* states);
 	virtual ~GameState();
+
+	void applyDamage(const float& amount, Actor* target, Actor* caster = nullptr);
 
 	void updateInput(const float& dt) override;
 	void updatePlayerInput(const float& dt);
@@ -64,8 +63,7 @@ public:
 	void updateBullets(const float& dt);
 	void updateEffects(const float& dt);
 	void updateCameras(const float& dt);
-	void updateButtons();
-	void updateUI(const float& dt);
+	void updateUI();
 	void update(const float& dt) override;
 	void render(sf::RenderTarget* target = nullptr) override;
 };

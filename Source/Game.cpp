@@ -71,11 +71,6 @@ void Game::initStates()
 //Constructors/Destructors
 Game::Game()
 {
-	///Debug print
-	#ifdef DEBUG_CONSOLE_OUTPUT
-	std::cout << "Starting Application" << std::endl;
-	#endif
-
 	this->initVariables();
 	this->initWindow();
 	this->initKeys();
@@ -95,13 +90,7 @@ Game::~Game()
 }
 
 //Functions
-void Game::endApplication()
-{
-	///Debug print
-	#ifdef DEBUG_CONSOLE_OUTPUT
-	std::cout << "Ending Application" << std::endl;
-	#endif
-}
+void Game::endApplication() { }
 
 //Update
 void Game::updateDt()

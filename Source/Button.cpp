@@ -1,27 +1,11 @@
-//Constructors/Destructors
+///Constructors/Destructors
 Button::Button(float x, float y,
-			   float offset_x, float offset_y, float width, float height,
-			   sf::Font* font, std::string text, unsigned char character_size,
-			   sf::Color text_idle_color, sf::Color text_hover_color, sf::Color text_active_color,
-			   sf::Color idle_color, sf::Color hover_color, sf::Color active_color)
+	float offset_x, float offset_y, float width, float height,
+	sf::Font* font, std::string text, unsigned char character_size,
+	sf::Color text_idle_color, sf::Color text_hover_color, sf::Color text_active_color,
+	sf::Color idle_color, sf::Color hover_color, sf::Color active_color)
 {
 	this->buttonState = BTN_IDLE;
-
-	//this->shape.setPosition(sf::Vector2f(x, y));
-	//this->shape.setSize(sf::Vector2f(width, height));
-	//this->shape.setFillColor(idle_color);
-
-	//this->font = font;
-	//this->text.setFont(*this->font);
-	//this->text.setFillColor(text_idle_color);
-	//this->text.setCharacterSize(character_size);
-	//this->text.setString(text);
-	//this->text.setOrigin(
-	//	this->text.getGlobalBounds().width  / 2.f,
-	//	this->text.getGlobalBounds().height / 2.f);
-	//this->text.setPosition(
-	//	this->shape.getPosition().x + this->shape.getGlobalBounds().width / 2.0f,
-	//	this->shape.getPosition().y + this->shape.getGlobalBounds().height / 2.5f);
 
 	this->shape.setSize(sf::Vector2f(width, height));
 	this->shape.setFillColor(idle_color);
@@ -53,7 +37,7 @@ Button::Button(float x, float y,
 	this->wasPressed = false;
 }
 
-//Accessors
+///Accessors
 const bool Button::isPressed() const
 {
 	if (this->buttonState == BTN_ACTIVE)
@@ -61,20 +45,20 @@ const bool Button::isPressed() const
 	return false;
 }
 
-//Functions
+///Functions
 void Button::update(const sf::Vector2f& mousePos)
 {
 	/*Update the booleans for hover and pressed*/
 
-	//Idle
+	///Idle
 	this->buttonState = BTN_IDLE;
 
-	//Hover
+	///Hover
 	if (this->shape.getGlobalBounds().contains(mousePos))
 	{
 		this->buttonState = BTN_HOVER;
 
-		//Pressed
+		///Pressed
 		if (sf::Mouse::isButtonPressed(sf::Mouse::Left))
 			this->buttonState = BTN_ACTIVE;
 	}

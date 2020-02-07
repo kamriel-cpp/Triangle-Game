@@ -5,13 +5,13 @@ ShootComponent::ShootComponent()
 ShootComponent::~ShootComponent() { }
 
 ///Functions
-void ShootComponent::shoot(Actor* caster, std::list<Bullet*>* bullets,
+void ShootComponent::shoot(Unit* caster, std::list<Bullet*>* bullets,
 		const sf::Vector2f& position, const float& rotation,
 		const int& spread, const int& damage,
 		int bullets_per_shoot,
 		const float& bullet_speed, const float& bullet_radius)
 {
-	if (this->timer > this->cooldown)
+	if (this->timer >= this->cooldown)
 	{
 		this->timer = 0.f;
 
@@ -36,5 +36,5 @@ void ShootComponent::shoot(Actor* caster, std::list<Bullet*>* bullets,
 void ShootComponent::update(const float& dt, const float& cooldown)
 {
 	this->cooldown = cooldown;
-	this->timer += dt;
+	this->timer = this->timer + dt > this->cooldown ? this->cooldown : this->timer + dt;
 }

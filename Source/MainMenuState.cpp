@@ -34,7 +34,7 @@ void MainMenuState::initKeybinds()
 void MainMenuState::initFonts()
 {
 	if (!this->font.loadFromFile("Fonts/Dosis-Light.ttf"))
-		throw "ERROR::MAIN_MENU_STATE::COULD_NOT_LOAD_FONT";
+		throw "ERROR::MAINMENUSTATE::COULD_NOT_LOAD_FONT";
 }
 
 void MainMenuState::initButtons()
@@ -78,10 +78,6 @@ MainMenuState::MainMenuState(sf::RenderWindow* window,std::map<std::string,
 	int>* supportedKeys, std::stack<State*>* states)
 	:	State(window, supportedKeys, states)
 {
-	#ifdef DEBUG_CONSOLE_OUTPUT
-	std::cout << "Starting MainMenuState!" << std::endl;
-	#endif
-
 	this->initVariables();
 	this->initBackground();
 	this->initKeybinds();
@@ -93,10 +89,6 @@ MainMenuState::~MainMenuState()
 {
 	for (auto it = this->buttons.begin(); it != this->buttons.end(); ++it)
 		delete it->second;
-
-	#ifdef DEBUG_CONSOLE_OUTPUT
-	std::cout << "Ending MainMenuState!" << std::endl;
-	#endif
 }
 
 ///Functions

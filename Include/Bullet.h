@@ -2,16 +2,16 @@
 #define BULLET_H
 #include <Include/Effect.h>
 
-class Actor;
+class Unit;
 
 class Bullet : public sf::CircleShape
 {
 public:
-	Actor* caster;
+	Unit* caster;
 	int damage;
 	float movingSpeed;
 public:
-	Bullet(Actor* caster, const sf::Vector2f& position, const float& rotation,
+	Bullet(Unit* caster, const sf::Vector2f& position, const float& rotation,
 		const sf::Color& color, const int& damage,
 		const float& moving_speed, const float& radius);
 	virtual ~Bullet();

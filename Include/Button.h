@@ -27,9 +27,13 @@ public:
 		   sf::Color idle_color, sf::Color hover_color, sf::Color active_color);
 	virtual ~Button() = default;
 	
+	const sf::Vector2f& getPosition()
+	{
+		return this->shape.getPosition();
+	}
 	const bool isPressed() const;
 	void update(const sf::Vector2f& mousePos);
-	void render(sf::RenderTarget* target);
+	void render(sf::RenderTarget* target = nullptr);
 };
 
 #include <Source/Button.cpp>
