@@ -34,7 +34,10 @@ void MainMenuState::initKeybinds()
 void MainMenuState::initFonts()
 {
 	if (!this->font.loadFromFile("Fonts/Dosis-Light.ttf"))
-		throw "ERROR::MAINMENUSTATE::COULD_NOT_LOAD_FONT";
+	{
+		std::cerr << "ERROR::MAINMENUSTATE::COULD_NOT_LOAD_FONT" << std::endl;
+		throw;
+	}
 }
 
 void MainMenuState::initButtons()
@@ -42,7 +45,7 @@ void MainMenuState::initButtons()
 	this->buttons["GAME_STATE"] = new Button(
 		this->window->getSize().x / 2, this->window->getSize().y / 2 - 100.f,
 		0.f, -10.f, 150.f, 50.f,
-		&this->font, "New Game", 36,
+		&this->font, "New Game", "GAME_STATE", 36,
 		{ 70, 70, 70, 200 },
 		{ 250, 250, 250, 250 },
 		{ 20, 20, 20, 50 },
@@ -53,7 +56,7 @@ void MainMenuState::initButtons()
 	this->buttons["SETTINGS"] = new Button(
 		this->window->getSize().x / 2, this->window->getSize().y / 2 - 25.f,
 		0.f, -10.f, 125.f, 50.f,
-		&this->font, "Settings", 36,
+		&this->font, "Settings", "SETTINGS", 36,
 		{ 70, 70, 70, 200 },
 		{ 250, 250, 250, 250 },
 		{ 20, 20, 20, 50 },
@@ -64,7 +67,7 @@ void MainMenuState::initButtons()
 	this->buttons["EXIT_STATE"] = new Button(
 		this->window->getSize().x / 2, this->window->getSize().y / 2 + 50.f,
 		0.f, -10.f, 100.f, 50.f,
-		&this->font, "Quit", 36,
+		&this->font, "Quit", "EXIT_STATE", 36,
 		{ 70, 70, 70, 200 },
 		{ 250, 250, 250, 250 },
 		{ 20, 20, 20, 50 },

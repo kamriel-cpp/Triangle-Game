@@ -1,7 +1,8 @@
 ///Effect Constructors/Destructors
 Effect::~Effect()
 {
- 	this->target = nullptr; this->done = false;
+ 	this->target = nullptr;
+ 	this->done = false;
 }
 
 ///Effect Functions

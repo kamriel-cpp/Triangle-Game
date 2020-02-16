@@ -9,6 +9,9 @@ Bullet::Bullet(Unit* caster, const sf::Vector2f& position, const float& rotation
 	this->setFillColor(color);
 	this->setRadius(radius);
 	this->setOrigin(radius, radius);
+
+	///Maybe it can be used in future, but now it looks like a sh...
+	//this->setScale(sf::Vector2f(sqrt(200.f) / sqrt(moving_speed), 1.f));
 }
 
 Bullet::~Bullet()

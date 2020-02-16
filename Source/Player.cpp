@@ -1,5 +1,5 @@
 ///Constructors/Destructors
-Player::Player(const sf::Vector2f& position) : stopped(false)
+Player::Player(const sf::Vector2f& position)
 {
 	this->createAttributeComponent(1);
 	this->createMovementComponent(200.f, 15.f, 5.f);
@@ -20,33 +20,12 @@ Player::Player(const sf::Vector2f& position) : stopped(false)
 Player::~Player() { }
 
 ///Functions
-const bool Player::isStopped() const
-{
-	return this->stopped;
-}
+void Player::updateAutoShooting(std::list<Bullet*>* bullets) { }
 
-void Player::stop()
+void Player::update(std::list<Bullet*>* bullets, const sf::Vector2f& target_position, const float& dt)
 {
-	this->stopped = true;
-}
-
-void Player::unstop()
-{
-	this->stopped = false;
-}
-
-void Player::update(const float& dt, const sf::Vector2f& target_position)
-{
-	///Update some components
-	this->attributeComponent->update();
-	this->movementComponent->update(dt);
-	this->shootComponent->update(dt, this->attributeComponent->reloadTime);
-
-	///Update collisionCheckers
+	this->updateComponents(dt);
+	this->updateAutoShooting(bullets);
+	this->updateTrackingLook(target_position);
 	this->updateCollisionCheckers();
-
-	///Looking to the target
-	sf::Vector2f look_dir(target_position - this->getPosition());
-	const float angle = atan2(look_dir.y, look_dir.x) * (180.f / 3.14159265358979323846f) + 90.f;
-	this->setRotation(angle);
 }

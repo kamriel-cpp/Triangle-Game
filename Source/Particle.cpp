@@ -12,10 +12,7 @@ Particle::Particle(const sf::Vector2f& position, sf::Color color,
 	this->setOrigin(radius, radius);
 }
 
-Particle::~Particle()
-{
-	/* code */
-}
+Particle::~Particle() { }
 
 ///Functions
 void Particle::update(const float& dt)

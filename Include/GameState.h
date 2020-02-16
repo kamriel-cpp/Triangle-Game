@@ -21,9 +21,10 @@ private:
 	sf::Text*				floorText;
 
 	std::list<Unit*>		units;
-
 	Player*					player;
-	std::list<Enemy*>		enemies;
+
+	int						enemiesCounter;
+
 	std::list<Effect*>		effects;
 	std::list<Bullet*>		bullets;
 	sf::Clock 				gameClock;
@@ -46,18 +47,19 @@ private:
 	void initViews();
 	void initCameras();
 	void initUI();
-	void initWaveSpawner();
 public:
 	GameState(sf::RenderWindow* window, std::map<std::string,
 		int>* supportedKeys, std::stack<State*>* states);
 	virtual ~GameState();
 
-	void applyDamage(const float& amount, Actor* target, Actor* caster = nullptr);
+	void applyDamage(const float& amount, Unit* target, Unit* caster);
+	const bool canApplyDamage(Unit* target, Unit* caster) const;
 
 	void updateInput(const float& dt) override;
 	void updatePlayerInput(const float& dt);
 	void updateCollisionsWithWalls(const float& dt);
 	void updateCollisionsWithBullets();
+	void updateEnemiesCounter(const float& dt);
 	void updateCombat(const float& dt);
 	void updateUnits(const float& dt);
 	void updateBullets(const float& dt);

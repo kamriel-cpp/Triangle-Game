@@ -12,6 +12,7 @@ public:
 	Player* ptrPlayer;
 public:
 	Minimap(Floor& floor, Player& player, const sf::RenderWindow* window);
+	virtual ~Minimap();
 	
 	float mapFactor;
 	float playerFactor;

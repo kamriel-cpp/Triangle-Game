@@ -1,11 +1,11 @@
 ///Constructors/Destructors
-ShootComponent::ShootComponent()
-: cooldown(0.f), timer(0.f) { }
+ShootComponent::ShootComponent() : cooldown(1.f), timer(0.f) { }
 
 ShootComponent::~ShootComponent() { }
 
 ///Functions
-void ShootComponent::shoot(Unit* caster, std::list<Bullet*>* bullets,
+void ShootComponent::shoot(std::list<Bullet*>* bullets,
+		Unit* caster, sf::Color color,
 		const sf::Vector2f& position, const float& rotation,
 		const int& spread, const int& damage,
 		int bullets_per_shoot,
@@ -15,9 +15,8 @@ void ShootComponent::shoot(Unit* caster, std::list<Bullet*>* bullets,
 	{
 		this->timer = 0.f;
 
-		///Debug print
 		#ifdef DEBUG_ATTACK_OUTPUT
-		std::cout << "Shoot" << std::endl;
+		std::cout << "SHOOTCOMPONENT::SHOOTING" << std::endl;
 		#endif
 
 		while (bullets_per_shoot)
@@ -25,7 +24,7 @@ void ShootComponent::shoot(Unit* caster, std::list<Bullet*>* bullets,
 			float _rotation = (int)spread != 0 ? rotation + (rand() % (int)spread - spread / 2.f) : rotation;
 
 			bullets->push_back(new Bullet(caster, position, _rotation,
-				sf::Color(250, 250, 50), damage,
+				color, damage,
 				bullet_speed, bullet_radius));
 			
 			bullets_per_shoot--;
@@ -33,8 +32,9 @@ void ShootComponent::shoot(Unit* caster, std::list<Bullet*>* bullets,
 	}
 }
 
-void ShootComponent::update(const float& dt, const float& cooldown)
+void ShootComponent::update(const float& dt, const float& shoots_per_second)
 {
-	this->cooldown = cooldown;
+	this->cooldown = 1 / shoots_per_second;
 	this->timer = this->timer + dt > this->cooldown ? this->cooldown : this->timer + dt;
+	this->reloadPercent = this->timer * 100 / this->cooldown;
 }

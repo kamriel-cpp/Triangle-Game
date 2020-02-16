@@ -11,21 +11,27 @@ WaveSpawner::WaveSpawner(const sf::Vector2f& position, const int& radius,
 	this->enemyAmount = enemy_amount;
 }
 
-//Functions
-void WaveSpawner::spawnWave(std::list<Enemy*>& enemies)
-{
-	if (this->wavesCount > 0)
-	{
-		int enemy_amount = this->enemyAmount;
-		while (enemy_amount)
-		{
-			sf::Vector2f rand_position(sf::Vector2f(
-				this->position.x + rand() % (this->radius * 2) - this->radius,
-				this->position.y + rand() % (this->radius * 2) - this->radius));
+WaveSpawner::~WaveSpawner() { }
 
-			enemies.push_back(new Enemy(rand_position, this->enemyType, this->enemyLevel));
-			enemy_amount--;
-		}
-		this->wavesCount--;
+//Functions
+const bool WaveSpawner::canSpawnWave() const
+{
+	return this->wavesCount > 0;
+}
+
+void WaveSpawner::spawnWave(std::list<Unit*>& units)
+{
+	int enemy_amount = this->enemyAmount;
+
+	while (enemy_amount)
+	{
+		sf::Vector2f rand_position(sf::Vector2f(
+			this->position.x + rand() % (this->radius * 2) - this->radius,
+			this->position.y + rand() % (this->radius * 2) - this->radius));
+
+		units.push_back(new Enemy(rand_position, this->enemyType, this->enemyLevel));
+		enemy_amount--;
 	}
+
+	this->wavesCount--;
 }

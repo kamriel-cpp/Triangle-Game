@@ -4,24 +4,36 @@
 class AttributeComponent
 {
 public:
-	int level;
-	int exp;
-	long expNext;
-	int attributePoints;
+	int lvl;				///Level
+	int exp;				///EXPerience
+	long expNext;			///EXPerience for NEXT level
+	int aps;				///Attribute PointS
+	int hp;					///HitPoints
+	int mhp;				///Maximum HitPoints
+	int sps;				///Shoots Per Second
+	int spr;				///SPRead
+	int dmg;				///DaMaGe
+	int bps;				///Bullets Per Shoot
+	int bsp;				///Bullet SPeed
+	int brd;				///Bullet RaDius
 
-	int hp;
-	int hpMax;
-	float reloadTime;
-	float spread;
-	int damage;
-	int bulletsPerShoot;
-	float bulletSpeed;
-	float bulletRadius;
+	bool wasChangedLVL;
+	bool wasChangedEXP;
+	bool wasChangedAPS;
+	bool wasChangedHP;
+private:
+	const bool upgradeMHP();
+	const bool upgradeSPS();
+	const bool upgradeSPR();
+	const bool upgradeDMG();
+	const bool upgradeBPS();
+	const bool upgradeBSP();
+	const bool upgradeBRD();
 public:
 	AttributeComponent(const int level);
 
-	void randomSelectAllAttributePoints();
-	const bool selectAttributePoints(const int& choise);
+	void randomDistributeAPS();
+	const bool manualDistributeAPS(const int& choise);
 
 	void resetHP();
 	void loseHP(const int hp);
@@ -33,7 +45,6 @@ public:
 	void debugPrint();
 
 	void updateLevel();
-	void update();
 };
 
 #include <Source/AttributeComponent.cpp>

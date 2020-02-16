@@ -124,6 +124,7 @@ Room::Room(const sf::Vector2f& position, const sf::Vector2f& size, const sf::Col
 
 Room::~Room()
 {
+	//std::cout << "DEBUG::ROOM::DESTRUCTOR_BEGIN" << std::endl;
 	while (!this->walls.empty())
 	{
 		delete this->walls.back();
@@ -135,6 +136,7 @@ Room::~Room()
 		delete this->doors.back();
 		this->doors.pop_back();
 	}
+	//std::cout << "DEBUG::ROOM::DESTRUCTOR_END" << std::endl;
 }
 
 ///Functions

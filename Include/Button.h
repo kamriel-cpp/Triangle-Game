@@ -13,18 +13,25 @@ private:
 	sf::Color			textHoverColor;
 	sf::Color			textActiveColor;
 
-	sf::Color			idleColor;
-	sf::Color			hoverColor;
-	sf::Color			activeColor;
+	sf::Color			fillIdleColor;
+	sf::Color			fillHoverColor;
+	sf::Color			fillActiveColor;
+
+	sf::Color			outlineIdleColor;
+	sf::Color			outlineHoverColor;
+	sf::Color			outlineActiveColor;
 public:
-	bool wasPressed;
+	std::string			tag;
+	bool				wasPressed;
 public:
 	Button() = default;
 	Button(float x, float y,
 		   float offset_x, float offset_y, float width, float height,
-		   sf::Font* font, std::string text, unsigned char character_size,
+		   sf::Font* font, std::string text, std::string tag, unsigned char character_size,
 		   sf::Color text_idle_color, sf::Color text_hover_color, sf::Color text_active_color,
-		   sf::Color idle_color, sf::Color hover_color, sf::Color active_color);
+		   sf::Color fill_idle_color, sf::Color fill_hover_color, sf::Color fill_active_color,
+		   sf::Color outline_idle_color = sf::Color::Transparent, sf::Color outline_hover_color = sf::Color::Transparent, sf::Color outline_active_color = sf::Color::Transparent,
+		   float outline_thickness = 0);
 	virtual ~Button() = default;
 	
 	const sf::Vector2f& getPosition()

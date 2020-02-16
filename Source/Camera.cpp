@@ -9,12 +9,9 @@ Camera::Camera(sf::View* view, sf::Shape* target, sf::RenderWindow* window)
 
 Camera::~Camera()
 {
-	this->view = nullptr;
-	this->target = nullptr;
 	this->window = nullptr;
-	delete this->view;
-	delete this->target;
-	delete this->window;
+	this->target = nullptr;
+	this->view = nullptr;
 }
 
 ///Functions

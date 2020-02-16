@@ -42,6 +42,11 @@ Minimap::Minimap(Floor& floor, Player& player, const sf::RenderWindow* window)
 	this->ptrPlayer = &player;
 }
 
+Minimap::~Minimap()
+{
+	this->ptrPlayer = nullptr;
+}
+
 ///Functions
 void Minimap::update()
 {

@@ -67,21 +67,19 @@ Done:
  ✔ Fix Blink                              @started(20-02-03 20:35)  @done(20-02-03 20:48)  @lasted(0:13)
  ✔ Remove Triangle Class                  @started(20-02-05 09:00)  @done(20-02-05 09:05)  @lasted(0:05)
  ✔ Add Unit Class                         @started(20-02-05 09:07)  @done(20-02-05 09:32)  @lasted(0:25)
-
-Doing:
- ☐ Update UI                              @started(20-02-04 01:56)
+ ✔ Remove Actor Class                     @started(20-02-07 15:04)  @done(20-02-07 15:39)  @lasted(0:35)
+ ✔ Update UI                              @started(20-02-04 01:56)  @done(20-02-16 14:28)  @lasted(12 days, 12:32)
    ✔ Add UserInterface Class              @started(20-02-04 01:56)  @done(20-02-04 03:57)  @lasted(2:01)
-   ✔ Add StatusBar Class                  @started(20-02-04 03:57)  @done(20-02-04 05:54)  @lasted(1:57)  
+   ✔ Add ProgressBar Class                @started(20-02-04 03:57)  @done(20-02-04 05:54)  @lasted(1:57)  
    ✔ Add HP Bar                           @started(20-02-04 05:54)  @done(20-02-04 06:01)  @lasted(0:05)
    ✔ Add Reload Bar                       @started(20-02-04 06:01)  @done(20-02-04 06:16)  @lasted(0:15)  
    ✔ Add EXP Bar                          @started(20-02-04 06:16)  @done(20-02-04 06:29)  @lasted(0:13)  
-   ☐ Add Stats Pane                       @started
-   ☐ Add Pause Button                     @started
-   ☐ Add Death Screen                     @started
-   ☐ Add Timer?                           @started
+   ✔ Add Attributes Pane                  @started(20-02-13 23:18)  @done(20-02-16 14:28)  @lasted(2 days, 15:10)
+
+Doing:
+ ☐ Update Wave Spawning                   @started
 
 Todo:
- ☐ Update Wave Spawning                   @low
  ☐ Update Game Loop                       @critical
    ☐ Update Combat System                 
    ☐ Add Difficulty System                
@@ -100,7 +98,7 @@ Todo:
    ☐ Add Music                            
 
 Notes:
- **Difficulty System**
+ **Add Difficulty System**
  _Можно сделать как у Dani таймером, но мало ли что ещё в голову прийдёт._
 
  **Update Effect System**
@@ -112,13 +110,13 @@ Notes:
  _Закинуть в него его параметры movingSpeed и fadingSpeed и апдейтить каждую частицу в списке._
  _Во гемор._
 
- **Posibillity Of Stats Upgrading**
+ **Fix Posibillity Of Stats Upgrading**
  _Надо всё удалить нахуй_
  _..._
  _Кароче думаю добавить чек на использование AP, когда аттрибут апнуть уже нельзя._
  _Можно возвращать функцией selectAttributePoints() true, если апнуть удалось успешно и false, если нет._
 
- **Blink Crash**
+ **Fix Blink Crash**
  _Почему нахуй?????_
  _После смерти врага, спустя немного времени, всё ломается._
  _Мб эффект._
@@ -140,14 +138,14 @@ Notes:
  _Бага снова нет._
  _Пока что..._
 
- **Components**
+ **Add Components**
  _Надо разбить AttackComponent на отдельные компоненты._
  _То есть на ShootComponent, PickComponent и DashComponent._
  _..._
  _Крч как-то крипово с такими названиями._
  _Нужно оставить либо AttackCmp, либо добавить те, что выше, а его убрать._
 
- **Player Stats**
+ **Update Player Stats**
  _Level_
  _MaxHP_
  _MovingSpeed_
